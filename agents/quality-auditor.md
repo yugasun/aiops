@@ -52,4 +52,4 @@
 ## Downstream
 
 - → **Builder**: 简化 blocking findings 后重新提交
-- → **Git Ops**: PASS 后进入提交流程
+- → **Gitops**: PASS 后进入提交流程

@@ -38,4 +38,4 @@
 
 - → **Code Reviewer**: 评审代码变更（对照 NOTES.md 设计意图）
 - → **Quality Auditor**: 检查过度工程（在 Reviewer 通过后）
-- → **Git Ops**: 所有 gate 通过后提交代码
+- → **Gitops**: 所有 gate 通过后提交代码

@@ -18,7 +18,7 @@
     { "name": "handoff", "personal": false, "role": "cross-session" },
     { "name": "prototype", "personal": false, "role": "prototype" },
     { "name": "review", "personal": false, "role": "delivery-gate" },
-    { "name": "git-ops", "personal": true, "role": "delivery" },
+    { "name": "gitops", "personal": true, "role": "delivery" },
     { "name": "ui-mockup", "personal": false, "role": "design" }
   ],
   "tier2Deferred": [
@@ -83,8 +83,8 @@
       "outputs": ["prune findings"]
     },
     {
-      "name": "git-ops",
-      "skills": ["git-ops"],
+      "name": "gitops",
+      "skills": ["gitops"],
       "role": "delivery",
       "outputs": ["git commit", "push confirmation"]
     }

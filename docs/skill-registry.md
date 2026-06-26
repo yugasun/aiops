@@ -34,7 +34,7 @@ From [`skills/manifest.json`](../../skills/manifest.json) — invoke as `/skill-
 | `/handoff` | Cross-session context |
 | `/prototype` | Throwaway prototypes |
 | `/review` | Standards + spec review |
-| `/git-ops` | Git operations: sync, commit, push |
+| `/gitops` | Git operations: sync, commit, push |
 | `/ui-mockup` | HTML/CSS mockup generation |
 
 ## Tier 2 deferred (not installed)
@@ -61,7 +61,7 @@ Agents wrap skills with specialized identity and constraints. See [agent-registr
 | `ui-designer` | ui-mockup |
 | `code-reviewer` | review |
 | `quality-auditor` | prune |
-| `git-ops` | git-ops |
+| `gitops` | gitops |
 
 ## External (environment)
 

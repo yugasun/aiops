@@ -81,14 +81,14 @@ Tell the agent:
 
 > Task type: **Feature**. Add a health endpoint that returns status and app version from env or package metadata.
 
-The router dispatches agents in sequence: **Architect** (grill + design) → **Planner** (break into issues) → **Builder** (implement) → **Code Reviewer** (review) → **Git Ops** (commit + push).
+The router dispatches agents in sequence: **Architect** (grill + design) → **Planner** (break into issues) → **Builder** (implement) → **Code Reviewer** (review) → **Gitops** (commit + push).
 
 You can also invoke agents directly:
 
 ```
 /aiops architect 设计一个缓存层
 /aiops builder 实现 issue 001
-/aiops git-ops 提交代码
+/aiops gitops 提交代码
 ```
 
 See [agent-registry.md](agent-registry.md) for all agents and dispatch sequences.

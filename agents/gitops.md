@@ -1,4 +1,4 @@
-# Agent: Git Ops
+# Agent: Gitops
 
 ## Identity
 
@@ -6,7 +6,7 @@
 
 ## Available Skills
 
-- `/git-ops` — Git 操作封装（同步、提交、推送）
+- `/gitops` — Git 操作封装（同步、提交、推送）
 
 ## Inputs
 

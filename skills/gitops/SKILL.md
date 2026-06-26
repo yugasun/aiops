@@ -1,12 +1,12 @@
 ---
-name: git-ops
+name: gitops
 description: >
   Git operations wrapper: sync, stage, commit, push. Generates Conventional Commits
-  messages with .scratch artifact references. Use when the user says git-ops,
+  messages with .scratch artifact references. Use when the user says gitops,
   commit, push, sync code, or needs version control operations.
 ---
 
-# Git Ops
+# Gitops
 
 Git version control operations for the aiops delivery chain.
 

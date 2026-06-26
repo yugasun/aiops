@@ -26,7 +26,7 @@ From [`skills/manifest.json`](../skills/manifest.json) `agents` array:
 | `ui-designer` | design | ui-mockup | mockups/, design-notes.md |
 | `code-reviewer` | delivery-gate | review | REVIEW.md |
 | `quality-auditor` | delivery-gate | prune | prune findings |
-| `git-ops` | delivery | git-ops | commit + push |
+| `gitops` | delivery | gitops | commit + push |
 
 ## Agent definitions
 
@@ -41,18 +41,18 @@ Each agent is defined in `agents/<name>.md`:
 | `agents/ui-designer.md` | UI Designer |
 | `agents/code-reviewer.md` | Code Reviewer |
 | `agents/quality-auditor.md` | Quality Auditor |
-| `agents/git-ops.md` | Git Ops |
+| `agents/gitops.md` | Gitops |
 
 ## Dispatch sequences
 
 | Task type | Agent sequence |
 |-----------|---------------|
-| **Feature** | architect → planner → builder → code-reviewer → quality-auditor → git-ops |
-| **Feature + UI** | architect → ui-designer → planner → builder → code-reviewer → quality-auditor → git-ops |
-| **Bug** | builder → code-reviewer → git-ops |
-| **Incoming** | router triage → builder → code-reviewer → git-ops |
+| **Feature** | architect → planner → builder → code-reviewer → quality-auditor → gitops |
+| **Feature + UI** | architect → ui-designer → planner → builder → code-reviewer → quality-auditor → gitops |
+| **Bug** | builder → code-reviewer → gitops |
+| **Incoming** | router triage → builder → code-reviewer → gitops |
 | **Prototype** | prototyper (standalone, no delivery chain) |
-| **Architecture health** | architect → builder → code-reviewer → git-ops |
+| **Architecture health** | architect → builder → code-reviewer → gitops |
 
 ## Artifact contracts
 
@@ -67,7 +67,7 @@ Agents communicate through `.scratch/<feature>/` files:
 | `issues/*.md` | planner | builder |
 | `VERDICT.md` | prototyper | architect, builder |
 | `mockups/` | ui-designer | builder, code-reviewer |
-| `REVIEW.md` | code-reviewer | builder, quality-auditor, git-ops |
+| `REVIEW.md` | code-reviewer | builder, quality-auditor, gitops |
 | prune findings | quality-auditor | builder |
 
 Full artifact formats: see [design spec](superpowers/specs/2026-06-26-agents-team-design.md).

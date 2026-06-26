@@ -518,6 +518,303 @@ aiops/
 }
 ```
 
+## Collaboration Artifacts
+
+### Conditional Generation Matrix
+
+产物按 task type 条件生成，Router 根据 task type 决定激活哪些 Agent 和生成哪些文件：
+
+| 产物 | Feature | Feature+UI | Bug | Incoming | Prototype | Arch Health |
+|------|---------|-----------|-----|----------|-----------|-------------|
+| NOTES.md | ✅ | ✅ | — | — | — | ✅ |
+| tech-spec.md | ✅ | ✅ | — | — | — | 按需 |
+| PRD.md | ✅ | ✅ | — | — | — | — |
+| plan.md | ✅ | ✅ | — | — | — | — |
+| issues/*.md | ✅ | ✅ | — | 按需 | — | — |
+| mockups/ | — | ✅ | — | — | 按需 | — |
+| VERDICT.md | — | — | — | — | ✅ | — |
+| REVIEW.md | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+
+### Agent → Artifact Ownership
+
+| Agent | Artifacts | Condition |
+|-------|-----------|-----------|
+| **Architect** | NOTES.md, tech-spec.md | Feature / Arch Health |
+| **Planner** | PRD.md, plan.md, issues/*.md | Feature |
+| **Prototyper** | VERDICT.md, prototype/ | Prototype |
+| **UI Designer** | mockups/, design-notes.md | Feature+UI |
+| **Builder** | source code + tests | All tasks requiring implementation |
+| **Code Reviewer** | REVIEW.md | All tasks with code diff |
+| **Quality Auditor** | prune findings (in-session) | Feature |
+| **Git Ops** | commit + push | All tasks requiring commit |
+
+### Artifact Formats
+
+#### NOTES.md (Architect)
+
+```markdown
+# Design Notes: <feature-slug>
+
+## Problem Statement
+一句话描述要解决的问题。
+
+## Context
+- 现有系统的相关部分（文件、模块）
+- 已知约束（性能、兼容性、依赖）
+
+## Design Decisions
+
+### Decision 1: <标题>
+- **选择**: <采用的方案>
+- **理由**: <为什么选这个>
+- **替代方案**: <被否决的方案及原因>
+- **约束**: <此决策带来的限制>
+
+### Decision 2: <标题>
+...
+
+## Scope
+- **In scope**: 本次要做的
+- **Out of scope**: 明确排除的
+
+## Open Questions
+- [ ] <待确认的问题>（如有，阻塞下游）
+```
+
+#### tech-spec.md (Architect)
+
+```markdown
+# Tech Spec: <feature-slug>
+
+## Architecture
+组件关系图或文字描述。
+
+## Data Model
+| 实体 | 字段 | 类型 | 说明 |
+|------|------|------|------|
+
+## API Contracts
+### <METHOD> <path>
+- Request: `{ ... }`
+- Response: `{ ... }`
+
+## Sequence
+1. <步骤 1>
+2. <步骤 2>
+
+## Technical Decisions
+- 引用 NOTES.md Decision X，补充实现细节
+
+## Risks
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+```
+
+#### PRD.md (Planner)
+
+```markdown
+# PRD: <feature-slug>
+
+## Overview
+一段话概述本次交付目标。
+
+## User Stories
+1. 作为 <角色>，我希望 <能力>，以便 <价值>
+
+## Acceptance Criteria
+- [ ] <可验证的完成标准>
+
+## Dependencies
+- 上游依赖：NOTES.md Decision X
+- 外部依赖：<API、库、服务>
+
+## Priority
+| 优先级 | 内容 |
+|--------|------|
+| Must | ... |
+| Should | ... |
+| Could | ... |
+```
+
+#### plan.md (Planner)
+
+```markdown
+# Implementation Plan: <feature-slug>
+
+## Prerequisites
+- [ ] <前置条件>
+
+## Steps
+### Step 1: <标题>
+- **Issue**: `issues/001-xxx.md`
+- **Depends on**: —
+- **Risk**: low | medium | high
+- **Rollback**: <回退策略>
+
+## Execution Order
+Step 1 → Step 2 → Step 3（可并行: Step 4, Step 5）
+
+## Definition of Done
+- [ ] 所有 issues 状态 closed
+- [ ] Code Reviewer APPROVE
+- [ ] Quality Auditor 无 blocking findings
+```
+
+#### issues/*.md (Planner)
+
+命名规范：`001-<kebab-case>.md`，三位数编号 + kebab-case 标题。
+
+```markdown
+# Issue: <编号>-<简短标题>
+
+## Type
+[ ] feature | [ ] bug | [ ] refactor | [ ] chore
+
+## Description
+一句话说清楚要做什么。
+
+## Acceptance Criteria
+- [ ] <条件 1>
+
+## Context
+- 参考：`NOTES.md` Decision X
+- 依赖：`issues/001-xxx.md`（如有）
+
+## Estimated Effort
+small | medium | large
+```
+
+#### VERDICT.md (Prototyper)
+
+```markdown
+# Prototype Verdict: <idea-slug>
+
+## Question
+验证什么？一句话。
+
+## Approach
+怎么验证的？用了什么技术、多少代码。
+
+## Verdict
+**FEASIBLE** | **NOT FEASIBLE** | **FEASIBLE WITH CAVEATS**
+
+## Findings
+- <发现>
+
+## Recommendation
+- 保留原型 / 丢弃原型
+- 如可行：建议的实现路径
+- 如不可行：建议的替代方向
+
+## Time Spent
+<X> 分钟 / <Y> 行代码
+```
+
+#### REVIEW.md (Code Reviewer)
+
+```markdown
+# Code Review: <feature-slug>
+
+## Summary
+一段话总结变更内容和整体评价。
+
+## Design Alignment
+- [ ] 实现符合 NOTES.md 设计决策
+- [ ] 无超出 scope 的变更
+
+## Findings
+
+### Blocking (必须修复)
+#### B1: <文件:行号> — <问题标题>
+- **问题**: <描述>
+- **建议**: <修复方向>
+
+### Non-blocking (建议改进)
+#### N1: <文件:行号> — <问题标题>
+- **问题**: <描述>
+- **建议**: <改进方向>
+
+## Verdict
+**APPROVE** | **REQUEST_CHANGES**
+```
+
+#### mockups/ + design-notes.md (UI Designer)
+
+目录结构：
+```
+mockups/
+├── index.html          # 入口页，链接到各页面
+├── <page-name>.html    # 每个页面一个 HTML 文件
+└── design-notes.md     # 设计说明
+```
+
+design-notes.md 格式：
+```markdown
+# UI Design Notes: <feature-slug>
+
+## Pages
+| 页面 | 文件 | 说明 |
+|------|------|------|
+
+## Design Decisions
+- 色彩：遵循现有设计系统
+- 交互：<关键交互说明>
+
+## Responsive
+- Desktop: <说明>
+- Mobile: <说明>
+```
+
+#### Git Commit Message (Git Ops)
+
+格式遵循 Conventional Commits，body 引用 .scratch 产物形成可追溯链：
+
+```
+<type>(<scope>): <subject>
+
+<body — 引用 .scratch 产物>
+
+Refs: .scratch/<feature-slug>/
+```
+
+type: feat | fix | refactor | test | docs | chore
+
+示例：
+```
+feat(auth): add phone number login
+
+Implemented per NOTES.md Decision 1 (SMS provider: Aliyun).
+Reviewed in REVIEW.md — all blocking findings resolved.
+
+Refs: .scratch/login/
+```
+
+### Artifact Dependency Graph
+
+```
+CONTEXT.md ─────────────────────────────────────┐
+(aiops-setup)                                   │
+                                                ▼
+NOTES.md ──────→ tech-spec.md ──→ PRD.md ──→ plan.md ──→ issues/*.md
+(Architect)      (Architect)      (Planner)  (Planner)   (Planner)
+    │                              │
+    │                              ▼
+    │                         mockups/
+    │                         (UI Designer)
+    │                              │
+    ▼                              ▼
+    └──────────→ Builder ────────→ source code
+                   │
+                   ▼
+              REVIEW.md ────→ prune findings
+             (Code Reviewer)  (Quality Auditor)
+                   │               │
+                   ▼               ▼
+                Git Ops → commit + push
+
+VERDICT.md ← Prototyper（独立路径，可反馈给 Architect）
+```
+
 ## MVP Scope
 
 | Phase | Agents | Skills 新增 | 理由 |

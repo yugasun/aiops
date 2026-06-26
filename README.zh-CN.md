@@ -136,45 +136,6 @@ skills/lean/SKILL.md ─── 安装时 ────→ Cursor: .cursor/rules/l
 node scripts/build/build-all.js    # 生成所有 IDE 原生制品
 ```
 
-## 项目结构
-
-```
-aiops/
-├── README.md                     # 英文（默认）
-├── README.zh-CN.md               # 中文
-├── AGENTS.md                     # 生成的 agent 协议文件
-├── CONTEXT.md                    # 领域词汇表
-├── package.json                  # CLI 入口 (npx -y github:yugasun/aiops)
-├── install.sh                    # curl | bash 引导脚本
-├── bin/
-│   └── install.js                # 主安装器（含 adapter seam）
-├── agents/                       # Agent 定义（source of truth）
-├── skills/                       # Skill 定义（source of truth）
-│   ├── manifest.json             # Tier 1 注册表（19 个 skills）
-│   └── <skill-name>/SKILL.md
-├── hooks/                        # 生命周期 hooks
-│   ├── aiops-activate.js         # SessionStart: 注入 lean + 交付序列
-│   ├── aiops-subagent.js         # SubagentStart: 精简版 lean 提醒
-│   └── claude-codex-hooks.json   # Hook 配置
-├── scripts/
-│   ├── adapters/                 # IDE 格式适配器
-│   │   ├── cursor.js             # SKILL.md → .mdc (alwaysApply: true)
-│   │   ├── copilot.js            # SKILL.md → copilot-instructions.md
-│   │   ├── windsurf.js           # SKILL.md → .mdc
-│   │   └── index.js              # Adapter 注册表
-│   └── build/                    # 预构建脚本
-│       ├── build-all.js          # 主构建（运行所有）
-│       ├── build-agents-md.js    # → AGENTS.md
-│       ├── build-cursor-rules.js # → .cursor/rules/lean.mdc
-│       ├── build-copilot-instructions.js
-│       └── build-windsurf-rules.js
-├── .claude-plugin/               # Claude Code 插件清单
-└── docs/
-    ├── getting-started.md
-    ├── agent-registry.md
-    └── skill-registry.md
-```
-
 ## 在目标项目中使用
 
 1. 运行一次 `/aiops-setup`（issue 跟踪、标签、`CONTEXT.md` 布局）
@@ -194,8 +155,6 @@ node scripts/build/build-all.js # 生成 IDE 原生制品
 - [快速开始](docs/getting-started.md) — 安装、设置、示例开发流程
 - [Agent 注册表](docs/agent-registry.md) — agents、调度序列、制品契约
 - [Skill 注册表](docs/skill-registry.md) — 安装路径 + 允许引用
-- [CONTEXT.md](CONTEXT.md) — bundle 领域词汇表
-- [设计规格](docs/superpowers/specs/2026-06-26-agents-team-design.md) — agents 团队架构
 
 ## 许可证
 

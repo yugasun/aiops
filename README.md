@@ -136,45 +136,6 @@ skills/lean/SKILL.md ─── install time ──→ Cursor: .cursor/rules/lean
 node scripts/build/build-all.js    # Generate all IDE-native artifacts
 ```
 
-## Project layout
-
-```
-aiops/
-├── README.md                     # English (default)
-├── README.zh-CN.md               # 中文
-├── AGENTS.md                     # Generated agent protocol file
-├── CONTEXT.md                    # Domain vocabulary
-├── package.json                  # CLI entry (npx -y github:yugasun/aiops)
-├── install.sh                    # curl | bash bootstrap
-├── bin/
-│   └── install.js                # Main installer with adapter seam
-├── agents/                       # Agent definitions (source of truth)
-├── skills/                       # Skill definitions (source of truth)
-│   ├── manifest.json             # Tier 1 registry (19 skills)
-│   └── <skill-name>/SKILL.md
-├── hooks/                        # Lifecycle hooks
-│   ├── aiops-activate.js         # SessionStart: inject lean + delivery sequence
-│   ├── aiops-subagent.js         # SubagentStart: compact lean reminder
-│   └── claude-codex-hooks.json   # Hook configuration
-├── scripts/
-│   ├── adapters/                 # IDE format adapters
-│   │   ├── cursor.js             # SKILL.md → .mdc (alwaysApply: true)
-│   │   ├── copilot.js            # SKILL.md → copilot-instructions.md
-│   │   ├── windsurf.js           # SKILL.md → .mdc
-│   │   └── index.js              # Adapter registry
-│   └── build/                    # Pre-build scripts for artifacts
-│       ├── build-all.js          # Master build (runs all)
-│       ├── build-agents-md.js    # → AGENTS.md
-│       ├── build-cursor-rules.js # → .cursor/rules/lean.mdc
-│       ├── build-copilot-instructions.js
-│       └── build-windsurf-rules.js
-├── .claude-plugin/               # Claude Code plugin manifest
-└── docs/
-    ├── getting-started.md
-    ├── agent-registry.md
-    └── skill-registry.md
-```
-
 ## In a target project
 
 1. Run `/aiops-setup` once (issue tracker, labels, `CONTEXT.md` layout).
@@ -194,8 +155,6 @@ node scripts/build/build-all.js # generate IDE-native artifacts
 - [Getting started](docs/getting-started.md) — install, setup, example dev flow
 - [Agent registry](docs/agent-registry.md) — agents, dispatch sequences, artifact contracts
 - [Skill registry](docs/skill-registry.md) — install paths + allowed references
-- [CONTEXT.md](CONTEXT.md) — vocabulary for the bundle
-- [Design spec](docs/superpowers/specs/2026-06-26-agents-team-design.md) — agents team architecture
 
 ## License
 

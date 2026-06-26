@@ -35,6 +35,7 @@ From [`skills/manifest.json`](../../skills/manifest.json) — invoke as `/skill-
 | `/prototype` | Throwaway prototypes |
 | `/review` | Standards + spec review |
 | `/git-ops` | Git operations: sync, commit, push |
+| `/ui-mockup` | HTML/CSS mockup generation |
 
 ## Tier 2 deferred (not installed)
 
@@ -55,8 +56,11 @@ Agents wrap skills with specialized identity and constraints. See [agent-registr
 | --- | --- |
 | `architect` | grilling, grill-with-docs, domain-modeling |
 | `planner` | to-prd, to-issues, handoff, aiops-setup |
+| `prototyper` | prototype, lean |
 | `builder` | aiops-implement, tdd, lean |
+| `ui-designer` | ui-mockup |
 | `code-reviewer` | review |
+| `quality-auditor` | prune |
 | `git-ops` | git-ops |
 
 ## External (environment)

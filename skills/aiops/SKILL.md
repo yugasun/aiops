@@ -15,7 +15,7 @@ Single entry for the bundle. Routes tasks through specialized **agents**.
 /aiops <agent-name> <task description> # Direct agent invocation
 ```
 
-Direct agent names: `architect`, `planner`, `builder`, `code-reviewer`, `git-ops`
+Direct agent names: `architect`, `planner`, `prototyper`, `builder`, `ui-designer`, `code-reviewer`, `quality-auditor`, `git-ops`
 
 ## How to route
 
@@ -29,11 +29,12 @@ Direct agent names: `architect`, `planner`, `builder`, `code-reviewer`, `git-ops
 
 | Task type | Agent sequence |
 |-----------|---------------|
-| **Feature** | architect → planner → builder → code-reviewer → git-ops |
+| **Feature** | architect → planner → builder → code-reviewer → quality-auditor → git-ops |
+| **Feature + UI** | architect → ui-designer → planner → builder → code-reviewer → quality-auditor → git-ops |
 | **Bug** | builder → code-reviewer → git-ops |
 | **Incoming** | router triage → builder → code-reviewer → git-ops |
+| **Prototype** | prototyper |
 | **Architecture health** | architect → builder → code-reviewer → git-ops |
-| **New personal skill** | architect (new-skill checklist) |
 
 ## Agent dispatch protocol
 

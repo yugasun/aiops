@@ -1,6 +1,6 @@
 {
   "manifestVersion": 3,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "tier1": [
     { "name": "aiops", "personal": true, "role": "router" },
     { "name": "aiops-implement", "personal": true, "role": "delivery" },
@@ -18,7 +18,8 @@
     { "name": "handoff", "personal": false, "role": "cross-session" },
     { "name": "prototype", "personal": false, "role": "prototype" },
     { "name": "review", "personal": false, "role": "delivery-gate" },
-    { "name": "git-ops", "personal": true, "role": "delivery" }
+    { "name": "git-ops", "personal": true, "role": "delivery" },
+    { "name": "ui-mockup", "personal": false, "role": "design" }
   ],
   "tier2Deferred": [
     {
@@ -52,10 +53,22 @@
       "outputs": [".scratch/<feature>/PRD.md", ".scratch/<feature>/plan.md", ".scratch/<feature>/issues/"]
     },
     {
+      "name": "prototyper",
+      "skills": ["prototype", "lean"],
+      "role": "prototype",
+      "outputs": [".scratch/<feature>/prototype/", ".scratch/<feature>/VERDICT.md"]
+    },
+    {
       "name": "builder",
       "skills": ["aiops-implement", "tdd", "lean"],
       "role": "delivery",
       "outputs": ["source code", "test files"]
+    },
+    {
+      "name": "ui-designer",
+      "skills": ["ui-mockup"],
+      "role": "design",
+      "outputs": [".scratch/<feature>/mockups/", ".scratch/<feature>/mockups/design-notes.md"]
     },
     {
       "name": "code-reviewer",
@@ -64,30 +77,16 @@
       "outputs": [".scratch/<feature>/REVIEW.md"]
     },
     {
-      "name": "git-ops",
-      "skills": ["git-ops"],
-      "role": "delivery",
-      "outputs": ["git commit", "push confirmation"]
-    }
-  ],
-  "agentsTier2": [
-    {
       "name": "quality-auditor",
       "skills": ["prune"],
       "role": "delivery-gate",
       "outputs": ["prune findings"]
     },
     {
-      "name": "prototyper",
-      "skills": ["prototype", "lean"],
-      "role": "prototype",
-      "outputs": [".scratch/<feature>/prototype/", ".scratch/<feature>/VERDICT.md"]
-    },
-    {
-      "name": "ui-designer",
-      "skills": [],
-      "role": "design",
-      "outputs": [".scratch/<feature>/mockups/"]
+      "name": "git-ops",
+      "skills": ["git-ops"],
+      "role": "delivery",
+      "outputs": ["git commit", "push confirmation"]
     }
   ]
 }

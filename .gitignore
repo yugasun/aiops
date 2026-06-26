@@ -1,6 +1,10 @@
 # Installed agent skills (local override / install target)
 .agents/skills/
 
+# Node
+node_modules/
+package-lock.json
+
 # Python
 __pycache__/
 *.py[cod]

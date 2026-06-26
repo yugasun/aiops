@@ -42,34 +42,40 @@ See [agent-registry.md](docs/agent-registry.md) for dispatch sequences and artif
 
 ## Quick start
 
-### Skills CLI (Cursor, Codex, Claude Code, …)
+### One-line install (recommended)
 
 ```bash
-npx skills@latest add yugasun/aiops -g -y --skill '*'
+# Install skills + agents to all detected AI IDEs
+npx -y github:yugasun/aiops
+
+# Or via curl
+curl -fsSL https://raw.githubusercontent.com/yugasun/aiops/main/install.sh | bash
 ```
 
-List skills before install:
+### CLI options
 
 ```bash
-npx skills@latest add yugasun/aiops --list
-```
-
-### Agents Install
-
-```bash
-# Install agents to all supported IDEs (Claude Code, Cursor, Copilot, Codex)
-bash scripts/install-agents.sh -g
-
 # Install to a specific IDE
-bash scripts/install-agents.sh -g -a cursor
-bash scripts/install-agents.sh -g -a claude-code
-bash scripts/install-agents.sh -g -a codex
+npx -y github:yugasun/aiops --ide cursor
+npx -y github:yugasun/aiops --ide claude-code
 
-# Project-local install (no -g)
-bash scripts/install-agents.sh cursor codex
+# Only install agents (skip skills)
+npx -y github:yugasun/aiops --agents-only
+
+# Only install skills (skip agents)
+npx -y github:yugasun/aiops --skills-only
+
+# List detected IDEs without installing
+npx -y github:yugasun/aiops --list
+
+# Project-local install (to .claude/, .cursor/, etc.)
+npx -y github:yugasun/aiops --local
+
+# Uninstall agents
+npx -y github:yugasun/aiops --uninstall
 ```
 
-Supported IDEs:
+### Supported IDEs
 
 | IDE | Install Path | Format |
 | --- | --- | --- |
@@ -78,16 +84,14 @@ Supported IDEs:
 | GitHub Copilot | `~/.github/agents/` | Markdown + YAML |
 | Codex CLI | `~/.codex/agents/` | TOML |
 
-### Claude Code Plugin
-
-In Claude Code:
+### Claude Code Plugin (alternate)
 
 ```
 /plugin marketplace add yugasun/aiops
 /plugin install aiops@aiops
 ```
 
-Plugin skills use the `aiops:` namespace (e.g. `/aiops:aiops`). Skills CLI installs use `/aiops` directly.
+Plugin skills use the `aiops:` namespace (e.g. `/aiops:aiops`).
 
 Then in **any target project**:
 
@@ -101,6 +105,10 @@ Details: **[docs/getting-started.md](docs/getting-started.md)**.
 ```
 aiops/
 ├── README.md
+├── package.json              # CLI entry (npx -y github:yugasun/aiops)
+├── install.sh                # curl | bash bootstrap
+├── bin/
+│   └── install.js            # Main installer (detects IDEs, installs all)
 ├── agents/                   # Agent definitions (source of truth)
 │   └── <agent-name>.md
 ├── .claude-plugin/           # Claude Code marketplace + plugin manifest
@@ -113,7 +121,7 @@ aiops/
 │   ├── skill-registry.md
 │   └── superpowers/specs/
 └── scripts/
-    ├── install-agents.sh     # Install agents to AI IDEs
+    ├── install-agents.sh     # Standalone agent installer (bash)
     ├── smoke-install.sh      # CI: npx skills install + router tests
     └── verify.sh             # bundle + plugin + skill-ref checks
 ```

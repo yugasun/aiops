@@ -1,0 +1,93 @@
+{
+  "manifestVersion": 3,
+  "version": "1.2.0",
+  "tier1": [
+    { "name": "aiops", "personal": true, "role": "router" },
+    { "name": "aiops-implement", "personal": true, "role": "delivery" },
+    { "name": "aiops-setup", "personal": true, "role": "setup" },
+    { "name": "lean", "personal": false, "role": "discipline" },
+    { "name": "prune", "personal": false, "role": "delivery-gate" },
+    { "name": "grill-with-docs", "personal": false, "role": "alignment" },
+    { "name": "grilling", "personal": false, "role": "alignment" },
+    { "name": "domain-modeling", "personal": false, "role": "alignment" },
+    { "name": "tdd", "personal": false, "role": "delivery-gate" },
+    { "name": "diagnosing-bugs", "personal": false, "role": "bug" },
+    { "name": "triage", "personal": false, "role": "incoming" },
+    { "name": "to-prd", "personal": false, "role": "planning" },
+    { "name": "to-issues", "personal": false, "role": "planning" },
+    { "name": "handoff", "personal": false, "role": "cross-session" },
+    { "name": "prototype", "personal": false, "role": "prototype" },
+    { "name": "review", "personal": false, "role": "delivery-gate" },
+    { "name": "git-ops", "personal": true, "role": "delivery" }
+  ],
+  "tier2Deferred": [
+    {
+      "name": "improve-codebase-architecture",
+      "handoff": "Use /aiops with Architecture health, or /grill-with-docs for a single deepening item."
+    },
+    {
+      "name": "codebase-design",
+      "handoff": "Deferred; use /domain-modeling and /grill-with-docs for design vocabulary until forked."
+    },
+    {
+      "name": "writing-great-skills",
+      "handoff": "Deferred; follow aiops skill authoring principles in CONTEXT.md and skill-registry.md."
+    },
+    {
+      "name": "teach",
+      "handoff": "Deferred; not part of the engineering bundle."
+    }
+  ],
+  "agents": [
+    {
+      "name": "architect",
+      "skills": ["grilling", "grill-with-docs", "domain-modeling"],
+      "role": "alignment",
+      "outputs": [".scratch/<feature>/NOTES.md", ".scratch/<feature>/tech-spec.md"]
+    },
+    {
+      "name": "planner",
+      "skills": ["to-prd", "to-issues", "handoff", "aiops-setup"],
+      "role": "planning",
+      "outputs": [".scratch/<feature>/PRD.md", ".scratch/<feature>/plan.md", ".scratch/<feature>/issues/"]
+    },
+    {
+      "name": "builder",
+      "skills": ["aiops-implement", "tdd", "lean"],
+      "role": "delivery",
+      "outputs": ["source code", "test files"]
+    },
+    {
+      "name": "code-reviewer",
+      "skills": ["review"],
+      "role": "delivery-gate",
+      "outputs": [".scratch/<feature>/REVIEW.md"]
+    },
+    {
+      "name": "git-ops",
+      "skills": ["git-ops"],
+      "role": "delivery",
+      "outputs": ["git commit", "push confirmation"]
+    }
+  ],
+  "agentsTier2": [
+    {
+      "name": "quality-auditor",
+      "skills": ["prune"],
+      "role": "delivery-gate",
+      "outputs": ["prune findings"]
+    },
+    {
+      "name": "prototyper",
+      "skills": ["prototype", "lean"],
+      "role": "prototype",
+      "outputs": [".scratch/<feature>/prototype/", ".scratch/<feature>/VERDICT.md"]
+    },
+    {
+      "name": "ui-designer",
+      "skills": [],
+      "role": "design",
+      "outputs": [".scratch/<feature>/mockups/"]
+    }
+  ]
+}

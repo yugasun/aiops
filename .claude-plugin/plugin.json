@@ -1,0 +1,8 @@
+{
+  "name": "aiops",
+  "description": "AI-assisted dev workflow: grill, plan, implement, hard gates",
+  "version": "1.2.0",
+  "author": {
+    "name": "yugasun"
+  }
+}

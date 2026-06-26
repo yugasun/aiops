@@ -1,0 +1,23 @@
+# Installed agent skills (local override / install target)
+.agents/skills/
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Scratch work (optional — keep if you want issues tracked in-repo)
+.scratch/
+.agents/
+
+CONTEXT.md
+docs/adr/
+docs/agents/

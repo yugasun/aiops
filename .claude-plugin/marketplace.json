@@ -1,0 +1,19 @@
+{
+  "name": "aiops",
+  "owner": {
+    "name": "yugasun"
+  },
+  "metadata": {
+    "description": "Personal agent skills bundle for AI-assisted software development",
+    "version": "1.2.0"
+  },
+  "plugins": [
+    {
+      "name": "aiops",
+      "description": "Router, alignment, planning, and delivery hard gates for agent-assisted development",
+      "version": "1.2.0",
+      "source": "./",
+      "strict": false
+    }
+  ]
+}

@@ -58,40 +58,48 @@ const PROVIDERS = [
   {
     id: "claude-code",
     label: "Claude Code",
+    aliases: ["claude", "claude-code"],
     detect: () => hasCommand("claude") || hasDir(path.join(HOME, ".claude")),
-    skillsProfile: "claude-code",
     globalAgentsDir: path.join(HOME, ".claude", "agents"),
     localAgentsDir: ".claude/agents",
+    globalSkillsDir: path.join(HOME, ".claude", "skills"),
+    localSkillsDir: ".claude/skills",
     agentFormat: "md-yaml",
   },
   {
     id: "cursor",
     label: "Cursor",
+    aliases: ["cursor"],
     detect: () =>
       hasMacApp("Cursor") ||
       hasDir(path.join(HOME, ".cursor")) ||
       hasDir(path.join(HOME, ".agents")),
-    skillsProfile: "cursor",
     globalAgentsDir: path.join(HOME, ".cursor", "agents"),
     localAgentsDir: ".cursor/agents",
+    globalSkillsDir: path.join(HOME, ".cursor", "skills"),
+    localSkillsDir: ".cursor/skills",
     agentFormat: "md-yaml",
   },
   {
     id: "copilot",
     label: "GitHub Copilot",
+    aliases: ["copilot", "github-copilot", "github"],
     detect: () => hasDir(path.join(HOME, ".github")) || hasVSCodeExt("github.copilot"),
-    skillsProfile: "copilot",
     globalAgentsDir: path.join(HOME, ".github", "agents"),
     localAgentsDir: ".github/agents",
+    globalSkillsDir: path.join(HOME, ".github", "skills"),
+    localSkillsDir: ".github/skills",
     agentFormat: "md-yaml",
   },
   {
     id: "codex",
     label: "Codex CLI",
+    aliases: ["codex"],
     detect: () => hasCommand("codex") || hasDir(path.join(HOME, ".codex")),
-    skillsProfile: "codex",
     globalAgentsDir: path.join(HOME, ".codex", "agents"),
     localAgentsDir: ".codex/agents",
+    globalSkillsDir: path.join(HOME, ".codex", "skills"),
+    localSkillsDir: ".codex/skills",
     agentFormat: "toml",
   },
 ];
@@ -135,7 +143,7 @@ function parseArgs(argv) {
   const args = {
     all: true,
     ide: null,
-    global: true,
+    global: false,
     list: false,
     uninstall: false,
     skillsOnly: false,
@@ -194,22 +202,22 @@ ${c.bold("Usage:")}
 
 ${c.bold("Flags:")}
   --all              Install to all detected IDEs (default)
-  --ide <name>       Install to specific IDE: claude-code, cursor, copilot, codex
-  -g, --global       Global install to ~/<ide>/ (default)
-  --local            Project-local install to ./<ide>/
+  --ide <name>       Install to specific IDE: claude, cursor, copilot, codex
+  -g, --global       Global install to ~/<ide>/
+  --local            Project-local install to ./<ide>/ (default)
   --list             List detected IDEs, don't install
   --uninstall        Remove installed agents from all/specified IDEs
-  --skills-only      Only install skills (via npx skills)
+  --skills-only      Only install skills
   --agents-only      Only install agents
   --no-skills        Skip skills installation
   -h, --help         Show this help
 
 ${c.bold("Examples:")}
-  npx -y github:${REPO}                        # install to all detected IDEs
-  npx -y github:${REPO} --ide cursor           # install to Cursor only
-  npx -y github:${REPO} --list                 # show what was detected
-  npx -y github:${REPO} --uninstall            # remove agents
-  curl -fsSL https://raw.githubusercontent.com/${REPO}/main/install.sh | bash
+  npx -y github:${REPO}                        # install to current project
+  npx -y github:${REPO} --ide claude            # install to Claude Code only
+  npx -y github:${REPO} -g                      # global install to ~/<ide>/
+  npx -y github:${REPO} --list                  # show what was detected
+  npx -y github:${REPO} --uninstall             # remove installed files
 `);
 }
 
@@ -300,15 +308,56 @@ function uninstallAgents(provider, agents, isGlobal) {
 }
 
 function installSkills(provider, isGlobal) {
-  const gFlag = isGlobal ? "-g" : "";
-  const cmd = `npx -y skills@latest add ${REPO} ${gFlag} -a ${provider.skillsProfile} -y --skill '*' 2>&1`;
+  const skillsDir = path.join(AIOps_ROOT, "skills");
+  if (!hasDir(skillsDir)) {
+    skip("no skills/ directory found");
+    return;
+  }
 
-  try {
-    execSync(cmd, { stdio: "pipe", timeout: 60000 });
-    ok(`skills installed via npx skills (${provider.skillsProfile})`);
-  } catch (err) {
-    const stderr = err.stderr ? err.stderr.toString() : err.message;
-    fail(`skills install failed: ${stderr.split("\n")[0]}`);
+  const destBase = isGlobal
+    ? provider.globalSkillsDir
+    : path.resolve(provider.localSkillsDir);
+
+  fs.mkdirSync(destBase, { recursive: true });
+
+  // Read manifest to get tier1 skills
+  const manifestPath = path.join(skillsDir, "manifest.json");
+  let tier1 = [];
+  if (fs.existsSync(manifestPath)) {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    tier1 = (manifest.tier1 || []).map((s) => s.name);
+  } else {
+    // Fallback: all subdirectories with SKILL.md
+    tier1 = fs.readdirSync(skillsDir).filter((d) => {
+      const p = path.join(skillsDir, d, "SKILL.md");
+      return fs.existsSync(p);
+    });
+  }
+
+  for (const name of tier1) {
+    const srcDir = path.join(skillsDir, name);
+    if (!hasDir(srcDir)) continue;
+
+    const destDir = path.join(destBase, name);
+    fs.mkdirSync(destDir, { recursive: true });
+
+    // Copy all files in skill directory
+    copyDirSync(srcDir, destDir);
+    ok(`${name}/ → ${c.dim(destDir)}`);
+  }
+}
+
+function copyDirSync(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src)) {
+    const srcPath = path.join(src, entry);
+    const destPath = path.join(dest, entry);
+    const stat = fs.statSync(srcPath);
+    if (stat.isDirectory()) {
+      copyDirSync(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
   }
 }
 
@@ -335,9 +384,13 @@ function main() {
     process.exit(1);
   }
 
-  // Filter by --ide flag
+  // Filter by --ide flag (supports aliases like "claude" → "claude-code")
   const targets = args.ide
-    ? detected.filter((p) => p.id === args.ide || p.label.toLowerCase().includes(args.ide.toLowerCase()))
+    ? detected.filter((p) =>
+        p.id === args.ide ||
+        p.label.toLowerCase().includes(args.ide.toLowerCase()) ||
+        (p.aliases && p.aliases.some((a) => a === args.ide.toLowerCase()))
+      )
     : detected;
 
   if (args.ide && targets.length === 0) {

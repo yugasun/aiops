@@ -7,6 +7,16 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 Skip phases only when explicitly justified. Read `CONTEXT.md` and local ADRs for module context.
 
+## Phase 0 — Code graph query (optional, if available)
+
+If `graphify-out/graph.json` exists, briefly tell the user "查询代码图谱了解影响范围" then query the code graph before starting diagnosis:
+
+1. `/code-graph query impact <suspected-file>` — find all modules affected by the suspected code area
+2. `/code-graph query deps <suspected-module>` — understand what the suspected module depends on
+3. `/code-graph query hotspot` — check if the bug area is also a known hotspot (high coupling + frequent changes)
+
+Use these results to narrow the hypothesis space in Phase 3. If no graph exists, skip silently.
+
 ## Phase 1 — Build a tight feedback loop
 
 **This is the skill.** A tight pass/fail signal that goes red on *this* bug beats staring at code.

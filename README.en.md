@@ -9,8 +9,9 @@ Entry: `**/aiops**` (Flow Conductor — step-by-step guidance, resumable via `fl
 ## Key features
 
 - **One command** — describe your goal in natural language; resume with `/aiops continue`
-- **20 skills** — full lifecycle: alignment → design review → planning → delivery → review → ship
+- **21 skills** — full lifecycle: alignment → design review → planning → delivery → review → ship + code graph infrastructure
 - **9 specialized agents** — artifact contracts and dispatch (optional for experts)
+- **Code graph** — graphify deterministic extraction (Tree-sitter AST + Louvain clustering) + AI semantic annotations for structured code understanding
 - **Zero-config default** — local markdown issues unless `aiops.yaml` specifies GitHub/GitLab
 - **Always-on lean discipline** — YAGNI ladder auto-injected on coding turns
 - **Multi-IDE portability** — single `SKILL.md` source, adapter compiles to native IDE formats
@@ -20,6 +21,31 @@ Entry: `**/aiops**` (Flow Conductor — step-by-step guidance, resumable via `fl
 ```bash
 npx -y github:yugasun/aiops
 ```
+
+### Code Graph (optional enhancement)
+
+Of aiops's 21 skills, `/code-graph` is optional — it builds a structured code understanding using [graphify](https://github.com/safishamsi/graphify) (Tree-sitter AST parsing + Louvain community detection). The other 20 skills **require zero additional dependencies**.
+
+**When do you need it?** When you run `/aiops check my architecture for optimization opportunities`, the code graph provides more precise analysis. Without it, aiops still works — just with organic exploration instead of structured graph data.
+
+**Install steps:**
+
+```bash
+# Step 1: Install uv (Python package manager) — skip if you already have uv or pip
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Step 2: Install graphify (PyPI package: graphifyy, CLI command: graphify)
+uv tool install graphifyy
+
+# Step 3: Verify
+graphify --version
+```
+
+> **Don't want uv?** Use pip: `pip install graphifyy`, or pipx: `pipx install graphifyy`.
+> **Don't want graphify?** Totally fine. Alignment, design, implementation, and quality gates all work independently.
 
 In your project chat:
 
@@ -66,7 +92,7 @@ npx -y github:yugasun/aiops --uninstall
 
 ## What you get
 
-### Skills (20 Tier 1)
+### Skills (21 Tier 1)
 
 
 | Layer            | Skills                                                                   |
@@ -76,7 +102,8 @@ npx -y github:yugasun/aiops --uninstall
 | **Alignment**    | `/grill-with-docs`, `/grilling`, `/domain-modeling`, `/architect-design` |
 | **Planning**     | `/to-prd`, `/to-issues`, `/handoff`, `/prototype`                        |
 | **Delivery**     | `/aiops-implement` → `/lean` → `/tdd` → `/prune` → `/review`             |
-| **Architecture** | `/improve-codebase-architecture`                                         |
+| **Architecture** | `/improve-codebase-architecture` — multi-modal sweep + deepening         |
+| **Infrastructure** | `/code-graph` — graphify code graph for all skills to query            |
 | **Other**        | `/diagnosing-bugs`, `/triage`, `/ui-mockup`, `/gitops`                   |
 
 
@@ -116,6 +143,15 @@ Details: [**docs/getting-started.md**](docs/getting-started.md) (Chinese: [getti
 - [Agent registry](docs/agent-registry.md)
 - [Skill registry](docs/skill-registry.md)
 - [Website](website/index.html)
+
+## Demo walkthroughs
+
+> Real run logs based on [aiops-demo](https://github.com/yugasun/aiops-demo). [Full index →](docs/demos/)
+
+- [Health check walkthrough](docs/demos/health-check-walkthrough.md) — TDD + prune + review, +32 lines, 4 tests pass
+- [Architecture scan + code graph](docs/demos/architecture-scan-walkthrough.md) — graphify → 4-perspective sweep → deepening a God module
+- [Effect analysis](docs/demos/effect-analysis.md) — two experiments: add feature (-52% code) + fix bug (TDD eliminates silent bugs)
+- [Automated benchmark](docs/demos/benchmark.sh) — `bash docs/demos/benchmark.sh` runs the comparison
 
 ## License
 

@@ -24,7 +24,10 @@
   --accent-glow: rgba(108,138,255,0.15);
   --green: #4ade80;
   --green-dim: rgba(74,222,128,0.12);
+  --green-glow: rgba(74,222,128,0.25);
   --yellow: #fbbf24;
+  --cyan: #22d3ee;
+  --cyan-glow: rgba(34,211,238,0.15);
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --radius: 12px;
@@ -38,18 +41,48 @@ body {
   font-family: var(--sans);
   line-height: 1.65;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Sci-fi cyber grid background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(108,138,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,138,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--accent), var(--green), transparent);
+  opacity: 0.6;
+  z-index: 200;
+  animation: scanline 4s linear infinite;
+}
+@keyframes scanline {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 ::selection { background: var(--accent-dim); color: #fff; }
 a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: underline; cursor: pointer; }
+button, .btn, .tab-btn, .gate-btn, .step-item, .cmd-copy-btn, .cmd-copy { cursor: pointer; }
 
 /* Nav */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10,11,15,0.88); backdrop-filter: blur(16px);
+  background: rgba(10,11,15,0.92); backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   padding: 0 1.25rem; height: 52px;
   display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 1px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(108,138,255,0.08);
 }
 .nav-logo { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; color: var(--text); cursor: default; }
 .nav-logo span { color: var(--accent); }
@@ -76,6 +109,11 @@ nav {
   width:  min(90vw, 720px); height: 480px;
   background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 68%);
   pointer-events: none;
+  animation: heroGlowPulse 6s ease-in-out infinite;
+}
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.8; filter: hue-rotate(0deg); }
+  50% { opacity: 1; filter: hue-rotate(20deg); }
 }
 .hero-tag {
   display: inline-block; font-family: var(--mono); font-size: 0.72rem;
@@ -83,13 +121,14 @@ nav {
   border: 1px solid rgba(74,222,128,0.25);
   padding: 0.3rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
   animation: fadeUp 0.6s ease both;
+  box-shadow: 0 0 15px rgba(74,222,128,0.15);
 }
 .hero h1 {
   font-size: clamp(1.85rem, 5vw, 2.75rem);
   font-weight: 700; line-height: 1.25; letter-spacing: -0.02em;
   margin-bottom: 1rem; animation: fadeUp 0.6s 0.08s ease both;
 }
-.hero h1 .accent { color: var(--accent); }
+.hero h1 .accent { color: var(--accent); text-shadow: 0 0 20px rgba(108,138,255,0.4); }
 .hero-lead {
   font-size: 1.05rem; color: var(--text-dim); max-width: 540px;
   margin: 0 auto 1.75rem; animation: fadeUp 0.6s 0.16s ease both;
@@ -102,11 +141,13 @@ nav {
   border-radius: var(--radius); overflow: hidden;
   animation: fadeUp 0.6s 0.24s ease both;
   text-align: left;
+  box-shadow: 0 0 30px rgba(108,138,255,0.08), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .terminal-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border);
   font-family: var(--mono); font-size: 0.68rem; color: var(--text-muted);
+  background: linear-gradient(90deg, rgba(108,138,255,0.05), transparent);
 }
 .terminal-dots { display: flex; gap: 5px; }
 .terminal-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--border-light); }
@@ -115,6 +156,7 @@ nav {
 .terminal-input {
   font-family: var(--mono); font-size: 0.9rem; color: var(--green);
   min-height: 1.4em; word-break: break-word;
+  text-shadow: 0 0 10px rgba(74,222,128,0.3);
 }
 .terminal-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.65rem; }
 .terminal-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
@@ -128,8 +170,8 @@ nav {
   border-color: var(--border);
 }
 .btn:hover { border-color: var(--border-light); color: var(--text); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { background: #5a7af0; color: #fff; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 20px rgba(108,138,255,0.3); }
+.btn-primary:hover { background: #5a7af0; color: #fff; box-shadow: 0 0 30px rgba(108,138,255,0.5); }
 .btn-ghost { background: transparent; border-color: var(--border-light); color: var(--text); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.72rem; }
@@ -142,7 +184,8 @@ nav {
 section { padding: 3.25rem 0; }
 .section-label {
   font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.45rem;
+  letter-spacing: 0.12em; color: var(--cyan); margin-bottom: 0.45rem;
+  text-shadow: 0 0 10px rgba(34,211,238,0.3);
 }
 .section-title { font-size: 1.45rem; font-weight: 700; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
 .section-desc { color: var(--text-dim); margin-bottom: 1.5rem; max-width: 640px; font-size: 0.95rem; }
@@ -151,6 +194,11 @@ section { padding: 3.25rem 0; }
 .card {
   background: var(--bg-2); border: 1px solid var(--border);
   border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.card:hover {
+  border-color: var(--border-light);
+  box-shadow: 0 0 30px rgba(108,138,255,0.06), 0 4px 20px rgba(0,0,0,0.4);
 }
 
 /* Tabs */
@@ -168,15 +216,29 @@ section { padding: 3.25rem 0; }
   font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
   padding: 0.45rem 0.85rem; border-radius: 8px;
   border: 1px solid var(--border); background: var(--bg-3);
-  color: var(--text-dim); cursor: pointer; transition: var(--transition);
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s ease;
   white-space: nowrap; flex-shrink: 0;
 }
-.tab-btn:hover { color: var(--text); border-color: var(--border-light); }
+.tab-btn:hover { color: var(--text); border-color: var(--border-light); background: var(--surface); }
 .tab-btn.active {
   background: var(--accent-glow); border-color: var(--accent-dim); color: var(--accent);
 }
 .tab-panel { display: none; animation: fadeIn 0.35s ease; }
 .tab-panel.active { display: block; }
+.tab-panel.fade-in { animation: fadeSlideUp 0.3s ease both; }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* Steps - interactive */
 .steps-grid { display: grid; gap: 0.65rem; }
@@ -242,9 +304,10 @@ section { padding: 3.25rem 0; }
   font-size: 0.78rem; padding: 0.4rem 0.7rem;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text);
-  transition: var(--transition);
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
-.flow-chip.highlight { border-color: var(--accent-dim); background: var(--accent-glow); color: var(--accent); }
+.flow-chip.highlight { border-color: var(--accent-dim); background: var(--accent-glow); color: var(--accent); box-shadow: 0 0 15px rgba(108,138,255,0.15); }
 .flow-arrow { color: var(--text-muted); font-size: 0.8rem; }
 .flow-desc { padding: 0 1.25rem 1.25rem; font-size: 0.86rem; color: var(--text-dim); }
 
@@ -298,17 +361,18 @@ section { padding: 3.25rem 0; }
   font-family: var(--mono); font-size: 0.76rem; font-weight: 600;
   padding: 0.55rem 0.85rem; border-radius: 8px;
   background: var(--surface); border: 1px solid var(--border);
-  color: var(--text-dim); cursor: pointer; transition: var(--transition);
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s ease;
   display: flex; align-items: center; gap: 0.4rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 .gate-btn .gate-idx {
   width: 18px; height: 18px; border-radius: 4px;
   background: var(--bg-3); font-size: 0.65rem;
   display: flex; align-items: center; justify-content: center;
 }
-.gate-btn:hover { border-color: var(--border-light); color: var(--text); }
-.gate-btn.active { border-color: var(--accent-dim); background: var(--accent-glow); color: var(--accent); }
-.gate-btn.done .gate-idx { background: var(--green); color: var(--bg); }
+.gate-btn:hover { border-color: var(--border-light); color: var(--text); box-shadow: 0 0 15px rgba(108,138,255,0.1); }
+.gate-btn.active { border-color: var(--accent-dim); background: var(--accent-glow); color: var(--accent); box-shadow: 0 0 20px rgba(108,138,255,0.2); }
+.gate-btn.done .gate-idx { background: var(--green); color: var(--bg); box-shadow: 0 0 8px rgba(74,222,128,0.3); }
 .gate-detail {
   padding: 1.15rem; background: var(--bg-2); border: 1px solid var(--border);
   border-radius: var(--radius); font-size: 0.88rem; color: var(--text-dim);
@@ -325,19 +389,71 @@ section { padding: 3.25rem 0; }
 .install-code {
   padding: 0.85rem 1rem; font-family: var(--mono); font-size: 0.85rem; color: var(--green);
   display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  text-shadow: 0 0 8px rgba(74,222,128,0.2);
 }
-.install-code .prompt { color: var(--text-muted); }
-.config-card { padding: 1.25rem; margin-top: 1.25rem; }
+.install-code .prompt { color: var(--cyan); text-shadow: 0 0 8px rgba(34,211,238,0.3); }
+.config-card { padding: 1.25rem; margin-top: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
 .config-card h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 .config-card p { font-size: 0.86rem; color: var(--text-dim); margin-bottom: 0.65rem; }
 .config-card pre {
   font-family: var(--mono); font-size: 0.74rem;
   background: var(--bg-3); padding: 1rem; border-radius: 8px;
-  color: var(--text-dim); overflow-x: auto; line-height: 1.5;
+  color: var(--cyan); overflow-x: auto; line-height: 1.5;
+  border: 1px solid rgba(34,211,238,0.1);
+  text-shadow: 0 0 5px rgba(34,211,238,0.15);
 }
 
 /* IDE */
 .ide-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+/* Effects section */
+.effects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+@media (max-width: 640px) { .effects-grid { grid-template-columns: 1fr; } }
+.effect-card {
+  padding: 1.25rem; border-radius: var(--radius);
+  background: var(--bg-2); border: 1px solid var(--border);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+.effect-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+.effect-card h4 { font-size: 0.82rem; font-family: var(--mono); margin-bottom: 0.85rem; }
+.effect-card.no-aiops h4 { color: var(--text-muted); }
+.effect-card.with-aiops h4 { color: var(--green); }
+.effect-stat { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+.effect-stat:last-child { border-bottom: none; }
+.effect-stat .label { color: var(--text-dim); }
+.effect-stat .val { font-family: var(--mono); font-weight: 600; }
+.effect-card.no-aiops .val { color: var(--text-muted); }
+.effect-card.with-aiops .val { color: var(--green); }
+.effect-highlight {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.effect-num {
+  text-align: center; padding: 1rem 0.5rem;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.effect-num:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+.effect-num .big { font-size: 1.65rem; font-weight: 700; color: var(--green); font-family: var(--mono); text-shadow: 0 0 15px rgba(74,222,128,0.4); }
+.effect-num .desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem; }
+.effect-code {
+  font-family: var(--mono); font-size: 0.74rem; color: var(--text-dim);
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 1rem; overflow-x: auto; line-height: 1.65;
+}
+.effect-code .added { color: var(--green); }
+.effect-code .removed { color: #f87171; }
+.effect-code .comment { color: var(--text-muted); }
+.effect-compare {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.75rem; align-items: center;
+  margin: 1rem 0;
+}
+.effect-bar-wrap { height: 28px; border-radius: 6px; overflow: hidden; background: var(--bg-3); position: relative; }
+.effect-bar { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding: 0 0.6rem; font-size: 0.72rem; font-family: var(--mono); font-weight: 600; }
+.effect-bar.no { background: #f8717133; color: #f87171; width: 100%; justify-content: flex-end; }
+.effect-bar.yes { background: var(--green-dim); color: var(--green); }
+.effect-bar-label { font-size: 0.72rem; color: var(--text-muted); text-align: center; min-width: 80px; }
 .ide-table th {
   font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--text-dim);
@@ -348,7 +464,7 @@ section { padding: 3.25rem 0; }
 }
 .ide-table td:first-child { font-family: var(--mono); font-weight: 600; color: var(--text); }
 .ide-table tr { transition: var(--transition); }
-.ide-table tbody tr:hover td { background: rgba(108,138,255,0.04); }
+.ide-table tbody tr:hover td { background: rgba(108,138,255,0.06); box-shadow: inset 0 0 20px rgba(108,138,255,0.03); }
 
 details.advanced { margin-top: 1.5rem; }
 details.advanced summary {
@@ -365,6 +481,7 @@ details.advanced ul { margin: 0.5rem 0 0 1.15rem; }
 
 footer {
   border-top: 1px solid var(--border); padding: 2.5rem 0; text-align: center;
+  background: linear-gradient(180deg, var(--bg) 0%, rgba(108,138,255,0.03) 100%);
 }
 .footer-links { display: flex; gap: 1.25rem; justify-content: center; margin-bottom: 0.75rem; }
 .footer-links a { color: var(--text-dim); font-size: 0.8rem; }
@@ -406,6 +523,7 @@ footer {
     <a href="#examples">示例</a>
     <a href="#flows">路径</a>
     <a href="#gates">质量门</a>
+    <a href="#effects">效果</a>
     <a href="#install">安装</a>
     <a href="https://github.com/yugasun/aiops" target="_blank" rel="noopener">GitHub</a>
   </div>
@@ -440,6 +558,39 @@ footer {
     <a href="#install" class="btn btn-primary">安装</a>
     <a href="#examples" class="btn btn-ghost">看示例</a>
     <a href="https://github.com/yugasun/aiops" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</section>
+
+<section id="install">
+  <div class="section-label">安装</div>
+  <div class="section-title">一行命令</div>
+
+  <div class="card install-block">
+    <div class="install-header"><span>推荐</span><button type="button" class="btn btn-sm cmd-copy-btn" data-copy="npx -y github:yugasun/aiops">复制</button></div>
+    <div class="install-code"><span><span class="prompt">$</span> npx -y github:yugasun/aiops</span></div>
+  </div>
+  <div class="card install-block">
+    <div class="install-header"><span>Skills CLI 全局</span><button type="button" class="btn btn-sm cmd-copy-btn" data-copy="npx skills@latest add yugasun/aiops -g -y --skill '*'">复制</button></div>
+    <div class="install-code"><span><span class="prompt">$</span> npx skills@latest add yugasun/aiops -g -y --skill '*'</span></div>
+  </div>
+  <div class="card install-block">
+    <div class="install-header"><span>可选 · 代码图谱（graphify）</span><button type="button" class="btn btn-sm cmd-copy-btn" data-copy="uv tool install graphifyy">复制</button></div>
+    <div class="install-code"><span><span class="prompt">$</span> uv tool install graphifyy</span></div>
+  </div>
+  <p style="font-size:0.78rem;color:var(--text-muted);margin-top:-0.5rem;margin-bottom:1rem;padding:0 0.25rem;">
+    graphify 是 Python 开源工具，为 AI 提供结构化代码理解（AST 解析 + 社区检测）。
+    需要先安装 <a href="https://docs.astral.sh/uv/getting-started/installation/" target="_blank" rel="noopener" style="color:var(--accent)">uv</a>（Python 包管理器）。
+    不装也能用其他 20 个 skill。
+  </p>
+
+  <div class="card config-card">
+    <h3>可选：团队用 GitHub / GitLab</h3>
+    <p>默认任务记在 <code>.scratch/</code>。只有需要远程 issue 时，在项目根加 <code>aiops.yaml</code>：</p>
+    <pre>version: 1
+issue_tracker:
+  kind: github
+  prs_as_triage: false</pre>
+    <p style="margin:0;font-size:0.82rem;color:var(--text-muted)">没有 yaml = 本地 markdown，首次 <code>/aiops</code> 不问卷。</p>
   </div>
 </section>
 
@@ -524,28 +675,104 @@ footer {
   <p class="flow-desc" style="margin-top: 1rem; padding: 0;">对齐、讨论需求时不启用「最小代码」模式。</p>
 </section>
 
-<section id="install">
-  <div class="section-label">安装</div>
-  <div class="section-title">一行命令</div>
+<section id="effects">
+  <div class="section-label">实测</div>
+  <div class="section-title">两个实验，真实数据</div>
+  <p class="section-desc">同一个项目，同一个任务，有无 aiops 的差异。<a href="https://github.com/yugasun/aiops-demo" target="_blank" rel="noopener">demo 项目可复现 →</a></p>
 
-  <div class="card install-block">
-    <div class="install-header"><span>推荐</span><button type="button" class="btn btn-sm cmd-copy-btn" data-copy="npx -y github:yugasun/aiops">复制</button></div>
-    <div class="install-code"><span><span class="prompt">$</span> npx -y github:yugasun/aiops</span></div>
-  </div>
-  <div class="card install-block">
-    <div class="install-header"><span>Skills CLI 全局</span><button type="button" class="btn btn-sm cmd-copy-btn" data-copy="npx skills@latest add yugasun/aiops -g -y --skill '*'">复制</button></div>
-    <div class="install-code"><span><span class="prompt">$</span> npx skills@latest add yugasun/aiops -g -y --skill '*'</span></div>
+  <div class="effect-highlight">
+    <div class="effect-num"><div class="big">-43%</div><div class="desc">代码量减少</div></div>
+    <div class="effect-num"><div class="big">-69%</div><div class="desc">路由代码精简</div></div>
+    <div class="effect-num"><div class="big">+100%</div><div class="desc">测试覆盖提升</div></div>
+    <div class="effect-num"><div class="big">100%</div><div class="desc">静默 bug 消除</div></div>
   </div>
 
-  <div class="card config-card">
-    <h3>可选：团队用 GitHub / GitLab</h3>
-    <p>默认任务记在 <code>.scratch/</code>。只有需要远程 issue 时，在项目根加 <code>aiops.yaml</code>：</p>
-    <pre>version: 1
-issue_tracker:
-  kind: github
-  prs_as_triage: false</pre>
-    <p style="margin:0;font-size:0.82rem;color:var(--text-muted)">没有 yaml = 本地 markdown，首次 <code>/aiops</code> 不问卷。</p>
+  <!-- Experiment tabs -->
+  <div class="tab-bar" id="expTabs" role="tablist">
+    <button type="button" class="tab-btn active" data-exp="health">实验 1: 加功能</button>
+    <button type="button" class="tab-btn" data-exp="bugfix">实验 2: 修 Bug</button>
   </div>
+
+  <!-- Experiment 1: Health Check -->
+  <div class="card" id="exp-health">
+    <div class="card-body">
+      <div class="effects-grid">
+        <div class="effect-card no-aiops">
+          <h4>无 aiops — 直接让 AI 写</h4>
+          <div class="effect-stat"><span class="label">diff 行数</span><span class="val">+56 行</span></div>
+          <div class="effect-stat"><span class="label">路由代码</span><span class="val">45 行</span></div>
+          <div class="effect-stat"><span class="label">测试代码</span><span class="val">9 行 / 1 个测试</span></div>
+          <div class="effect-stat"><span class="label">过度工程</span><span class="val">memory / uptime / ready / live</span></div>
+          <div class="effect-stat"><span class="label">设计文档</span><span class="val">无</span></div>
+          <div class="effect-stat"><span class="label">测试结果</span><span class="val">3 passed</span></div>
+        </div>
+        <div class="effect-card with-aiops">
+          <h4>有 aiops — 全流程</h4>
+          <div class="effect-stat"><span class="label">diff 行数</span><span class="val">+32 行</span></div>
+          <div class="effect-stat"><span class="label">路由代码</span><span class="val">14 行</span></div>
+          <div class="effect-stat"><span class="label">测试代码</span><span class="val">16 行 / 2 个测试</span></div>
+          <div class="effect-stat"><span class="label">过度工程</span><span class="val">无（prune 已清理）</span></div>
+          <div class="effect-stat"><span class="label">设计文档</span><span class="val">NOTES.md</span></div>
+          <div class="effect-stat"><span class="label">测试结果</span><span class="val">4 passed</span></div>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.5rem;">无 aiops 时 AI 自行添加的内容（用户没要求）：</div>
+        <div class="effect-code"><span class="removed">- interface HealthStatus { status, version, timestamp, uptime, memory, environment }</span>
+<span class="removed">- router.get("/health/ready", ...)  // 用户没要求</span>
+<span class="removed">- router.get("/health/live", ...)   // 用户没要求</span>
+<span class="comment">// YAGNI ladder + prune 阻止了这些过度工程</span></div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.5rem;">有 aiops 时的实现（只返回用户要求的字段）：</div>
+        <div class="effect-code"><span class="added">+ const { version } = JSON.parse(readFileSync(join(__dirname, "../../package.json"), "utf8"));</span>
+<span class="added">+ router.get("/health", (_req, res) => { res.json({ status: "ok", version }); });</span>
+<span class="comment">// 14 行，零过度工程，2 个测试全部通过</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Experiment 2: Bug Fix -->
+  <div class="card" id="exp-bugfix" style="display:none;">
+    <div class="card-body">
+      <div class="effects-grid">
+        <div class="effect-card no-aiops">
+          <h4>无 aiops — 直觉修复</h4>
+          <div class="effect-stat"><span class="label">diff 行数</span><span class="val">+1/-1 行</span></div>
+          <div class="effect-stat"><span class="label">测试结果</span><span class="val" style="color:#f87171">❌ FAILS</span></div>
+          <div class="effect-stat"><span class="label">返回码</span><span class="val">200（静默忽略）</span></div>
+          <div class="effect-stat"><span class="label">诊断过程</span><span class="val">无（直觉修复）</span></div>
+        </div>
+        <div class="effect-card with-aiops">
+          <h4>有 aiops — TDD 驱动</h4>
+          <div class="effect-stat"><span class="label">diff 行数</span><span class="val">+4/-1 行</span></div>
+          <div class="effect-stat"><span class="label">测试结果</span><span class="val">✅ PASSES</span></div>
+          <div class="effect-stat"><span class="label">返回码</span><span class="val">400（明确拒绝）</span></div>
+          <div class="effect-stat"><span class="label">诊断过程</span><span class="val">假设 → 验证 → 修复</span></div>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.5rem;">无 aiops 的修复 — 静默 bug（表面修了，测试仍失败）：</div>
+        <div class="effect-code"><span class="removed">-  if (req.body.title !== undefined) task.title = req.body.title;</span>
+<span class="removed">+  if (req.body.title !== undefined && req.body.title !== "") task.title = req.body.title;</span>
+<span class="comment">// 静默忽略空标题，返回 200 — 测试期望 400，失败</span></div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.5rem;">有 aiops 的修复 — TDD 驱动正确实现：</div>
+        <div class="effect-code"><span class="added">+  if (req.body.title !== undefined) {</span>
+<span class="added">+    if (!req.body.title.trim()) return res.status(400).json({ error: "title cannot be empty" });</span>
+<span class="added">+    task.title = req.body.title;</span>
+<span class="added">+  }</span>
+<span class="comment">// 明确返回 400，测试通过</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.86rem;color:var(--text-dim);text-align:center;margin-top:1.5rem;">
+    详细数据：<a href="https://github.com/yugasun/aiops/blob/main/docs/demos/effect-analysis.md" target="_blank" rel="noopener">效果分析报告 →</a>
+    ·
+    自动化脚本：<a href="https://github.com/yugasun/aiops/blob/main/docs/demos/benchmark.sh" target="_blank" rel="noopener">benchmark.sh →</a>
+  </p>
 </section>
 
 <section id="ides">
@@ -565,7 +792,7 @@ issue_tracker:
   </div>
 
   <details class="card advanced">
-    <summary>想了解底层？9 agent · 20 skill</summary>
+    <summary>想了解底层？9 agent · 21 skill</summary>
     <div class="inner">
       <p>普通用户只需 <code>/aiops</code>；专家可 <code>/aiops architect …</code> 直接指定。</p>
       <ul>
@@ -614,7 +841,7 @@ issue_tracker:
     '隔天继续：<code style="color:var(--green)">/aiops 继续</code>',
     'Bug 路径会跳过需求对齐',
     '从 flow.state.yaml 恢复进度',
-    '会先出架构报告，你选一项再深化',
+    'graphify 图谱 + 4 视角扫描，你选一项再深化',
     '带 UI 会先出 HTML 草图'
   ];
   var heroIdx = 0;
@@ -632,7 +859,7 @@ issue_tracker:
       scenario: '小 HTTP 服务加 GET /health，返回 status 和版本号，不引入多余框架。',
       cmd: '/aiops 加一个 health 接口，返回 JSON：status 和 app 版本号，版本从环境变量或 package 读',
       outcome: '对齐 → 设计笔记 → 实现 + 集成测试 → 你确认后再 commit。',
-      meta: ['约 30 分钟', '默认单次聊完'],
+      meta: ['约 30 分钟', '默认单次聊完', '<a href="docs/demos/health-check-walkthrough.md" style="color:var(--accent)">查看完整走查 →</a>'],
       flow: ['对齐', '设计', '设计评审', '实现', '提交']
     },
     {
@@ -654,13 +881,13 @@ issue_tracker:
       flow: ['对齐', 'UI 草图', '设计评审', '实现', '提交']
     },
     {
-      id: 'arch', label: '存量优化', tag: '架构健康',
+      id: 'arch', label: '存量优化', tag: '架构健康 + 代码图谱',
       title: '老项目架构瘦身',
-      scenario: '模块边界乱，系统性找可深化点，选一项再改。',
+      scenario: 'graphify 确定性提取代码图谱（AST + 社区检测），多模态并行扫描找可深化点，选一项再改。',
       cmd: '/aiops 帮我看看这个仓库有哪些架构可以优化，技术债集中在路由和 service 层',
-      outcome: '架构报告（浏览器打开）→ 你选一项 → grill → 设计 → 实现。',
-      meta: ['先扫再选', '深化机会'],
-      flow: ['架构扫描', '对齐', '设计', '实现']
+      outcome: 'graphify 生成代码图谱 → 4 视角并行扫描（结构/数据流/变更/测试）→ 架构报告（浏览器打开）→ 你选一项 → grill → 设计 → 实现。',
+      meta: ['graphify 图谱', '多模态扫描', '深化机会', '<a href="docs/demos/architecture-scan-walkthrough.md" style="color:var(--accent)">查看完整走查 →</a>'],
+      flow: ['代码图谱', '多模态扫描', '选一项', '对齐', '设计', '实现']
     },
     {
       id: 'rbac', label: '大功能', tag: '多会话',
@@ -710,8 +937,8 @@ issue_tracker:
       desc: '跳过需求对齐，先复现再修。'
     },
     arch: {
-      chips: ['架构扫描', '对齐所选项', '设计', '实现'],
-      desc: '先出报告，你选一项 deepening candidate 再深化。'
+      chips: ['代码图谱', '多模态扫描', '对齐所选项', '设计', '实现'],
+      desc: 'graphify 确定性提取 → 4 视角并行扫描 → 你选一项 deepening candidate 再深化。'
     },
     multi: {
       chips: ['对齐', '写 PRD', '拆 issue', '每 issue 新聊天', '实现'],
@@ -863,6 +1090,51 @@ issue_tracker:
     gateBtns.appendChild(btn);
   });
   gateDetail.textContent = gates[0].desc;
+
+  /* ── Experiment tabs ── */
+  var expTabs = document.getElementById('expTabs');
+  if (expTabs) {
+    expTabs.addEventListener('click', function (e) {
+      var btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      expTabs.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var key = btn.getAttribute('data-exp');
+      var healthPanel = document.getElementById('exp-health');
+      var bugfixPanel = document.getElementById('exp-bugfix');
+      healthPanel.style.display = key === 'health' ? '' : 'none';
+      bugfixPanel.style.display = key === 'bugfix' ? '' : 'none';
+      // Add fade animation
+      var activePanel = key === 'health' ? healthPanel : bugfixPanel;
+      activePanel.classList.remove('fade-in');
+      void activePanel.offsetWidth; // trigger reflow
+      activePanel.classList.add('fade-in');
+    });
+  }
+
+  /* ── Effect numbers scroll animation ── */
+  var effectNums = document.querySelectorAll('.effect-num .big');
+  if (effectNums.length > 0) {
+    var observed = false;
+    var effectObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !observed) {
+          observed = true;
+          effectNums.forEach(function (el, i) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+            el.style.transition = 'opacity 0.4s ease ' + (i * 0.1) + 's, transform 0.4s ease ' + (i * 0.1) + 's';
+            setTimeout(function () {
+              el.style.opacity = '1';
+              el.style.transform = 'translateY(0)';
+            }, 50);
+          });
+          effectObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    effectNums.forEach(function (el) { effectObserver.observe(el.parentElement); });
+  }
 
   /* ── Install copy ── */
   document.querySelectorAll('.cmd-copy-btn').forEach(function (btn) {

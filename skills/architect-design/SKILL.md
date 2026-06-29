@@ -29,6 +29,7 @@ Avoid: "component," "service," "API," "boundary" — these are overloaded or too
 - `CONTEXT.md` domain glossary (from `/aiops-setup`)
 - `docs/adr/` existing architecture decision records
 - `.scratch/<feature>/VERDICT.md` (if prototyper ran)
+- `graphify-out/graph.json` (if `/code-graph` has been run — query via `/code-graph query god-nodes`, `/code-graph query communities` for overview)
 
 ## Process
 
@@ -40,6 +41,17 @@ Extract constraints from all inputs. Classify:
 - **Soft constraints**: preferences that can be traded off (performance targets, code style, library preferences)
 
 List constraints explicitly in `NOTES.md` Context section. Reference ADRs by number — do not re-litigate settled decisions unless friction is real enough to warrant revisiting (mark clearly).
+
+### Step 1.5: Graph validation (if code graph available)
+
+If `graphify-out/graph.json` exists, validate constraints against the actual code structure:
+
+1. Query `/code-graph query modules` to get the current module inventory
+2. For each constraint referencing existing modules, verify the module exists and matches the constraint's assumptions
+3. Query `/code-graph query deps <module>` to check dependency claims
+4. Flag any constraint that contradicts the graph (e.g., "Module A doesn't depend on Module B" but the graph shows it does)
+
+Record graph-validated constraints in `NOTES.md` with `[graph-verified]` tags.
 
 ### Step 2: Module identification
 

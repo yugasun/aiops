@@ -1,6 +1,6 @@
 {
   "name": "aiops-installer",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Flow Conductor for AI-assisted dev — install skills/agents to Cursor, Claude, Codex, Copilot, Windsurf",
   "bin": {
     "aiops": "./bin/install.js"

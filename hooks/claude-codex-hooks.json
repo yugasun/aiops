@@ -11,6 +11,17 @@
             "statusMessage": "Loading aiops lean discipline…"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/aiops-graph.js\" 2>/dev/null; exit 0",
+            "timeout": 3000,
+            "statusMessage": "Checking code graph freshness…"
+          }
+        ]
       }
     ],
     "SubagentStart": [

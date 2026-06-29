@@ -9,6 +9,7 @@
 - `/aiops-implement` — 实现交付流程
 - `/tdd` — 测试驱动开发
 - `/lean` — 最小代码纪律（YAGNI ladder）
+- `/code-graph` — 查询代码图谱，实现前了解影响范围
 
 ## Inputs
 

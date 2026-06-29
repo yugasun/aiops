@@ -17,6 +17,7 @@ Single context: `CONTEXT.md` + `docs/adr/`. Multi-context: `CONTEXT-MAP.md` poin
 - **Sharpen fuzzy language** — propose precise canonical terms.
 - **Stress-test with scenarios** — edge cases that force boundary decisions.
 - **Cross-check code** — surface contradictions between stated rules and implementation.
+- **Cross-check with code graph** — if `graphify-out/graph.json` exists, tell the user "用代码图谱验证模块边界假设" then query module boundaries and dependency density to validate concept boundary assumptions. Use `/code-graph query modules` for the overview and `/code-graph query deps <module>` to verify that proposed domain boundaries align with actual code boundaries.
 - **Update CONTEXT.md inline** — one term at a time; glossary only, no implementation detail.
 
 ## ADRs — offer only when all three hold

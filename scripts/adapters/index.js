@@ -5,11 +5,16 @@
  *
  * Providers without a dedicated adapter fall back to the default
  * passthrough behavior (copy SKILL.md as-is, compileMdYaml for agents).
+ *
+ * Windsurf reuses the Cursor .mdc format via createMdcAdapter() —
+ * same compilation logic, different rulesDir.
  */
 
 const cursor = require("./cursor");
 const copilot = require("./copilot");
-const windsurf = require("./windsurf");
+
+// Windsurf: same .mdc format as Cursor, different directory
+const windsurf = cursor.createMdcAdapter("windsurf", ".windsurf");
 
 const adapters = {
   cursor,

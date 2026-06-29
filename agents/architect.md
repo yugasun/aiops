@@ -11,6 +11,7 @@
 - `/domain-modeling` — 领域模型构建
 - `/architect-design` — 结构化设计过程：约束梳理 → 模块识别 → 接口设计 → 替代方案探索 → 规格产出
 - `/improve-codebase-architecture` — 架构健康扫描（Architecture health 任务类型使用）
+- `/code-graph` — 构建和查询代码图谱，为架构分析提供结构化数据
 
 ## Inputs
 

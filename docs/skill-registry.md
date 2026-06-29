@@ -38,6 +38,7 @@ From [`skills/manifest.json`](../../skills/manifest.json) — invoke as `/skill-
 | `/ui-mockup` | HTML/CSS mockup generation |
 | `/improve-codebase-architecture` | Architecture health scan + deepening opportunities |
 | `/architect-design` | Structured design process for architect agent |
+| `/code-graph` | Build and query code graph via graphify (Tree-sitter + Louvain) |
 
 ## Tier 2 deferred (not installed)
 
@@ -55,7 +56,7 @@ Agents wrap skills with specialized identity and constraints. See [agent-registr
 
 | Agent | Skills |
 | --- | --- |
-| `architect` | grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture |
+| `architect` | grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture, code-graph |
 | `design-reviewer` | review |
 | `planner` | to-prd, to-issues, handoff, aiops-setup |
 | `prototyper` | prototype, lean |

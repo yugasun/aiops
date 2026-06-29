@@ -7,35 +7,9 @@
  * Other skills pass through as SKILL.md copies (existing behavior).
  */
 
-const fs = require("fs");
 const path = require("path");
-
-/**
- * Strip YAML frontmatter (---...---) from markdown content.
- */
-function stripFrontmatter(content) {
-  if (!content.startsWith("---")) return content;
-  const second = content.indexOf("---", 3);
-  if (second === -1) return content;
-  return content.slice(second + 3).trimStart();
-}
-
-/**
- * Extract a field from YAML frontmatter.
- */
-function extractField(content, field) {
-  if (!content.startsWith("---")) return null;
-  const end = content.indexOf("---", 3);
-  if (end === -1) return null;
-  const fm = content.slice(3, end);
-  const re = new RegExp(`^${field}:\\s*(.+?)$`, "m");
-  const m = fm.match(re);
-  if (m) return m[1].trim().replace(/^["']|["']$/g, "");
-  const mlRe = new RegExp(`^${field}:\\s*>\\s*\\n((?:\\s+.+\\n)*)`, "m");
-  const ml = fm.match(mlRe);
-  if (ml) return ml[1].replace(/^\s{2}/gm, "").trim();
-  return null;
-}
+const os = require("os");
+const { stripFrontmatter, extractField } = require("./utils");
 
 /**
  * Compile an always-on skill into Copilot instructions format.
@@ -115,11 +89,7 @@ module.exports = {
 
   /** Copilot uses a single instructions file at this path */
   instructionsFile: {
-    global: path.join(
-      require("os").homedir(),
-      ".github",
-      "copilot-instructions.md"
-    ),
+    global: path.join(os.homedir(), ".github", "copilot-instructions.md"),
     local: ".github/copilot-instructions.md",
   },
 

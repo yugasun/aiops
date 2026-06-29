@@ -54,7 +54,7 @@ Expert override: `/aiops <agent-name> …` skips narration but still updates `fl
 
 - title_zh: 扫描架构机会
 - title_en: Architecture health scan
-- body_zh: 我会找出可深化的模块，用 HTML 报告展示。你选一个我们再继续。
+- body_zh: 如果代码图谱已就绪，我会基于图谱做增强分析；否则会直接探索代码。最终用 HTML 报告展示可深化的模块，你选一个我们再继续。
 - artifact_zh: 架构报告（临时目录）+ 你选中的 deepening candidate
 
 ### design

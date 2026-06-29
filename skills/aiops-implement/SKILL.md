@@ -16,6 +16,10 @@ Invoked by Flow Conductor **delivery** phase (`builder` agent). Update `flow.sta
 - `DESIGN_REVIEW.md` APPROVE when design review ran in this flow
 - If `/prototype` ran: `VERDICT.md` before absorbing prototype learnings
 
+## Impact analysis (before implement)
+
+If `graphify-out/graph.json` exists, tell the user "查询代码图谱评估修改影响面" then query `/code-graph query impact <target-file>` before writing code to understand the blast radius. Log affected modules in the journey context so the builder knows what might break.
+
 ## Orchestration (hard gates — fixed order)
 
 Run sub-phases in order. Do not skip unless user explicitly exempts a step (e.g. mechanical fix → skip new tests).

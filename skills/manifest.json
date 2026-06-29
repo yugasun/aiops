@@ -1,6 +1,6 @@
 {
   "manifestVersion": 3,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "tier1": [
     { "name": "aiops", "personal": true, "role": "router" },
     { "name": "aiops-implement", "personal": true, "role": "delivery" },
@@ -21,7 +21,8 @@
     { "name": "gitops", "personal": true, "role": "delivery" },
     { "name": "ui-mockup", "personal": false, "role": "design" },
     { "name": "improve-codebase-architecture", "personal": false, "role": "architecture-health" },
-    { "name": "architect-design", "personal": false, "role": "alignment" }
+    { "name": "architect-design", "personal": false, "role": "alignment" },
+    { "name": "code-graph", "personal": false, "role": "infrastructure" }
   ],
   "tier2Deferred": [
     {
@@ -40,7 +41,7 @@
   "agents": [
     {
       "name": "architect",
-      "skills": ["grilling", "grill-with-docs", "domain-modeling", "architect-design", "improve-codebase-architecture"],
+      "skills": ["grilling", "grill-with-docs", "domain-modeling", "architect-design", "improve-codebase-architecture", "code-graph"],
       "role": "alignment",
       "outputs": [".scratch/<feature>/NOTES.md", ".scratch/<feature>/tech-spec.md"]
     },

@@ -18,21 +18,50 @@ This command is _informed_ by the project's domain model and built on a shared d
 
 ## Process
 
-### 1. Explore
+### 1. Graph check (optional)
 
-Read the project's domain glossary (`CONTEXT.md`) and any ADRs in the area you're touching first.
+Before exploring, check for a code graph:
 
-Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+- If `graphify-out/graph.json` exists, tell the user: "代码图谱已就绪（N 个模块），将基于图谱做增强分析。" Then query `/code-graph query god-nodes` and `/code-graph query communities` to get the global view. Query specific modules as needed via `/code-graph query`.
+- If no graph exists, tell the user: "未检测到代码图谱，使用有机探索模式。如需更精确的分析，可先运行 `/code-graph build`（需要先安装 graphify）。" Then fall back to organic exploration.
 
-- Where does understanding one concept require bouncing between many small modules?
-- Where are modules **shallow** — interface nearly as complex as the implementation?
-- Where have pure functions been extracted just for testability, but the real bugs hide in how they're called (no **locality**)?
-- Where do tightly-coupled modules leak across their seams?
-- Which parts of the codebase are untested, or hard to test through their current interface?
+### 2. Multi-modal sweep
 
-Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
+Run 4 perspective agents in parallel using the Agent tool. Each agent queries the code graph from a different angle. See [sweep-patterns.md](sweep-patterns.md) for agent prompt templates.
 
-### 2. Present candidates as an HTML report
+**Structure agent** — Identify shallow modules:
+- Query `/code-graph query shallow` for modules where interface ≈ implementation
+- Query `/code-graph query god-nodes` for critical modules with high in-degree
+- For each shallow god-node, apply the **deletion test**: would deleting it concentrate complexity or just move it?
+- Output: list of shallow modules ranked by architectural impact
+
+**Data-flow agent** — Trace cross-module data flow:
+- Query `/code-graph query deps` and `/code-graph query rdeps` for the top 10 most-connected modules
+- Identify modules where data crosses a seam unnecessarily (leakage)
+- Look for modules that transform data they shouldn't own
+- Output: list of seam leakage points with affected modules
+
+**Change agent** — Identify friction from change patterns:
+- Query `/code-graph query hotspot` for modules that are both high-coupling and recently changed
+- Run `git log --oneline -30` to find the most-changed files
+- Cross-reference: hotspots that appear in both code graph and git log are high-confidence friction signals
+- Output: list of hotspot modules with coupling × change frequency score
+
+**Test agent** — Map test coverage gaps:
+- Query `/code-graph query modules` to get all modules
+- For each module, check if corresponding test files exist (grep for test patterns)
+- Identify untested seams — modules with high in-degree but no test coverage
+- Output: list of untested critical modules
+
+### 3. Cross-validate
+
+Spawn a synthesis agent that receives all 4 perspectives:
+- De-duplicate findings (same module flagged by multiple agents = higher confidence)
+- Rank by convergence: findings confirmed by 2+ agents rank highest
+- Apply the **deletion test** to the top findings
+- Produce a final candidate list (5-10 items)
+
+### 4. Present candidates as an HTML report
 
 Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
@@ -46,6 +75,7 @@ For each candidate, render a card with:
 - **Benefits** — explained in terms of locality and leverage, and how tests would improve
 - **Before / After diagram** — side-by-side, custom-drawn, illustrating the shallowness and the deepening
 - **Recommendation strength** — one of `Strong`, `Worth exploring`, `Speculative`, rendered as a badge
+- **Sweep evidence** — which perspective agents flagged this (badge per agent)
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
@@ -57,12 +87,16 @@ See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram pattern
 
 Do NOT propose interfaces yet. After the file is written, ask the user: "Which of these would you like to explore?"
 
-### 3. Grilling loop
+### 5. Grilling loop
 
 Once the user picks a candidate, run the `/grilling` skill to walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
+Side effects happen inline as decisions crystallise — run the `/domain-modeling` skill to keep the domain model current as you go:
 
 - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones.
+
+## Legacy mode (no code graph)
+
+If the user declines `/code-graph build`, fall back to a single Explore agent for organic exploration — the original behavior. The HTML report should note that findings are based on exploration only, not structured graph data, and may be less comprehensive.

@@ -17,10 +17,15 @@
 ## Skill authoring
 
 - Keep `SKILL.md` lean; sibling `.md` only for progressive disclosure.
-- No deprecated commands — see skill registry.
 - Delivery gates live in `/aiops-implement` only.
 - No repo-relative links in `SKILL.md` that break after `npx skills` install.
 
 ## Docs
 
-User-facing: `README.md`（中文）, `docs/getting-started.zh-CN.md`, `README.en.md`, `docs/getting-started.md`. Domain: `CONTEXT.md`. Architecture: `docs/adr/`.
+User-facing: `README.md`, `docs/getting-started.md`. Domain: `CONTEXT.md`. Architecture: `docs/adr/`.
+
+## Code style
+
+- **File size limit: 500 lines.** Split files that approach this limit. See `CLAUDE.md` for splitting order and rules.
+- TypeScript/React: extract types → utils → hooks → sub-components → constants, in that order.
+- Mirror existing package layout — don't invent new patterns.

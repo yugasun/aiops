@@ -2,8 +2,6 @@
 
 Install and use the bundle in a **target project** (your app repo, not the aiops meta-repo).
 
-[中文文档](getting-started.zh-CN.md)
-
 ## Prerequisites
 
 - Node.js 18+
@@ -51,8 +49,6 @@ Explicit setup: `/aiops-setup`
 ## 3. Example — health endpoint
 
 Single-session feature: align → design → design review → implement (lean → tdd → prune → review) → commit only when you ask.
-
-See [getting-started.zh-CN.md](getting-started.zh-CN.md) for full walkthrough in Chinese.
 
 ## Troubleshooting
 

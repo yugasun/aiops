@@ -22,6 +22,7 @@ From [`skills/manifest.json`](../../skills/manifest.json) — invoke as `/skill-
 | `/aiops-implement` | Delivery overlay |
 | `/aiops-setup` | Per-project tracker + domain config |
 | `/lean` | Minimal-code ladder (delivery only) |
+| `/file-refactor` | File size discipline — split files over 500 lines |
 | `/prune` | Over-engineering gate after review |
 | `/grill-with-docs` | Alignment with CONTEXT + ADRs |
 | `/grilling` | Interview loop |
@@ -71,15 +72,3 @@ Agents wrap skills with specialized identity and constraints. See [agent-registr
 | Tool | Notes |
 | --- | --- |
 | Cursor `create-skill` | Author new skills; not part of this bundle |
-
-## Deprecated (do not reference)
-
-| Name | Replacement |
-| --- | --- |
-| `/ask-matt` | `/aiops` |
-| `/setup-matt-pocock-skills` | `/aiops-setup` |
-| `/grill-me` | `/grilling` |
-| `/implement` | `/aiops-implement` |
-| `/ponytail` | `/lean` |
-
-`scripts/verify.sh` enforces this list in `skills/**/*.md`.

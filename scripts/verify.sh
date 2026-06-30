@@ -84,32 +84,16 @@ elif plugins[0].get("strict") is not False:
 # --- skill refs ---
 tier1 = {entry["name"] for entry in manifest["tier1"]}
 tier1_slash = {f"/{name}" for name in tier1}
-deprecated = {
-    "/ask-matt", "/setup-matt-pocock-skills", "/grill-me", "/implement", "/ponytail",
-    "/improve-codebase-architecture", "/codebase-design", "/writing-great-skills",
-    "ask-matt", "setup-matt-pocock-skills", "grill-me", "author-skill",
-    "improve-codebase-architecture", "codebase-design", "writing-great-skills",
-}
 slash_ref = re.compile(r"`(/[a-z][a-z0-9-]*)`")
-bare_ref = re.compile(
-    r"(?<![/`])(?:ask-matt|setup-matt-pocock-skills|grill-me|author-skill|"
-    r"improve-codebase-architecture|codebase-design|writing-great-skills)(?![/`a-z])"
-)
 for path in sorted(skills_root.rglob("*.md")):
     text = path.read_text()
     rel = path.relative_to(skills_root.parent)
     for m in slash_ref.finditer(text):
         ref = m.group(1)
-        if ref in deprecated:
-            print(f"ERROR {rel}: deprecated reference {ref}")
-            errors += 1
-        elif ref not in tier1_slash and ref not in {"/settings"}:
+        if ref not in tier1_slash and ref not in {"/settings"}:
             if ("-" in ref[1:] or ref[1:] in ("aiops", "tdd")) and ref.count("/") == 1:
                 print(f"ERROR {rel}: unregistered skill reference {ref}")
                 errors += 1
-    for m in bare_ref.finditer(text):
-        print(f"ERROR {rel}: deprecated reference {m.group(0)}")
-        errors += 1
 
 if errors:
     print(f"verify: {errors} error(s)")

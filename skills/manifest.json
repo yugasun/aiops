@@ -6,6 +6,7 @@
     { "name": "aiops-implement", "personal": true, "role": "delivery" },
     { "name": "aiops-setup", "personal": true, "role": "setup" },
     { "name": "lean", "personal": false, "role": "discipline", "alwaysOn": true },
+    { "name": "file-refactor", "personal": false, "role": "discipline" },
     { "name": "prune", "personal": false, "role": "delivery-gate" },
     { "name": "grill-with-docs", "personal": false, "role": "alignment" },
     { "name": "grilling", "personal": false, "role": "alignment" },

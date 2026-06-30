@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs'
 import { Table, TableBody, TableCell, TableRow } from '../components/ui/table'
 import { Separator } from '../components/ui/separator'
 import { Link } from 'react-router-dom'
+import { JourneyStateSection } from './JourneyStateSection'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -410,6 +411,8 @@ export default function Landing() {
       <InstallSection />
       <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent max-w-4xl mx-auto" />
       <UseCasesSection />
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent max-w-4xl mx-auto" />
+      <JourneyStateSection />
       <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent max-w-4xl mx-auto" />
       <GatesSection />
       <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent max-w-4xl mx-auto" />

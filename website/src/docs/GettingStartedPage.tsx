@@ -40,10 +40,21 @@ const content = {
       title: 'Example — health endpoint',
       desc: 'Single-session feature: align → design → design review → implement (lean → tdd → prune → review) → commit only when you ask.',
     },
+    journey: {
+      title: 'Journey state',
+      desc: 'The Flow Conductor saves progress in .scratch/<slug>/flow.state.yaml. Resume with /aiops continue — no extra setup needed.',
+      how: [
+        { title: 'Start a task', body: 'Type /aiops and describe your goal. The conductor infers task type, shows step N/M, and saves state automatically.' },
+        { title: 'Resume later', body: 'Type /aiops continue (or 继续). The conductor reads flow.state.yaml and picks up from your current step.' },
+        { title: 'Gate checks', body: 'Before advancing, the conductor verifies that gate artifacts (e.g. DESIGN_REVIEW.md with APPROVE) exist. No manual commands needed.' },
+      ],
+      note: 'State management is fully automatic — you never need to touch flow.state.yaml or run any CLI commands.',
+    },
     troubleshoot: [
       { p: '/aiops not found', f: 'Re-run installer; restart IDE' },
       { p: 'Stale skill behavior', f: 'Re-install to refresh skills' },
       { p: 'Wrong skill cited', f: 'Check skill-registry.md' },
+      { p: 'flow.state.yaml corrupted', f: 'Delete .scratch/<slug>/ and re-run /aiops' },
     ],
   },
   zh: {
@@ -80,10 +91,21 @@ const content = {
       title: '示例 — health 接口',
       desc: '单次会话功能：对齐 → 设计 → 设计评审 → 实现（lean → tdd → prune → review）→ 你确认后提交。',
     },
+    journey: {
+      title: 'Journey 状态',
+      desc: 'Flow Conductor 将进度保存在 .scratch/<slug>/flow.state.yaml。输入 /aiops 继续即可恢复，无需额外操作。',
+      how: [
+        { title: '开始任务', body: '输入 /aiops 并描述目标。Conductor 自动判断任务类型，显示第 N/M 步，并保存状态。' },
+        { title: '稍后恢复', body: '输入 /aiops 继续。Conductor 读取 flow.state.yaml，从当前步骤接着走。' },
+        { title: 'Gate 检查', body: '推进前 Conductor 自动验证 gate 产物（如 DESIGN_REVIEW.md 包含 APPROVE）。无需手动命令。' },
+      ],
+      note: '状态管理完全自动 —— 你不需要手动操作 flow.state.yaml 或运行任何 CLI 命令。',
+    },
     troubleshoot: [
       { p: '不认识 /aiops', f: '重新安装，重启 IDE' },
       { p: '技能行为像旧版', f: '重新安装以更新 skills' },
       { p: '技能引用错误', f: '查看 skill-registry.md' },
+      { p: 'flow.state.yaml 损坏', f: '删除 .scratch/<slug>/ 后重新运行 /aiops' },
     ],
   },
 }
@@ -141,6 +163,23 @@ export default function GettingStartedPage() {
       <div>
         <h2 className="text-lg font-semibold mb-2">{c.example.title}</h2>
         <p className="text-sm text-muted-foreground">{c.example.desc}</p>
+      </div>
+
+      {/* Journey State */}
+      <div>
+        <h2 className="text-lg font-semibold mb-2">{c.journey.title}</h2>
+        <p className="text-sm text-muted-foreground mb-3">{c.journey.desc}</p>
+        <div className="space-y-3 mb-3">
+          {c.journey.how.map((h, i) => (
+            <Card key={i} className="bg-card/60 backdrop-blur-xl border-border">
+              <CardContent className="p-4">
+                <div className="font-semibold text-sm mb-1">{h.title}</div>
+                <p className="text-sm text-muted-foreground">{h.body}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">{c.journey.note}</p>
       </div>
 
       {/* Troubleshooting */}

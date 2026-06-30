@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Iterable, Literal
-
 
 TaskKind = Literal[
     "feature_idea",
@@ -17,6 +17,8 @@ TaskKind = Literal[
 ]
 
 DeliveryMode = Literal["single_session", "multi_session"]
+
+TERMINAL_PHASE_ID = "done"
 
 
 @dataclass(frozen=True)
@@ -61,20 +63,91 @@ class JourneyState:
     phases_done: list[str] = field(default_factory=list)
     gates_satisfied: list[str] = field(default_factory=list)
     current_issue: str | None = None
-    delivery_sub_phase: str | None = None  # implement | prune | review | ready_for_commit
 
     def phase_index(self, plan: FlowPlan) -> int:
+        if self.current_phase_id == TERMINAL_PHASE_ID:
+            return max(0, len(plan.phases) - 1)
         for i, phase in enumerate(plan.phases):
             if phase.phase_id == self.current_phase_id:
                 return i
         return 0
 
     def current_phase(self, plan: FlowPlan) -> FlowPhase | None:
+        if self.current_phase_id == TERMINAL_PHASE_ID:
+            return plan.phases[-1] if plan.phases else None
         for phase in plan.phases:
             if phase.phase_id == self.current_phase_id:
                 return phase
         return plan.phases[0] if plan.phases else None
 
+
+# ─── Gate validation ────────────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class GateCheck:
+    """Defines what artifact a gate requires before it can be marked satisfied."""
+
+    filename: str
+    content_check: str | None = None  # If set, file must contain this string
+
+
+GATE_ARTIFACTS: dict[str, GateCheck] = {
+    "bootstrap_done": GateCheck("docs/agents/"),
+    "design_review_approve": GateCheck("DESIGN_REVIEW.md", "APPROVE"),
+    "prototype_verdict": GateCheck("VERDICT.md"),
+    "prune_done": GateCheck("PRUNE.md"),
+    "review_approve": GateCheck("REVIEW.md", "APPROVE"),
+    "ready_for_commit": GateCheck("REVIEW.md", "APPROVE"),
+}
+
+
+def check_gate(gate_name: str, scratch_dir: Path) -> tuple[bool, str]:
+    """Verify that a gate's artifact exists and meets content requirements.
+
+    Returns (passed, message). The scratch_dir is the .scratch/<slug>/ directory
+    where gate artifacts are expected.
+    """
+    spec = GATE_ARTIFACTS.get(gate_name)
+    if spec is None:
+        return True, f"Gate '{gate_name}' has no artifact spec — pass by convention."
+
+    artifact_path = scratch_dir / spec.filename
+
+    # Directory gate (e.g. docs/agents/)
+    if spec.filename.endswith("/"):
+        if not artifact_path.exists():
+            return False, f"Directory missing: {spec.filename}"
+        return True, f"Directory exists: {spec.filename}"
+
+    if not artifact_path.exists():
+        return False, f"Artifact missing: {spec.filename}"
+
+    if spec.content_check is not None:
+        content = artifact_path.read_text(encoding="utf-8")
+        if spec.content_check not in content:
+            return (
+                False,
+                f"{spec.filename} exists but does not contain '{spec.content_check}'",
+            )
+
+    return True, f"Artifact verified: {spec.filename}"
+
+
+def check_all_gates(
+    gates_satisfied: list[str], scratch_dir: Path
+) -> list[tuple[str, bool, str]]:
+    """Validate every gate in gates_satisfied against its artifact.
+
+    Returns list of (gate_name, passed, message).
+    """
+    results = []
+    for gate in gates_satisfied:
+        passed, msg = check_gate(gate, scratch_dir)
+        results.append((gate, passed, msg))
+    return results
+
+
+# ─── Phase planning ──────────────────────────────────────────────────────────
 
 def plan_flow(state: FlowState) -> FlowPlan:
     phases: list[FlowPhase] = []
@@ -350,7 +423,6 @@ def _finalize(
     questions: Iterable[str],
 ) -> FlowPlan:
     phase_tuple = tuple(phases)
-    initial = phase_tuple[0].phase_id if phase_tuple else ""
     return FlowPlan(
         state=state,
         phases=phase_tuple,
@@ -358,6 +430,8 @@ def _finalize(
         questions=tuple(questions),
     )
 
+
+# ─── State mutation ──────────────────────────────────────────────────────────
 
 def initial_journey(state: FlowState, slug: str, user_description: str) -> JourneyState:
     plan = plan_flow(state)
@@ -372,7 +446,7 @@ def initial_journey(state: FlowState, slug: str, user_description: str) -> Journ
 
 
 def advance_journey(journey: JourneyState, plan: FlowPlan) -> JourneyState:
-    """Mark current phase done and move to next."""
+    """Mark current phase done and move to next. Sets 'done' sentinel at end."""
     if not plan.phases:
         return journey
     idx = journey.phase_index(plan)
@@ -381,9 +455,10 @@ def advance_journey(journey: JourneyState, plan: FlowPlan) -> JourneyState:
     if current.phase_id not in done:
         done.append(current.phase_id)
     next_idx = idx + 1
-    next_phase_id = (
-        plan.phases[next_idx].phase_id if next_idx < len(plan.phases) else current.phase_id
-    )
+    if next_idx >= len(plan.phases):
+        next_phase_id = TERMINAL_PHASE_ID
+    else:
+        next_phase_id = plan.phases[next_idx].phase_id
     return JourneyState(
         version=journey.version,
         slug=journey.slug,
@@ -394,7 +469,6 @@ def advance_journey(journey: JourneyState, plan: FlowPlan) -> JourneyState:
         phases_done=done,
         gates_satisfied=list(journey.gates_satisfied),
         current_issue=journey.current_issue,
-        delivery_sub_phase=None,
     )
 
 
@@ -403,5 +477,7 @@ def narration_progress(journey: JourneyState, plan: FlowPlan) -> tuple[int, int]
     total = len(plan.phases)
     if total == 0:
         return 0, 0
+    if journey.current_phase_id == TERMINAL_PHASE_ID:
+        return total, total
     idx = journey.phase_index(plan)
     return idx + 1, total

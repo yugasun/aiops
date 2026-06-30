@@ -1,5 +1,5 @@
 {
-  "name": "aiops-installer",
+  "name": "@yugasun/aiops",
   "version": "1.4.0",
   "description": "Flow Conductor for AI-assisted dev — install skills/agents to Cursor, Claude, Codex, Copilot, Windsurf",
   "bin": {

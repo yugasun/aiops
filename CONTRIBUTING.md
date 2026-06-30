@@ -11,7 +11,7 @@
    bash scripts/verify.sh           # fast, no npm
    ```
 
-5. Router changes: `scripts/lib/router.py` + `scripts/test_router.py` + `scripts/lib/flow_cli.py`.
+5. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
 6. New skill references: update `docs/agents/skill-registry.md`.
 
 ## Skill authoring

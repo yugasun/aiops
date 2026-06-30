@@ -20,16 +20,16 @@ Agents: `architect`, `design-reviewer`, `planner`, `prototyper`, `builder`, `ui-
 
 ## Conductor loop (every turn)
 
-1. **Resume or start** — Read `.scratch/<slug>/flow.state.yaml` if user resumes or slug known. Else infer slug (kebab-case from description; user may override). See [journey.md](journey.md).
+1. **Resume or start** — Read `.scratch/<slug>/flow.state.yaml` if user resumes or slug known. If `current_phase_id` is `done`, inform user the journey is complete. Else infer slug (kebab-case from description; user may override). See [journey.md](journey.md).
 2. **Bootstrap** — If `docs/agents/` missing, run **bootstrap** inline:
    - No `aiops.yaml` → silent defaults: local markdown issues + 1:1 triage labels ([aiops-setup/aiops-yaml.md](../aiops-setup/aiops-yaml.md)).
    - `aiops.yaml` with `issue_tracker.kind: github|gitlab` → seed GitHub/GitLab tracker docs from yaml; do not prompt for tracker unless yaml incomplete.
    - Do not ask user to run another command.
-3. **Plan** — Build `FlowState` from journey + repo signals (see [journey.md](journey.md)). **Default `delivery_mode: single_session`** unless user confirms multi or heuristics clearly warrant multi. Canonical phase list: maintainer runs `python3 scripts/lib/flow_cli.py` in the aiops repo.
+3. **Plan** — Build `FlowState` from journey + repo signals (see [journey.md](journey.md)). **Default `delivery_mode: single_session`** unless user confirms multi or heuristics clearly warrant multi. Use `flow_cli.py plan` to generate the phase list.
 4. **Narrate** — One block from [narration.md](narration.md): **Chinese** `title_zh`, `body_zh`, `artifact_zh`; English only in `title_en`. Hide skill/agent names unless user asks.
 5. **Dispatch** — Load `agents/<agent>.md` when `agent` set; invoke `skill` for the phase. Gather `.scratch/<slug>/` inputs per agent Inputs.
-6. **Gate** — Before advancing: check gate artifacts (journey.md table). Record `gates_satisfied`.
-7. **Advance** — Update `flow.state.yaml` (`current_phase_id`, `phases_done`). On handoff, update journey **before** temp handoff doc.
+6. **Gate** — Before advancing: run `flow_cli.py validate --slug <slug>` to verify gate artifacts. If validation fails, do not advance. On success, append gate name to `gates_satisfied`.
+7. **Advance** — Run `flow_cli.py advance --slug <slug>` to update `current_phase_id` and `phases_done`. On handoff, advance journey **before** writing temp handoff doc.
 8. **Delivery** — When phase is `delivery`, hand off to `/aiops-implement` (owns lean → tdd → prune → review). Do not interleave those gates from the conductor.
 
 ## Task types → phase tail (after bootstrap if needed)
@@ -65,6 +65,6 @@ Recommend **multi-session** when: 3+ modules, multiple slices, near smart zone, 
 
 - Journey file format: [journey.md](journey.md)
 - User narration keys: [narration.md](narration.md)
-- Maintainer canonical routes: `scripts/lib/router.py` (`plan_flow`) + `scripts/lib/flow_cli.py`
+- State operations: `python3 <aiops-root>/skills/aiops/scripts/flow_cli.py {plan,init,advance,validate}`
 - Project config yaml: [aiops-setup/aiops-yaml.md](../aiops-setup/aiops-yaml.md)
 - Vocabulary: target `CONTEXT.md`; skill registry: `docs/skill-registry.md`

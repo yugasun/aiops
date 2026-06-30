@@ -1,6 +1,6 @@
 # User-facing narration for Flow Conductor
 
-Plain-language templates keyed by `narration_key` from `scripts/lib/router.py`.
+Plain-language templates keyed by `narration_key` from `skills/aiops/scripts/router.py`.
 
 ## Language
 

@@ -94,6 +94,28 @@ function createMdcAdapter(id, dirName) {
     compileAlwaysOn,
     compileSkill,
     compileAgent,
+
+    /**
+     * Install all always-on skills — writes one .mdc per skill to rulesDir.
+     * @param {Object[]} skills - [{ name, content, description }]
+     * @param {{ isGlobal: boolean }} options
+     */
+    installAlwaysOn(skills, { isGlobal }) {
+      const fs = require("fs");
+      const rulesDir = isGlobal
+        ? this.rulesDir.global
+        : path.resolve(this.rulesDir.local);
+      fs.mkdirSync(rulesDir, { recursive: true });
+      for (const skill of skills) {
+        const compiled = compileAlwaysOn(skill);
+        fs.writeFileSync(
+          path.join(rulesDir, compiled.filename),
+          compiled.content,
+          "utf8"
+        );
+      }
+      return rulesDir;
+    },
   };
 }
 

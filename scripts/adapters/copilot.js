@@ -97,4 +97,20 @@ module.exports = {
   compileAllAlwaysOn,
   compileSkill,
   compileAgent,
+
+  /**
+   * Install all always-on skills — compiles into single copilot-instructions.md.
+   * @param {Object[]} skills - [{ name, content, description }]
+   * @param {{ isGlobal: boolean }} options
+   */
+  installAlwaysOn(skills, { isGlobal }) {
+    const fs = require("fs");
+    const compiled = compileAllAlwaysOn(skills);
+    const filePath = isGlobal
+      ? this.instructionsFile.global
+      : path.resolve(this.instructionsFile.local);
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, compiled.content, "utf8");
+    return filePath;
+  },
 };

@@ -21,6 +21,7 @@ From [`skills/manifest.json`](../../skills/manifest.json) — invoke as `/skill-
 | `/aiops` | Entry router |
 | `/aiops-implement` | Delivery overlay |
 | `/aiops-setup` | Per-project tracker + domain config |
+| `/explore` | Free-form thinking partner — discuss ideas, no artifacts |
 | `/lean` | Minimal-code ladder (delivery only) |
 | `/file-refactor` | File size discipline — split files over 500 lines |
 | `/prune` | Over-engineering gate after review |
@@ -57,7 +58,7 @@ Agents wrap skills with specialized identity and constraints. See [agent-registr
 
 | Agent | Skills |
 | --- | --- |
-| `architect` | grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture, code-graph |
+| `architect` | explore, grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture, code-graph |
 | `design-reviewer` | review |
 | `planner` | to-prd, to-issues, handoff, aiops-setup |
 | `prototyper` | prototype, lean |

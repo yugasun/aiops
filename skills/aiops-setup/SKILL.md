@@ -39,13 +39,15 @@ Skip sections already satisfied by `aiops.yaml` — show yaml values and offer e
 
 **C — Domain docs:** Single-context (`CONTEXT.md` + `docs/adr/`) or multi-context (`CONTEXT-MAP.md`).
 
+**D — Constitution:** If `CONSTITUTION.md` does not exist at repo root, offer to generate one from [constitution-template.md](constitution-template.md). Walk through each section (Testing, Code quality, Architecture, Performance, Security, Process) and ask the user to fill in project-specific principles. These are **non-negotiable** — referenced by every agent at every phase.
+
 ### 3. Confirm draft
 
 Show `## Agent skills` block + `docs/agents/issue-tracker.md`, `triage-labels.md`, `domain.md` for user edit.
 
 ### 4. Write
 
-Seed templates: `issue-tracker-*.md`, `triage-labels.md`, `domain.md`.
+Seed templates: `issue-tracker-*.md`, `triage-labels.md`, `domain.md`. If constitution was configured, write `CONSTITUTION.md` from template with user's answers.
 
 ### 5. Done
 

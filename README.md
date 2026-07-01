@@ -9,7 +9,7 @@ Entry: `**/aiops**` (Flow Conductor — step-by-step guidance, resumable via `fl
 ## Key features
 
 - **One command** — describe your goal in natural language; resume with `/aiops continue`
-- **21 skills** — full lifecycle: alignment → design review → planning → delivery → review → ship + code graph infrastructure
+- **23 skills** — full lifecycle: alignment → design review → planning → delivery → review → ship + code graph infrastructure
 - **9 specialized agents** — artifact contracts and dispatch (optional for experts)
 - **Code graph** — graphify deterministic extraction (Tree-sitter AST + Louvain clustering) + AI semantic annotations for structured code understanding
 - **Zero-config default** — local markdown issues unless `aiops.yaml` specifies GitHub/GitLab
@@ -24,7 +24,7 @@ npx -y github:yugasun/aiops
 
 ### Code Graph (optional enhancement)
 
-Of aiops's 21 skills, `/code-graph` is optional — it builds a structured code understanding using [graphify](https://github.com/safishamsi/graphify) (Tree-sitter AST parsing + Louvain community detection). The other 20 skills **require zero additional dependencies**.
+Of aiops's 23 skills, `/code-graph` is optional — it builds a structured code understanding using [graphify](https://github.com/safishamsi/graphify) (Tree-sitter AST parsing + Louvain community detection). The other 22 skills **require zero additional dependencies**.
 
 **When do you need it?** When you run `/aiops check my architecture for optimization opportunities`, the code graph provides more precise analysis. Without it, aiops still works — just with organic exploration instead of structured graph data.
 
@@ -92,14 +92,14 @@ npx -y github:yugasun/aiops --uninstall
 
 ## What you get
 
-### Skills (21 Tier 1)
+### Skills (23 Tier 1)
 
 
 | Layer            | Skills                                                                   |
 | ---------------- | ------------------------------------------------------------------------ |
 | **Router**       | `/aiops` — Flow Conductor                                                |
 | **Setup**        | `/aiops-setup`                                                           |
-| **Alignment**    | `/grill-with-docs`, `/grilling`, `/domain-modeling`, `/architect-design` |
+| **Alignment**    | `/explore`, `/grill-with-docs`, `/grilling`, `/domain-modeling`, `/architect-design` |
 | **Planning**     | `/to-prd`, `/to-issues`, `/handoff`, `/prototype`                        |
 | **Delivery**     | `/aiops-implement` → `/lean` → `/tdd` → `/prune` → `/review`             |
 | **Architecture** | `/improve-codebase-architecture` — multi-modal sweep + deepening         |

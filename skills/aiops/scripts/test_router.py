@@ -1,4 +1,4 @@
-"""Tests for skills/aiops/scripts/router.py — canonical Flow Conductor routes."""
+"""Tests for skills/aiops/scripts/ — canonical Flow Conductor routes."""
 
 import sys
 import tempfile
@@ -8,16 +8,13 @@ from pathlib import Path
 # Allow running from repo root: python3 -m unittest skills.aiops.scripts.test_router
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from router import (
-    TERMINAL_PHASE_ID,
-    FlowState,
+from gates import GATE_ARTIFACTS, check_all_gates, check_gate  # noqa: E402
+from journey_state import (  # noqa: E402
     advance_journey,
-    check_all_gates,
-    check_gate,
     initial_journey,
     narration_progress,
-    plan_flow,
 )
+from phases import TERMINAL_PHASE_ID, FlowState, plan_flow  # noqa: E402
 
 
 class PlanFlowTests(unittest.TestCase):
@@ -34,6 +31,10 @@ class PlanFlowTests(unittest.TestCase):
         self.assertIn("delivery", ids)
         self.assertLess(ids.index("design_review"), ids.index("delivery"))
         self.assertNotIn("planning_prd", ids)
+        # P1.1: single-session includes lightweight task_breakdown
+        self.assertIn("task_breakdown", ids)
+        self.assertLess(ids.index("task_breakdown"), ids.index("delivery"))
+        self.assertGreater(ids.index("task_breakdown"), ids.index("design_review"))
 
     def test_feature_multi_session_inserts_planning(self):
         state = FlowState(
@@ -83,6 +84,70 @@ class PlanFlowTests(unittest.TestCase):
             self.assertTrue(phase.phase_id)
             self.assertTrue(phase.narration_key)
             self.assertTrue(phase.skill or phase.agent)
+
+    # ── P1.1: Universal task breakdown ──
+
+    def test_architecture_health_has_task_breakdown(self):
+        state = FlowState(task_kind="architecture_health", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertIn("task_breakdown", ids)
+        self.assertLess(ids.index("design_review"), ids.index("task_breakdown"))
+        self.assertLess(ids.index("task_breakdown"), ids.index("delivery"))
+
+    def test_multi_session_keeps_full_planning_pipeline(self):
+        state = FlowState(
+            task_kind="feature_idea",
+            issue_tracker_configured=True,
+            delivery_mode="multi_session",
+        )
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertIn("planning_prd", ids)
+        self.assertIn("planning_issues", ids)
+        self.assertIn("issue_session", ids)
+        # multi_session does NOT use task_breakdown
+        self.assertNotIn("task_breakdown", ids)
+        self.assertLess(ids.index("planning_issues"), ids.index("delivery"))
+
+    def test_bug_fix_skips_task_breakdown(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertNotIn("task_breakdown", ids)
+        self.assertIn("delivery", ids)
+
+    # ── P1.2: Explore phase ──
+
+    def test_explore_default_off(self):
+        state = FlowState(task_kind="feature_idea", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertNotIn("explore", ids)
+
+    def test_explore_inserted_before_alignment(self):
+        state = FlowState(
+            task_kind="feature_idea",
+            issue_tracker_configured=True,
+            explore_requested=True,
+        )
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertIn("explore", ids)
+        self.assertLess(ids.index("explore"), ids.index("alignment"))
+
+    # ── P1.3: Drift check ──
+
+    def test_drift_check_between_delivery_and_ship(self):
+        state = FlowState(task_kind="feature_idea", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        ids = [p.phase_id for p in plan.phases]
+        self.assertIn("drift_check", ids)
+        self.assertLess(ids.index("delivery"), ids.index("drift_check"))
+        self.assertLess(ids.index("drift_check"), ids.index("ship"))
+
+    def test_drift_check_gate_registered(self):
+        self.assertIn("drift_check_pass", GATE_ARTIFACTS)
 
 
 class JourneyTests(unittest.TestCase):
@@ -194,6 +259,52 @@ class GateValidationTests(unittest.TestCase):
             self.assertTrue(results[0][1])
             # prototype_verdict fails (no VERDICT.md)
             self.assertFalse(results[1][1])
+
+
+class TaskDagTests(unittest.TestCase):
+    def test_topological_sort_linear(self):
+        from task_dag import topological_sort
+        tasks = [
+            {"id": "t1", "blocked_by": []},
+            {"id": "t2", "blocked_by": ["t1"]},
+            {"id": "t3", "blocked_by": ["t2"]},
+        ]
+        waves = topological_sort(tasks)
+        self.assertEqual(waves, [["t1"], ["t2"], ["t3"]])
+
+    def test_topological_sort_parallel(self):
+        from task_dag import topological_sort
+        tasks = [
+            {"id": "t1", "blocked_by": []},
+            {"id": "t2", "blocked_by": ["t1"]},
+            {"id": "t3", "blocked_by": ["t1"]},
+            {"id": "t4", "blocked_by": ["t2", "t3"]},
+        ]
+        waves = topological_sort(tasks)
+        self.assertEqual(len(waves), 3)
+        self.assertEqual(waves[0], ["t1"])
+        self.assertEqual(sorted(waves[1]), ["t2", "t3"])
+        self.assertEqual(waves[2], ["t4"])
+
+    def test_topological_sort_detects_cycle(self):
+        from task_dag import topological_sort
+        tasks = [
+            {"id": "t1", "blocked_by": ["t2"]},
+            {"id": "t2", "blocked_by": ["t1"]},
+        ]
+        with self.assertRaises(ValueError):
+            topological_sort(tasks)
+
+    def test_get_ready_tasks(self):
+        from task_dag import get_ready_tasks
+        tasks = [
+            {"id": "t1", "blocked_by": []},
+            {"id": "t2", "blocked_by": ["t1"]},
+            {"id": "t3", "blocked_by": ["t1"]},
+        ]
+        self.assertEqual(get_ready_tasks(tasks, set()), ["t1"])
+        self.assertEqual(get_ready_tasks(tasks, {"t1"}), ["t2", "t3"])
+        self.assertEqual(get_ready_tasks(tasks, {"t1", "t2", "t3"}), [])
 
 
 if __name__ == "__main__":

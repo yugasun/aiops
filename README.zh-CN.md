@@ -9,7 +9,7 @@
 ## 核心特性
 
 - **一条命令开工** — 用中文描述目标即可；进度写在 `.scratch/<功能名>/flow.state.yaml`，`/aiops 继续` 接着做
-- **21 个 skills** — 对齐 → 设计评审 → 规划 → 交付 → 评审 → 发布 + 代码图谱基础设施
+- **23 个 skills** — 对齐 → 设计评审 → 规划 → 交付 → 评审 → 发布 + 代码图谱基础设施
 - **9 个专业 agents** — 制品契约与调度序列（普通用户不必记名字）
 - **代码图谱** — graphify 确定性提取（Tree-sitter AST + Louvain 社区检测）+ AI 语义标注，为所有 skill 提供结构化代码理解
 - **零配置默认** — 无 `aiops.yaml` 时用本地 markdown 记任务；团队可配置 GitHub/GitLab
@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/yugasun/aiops/main/install.sh | bas
 
 ### 代码图谱（可选增强）
 
-aiops 的 21 个 skill 中，`/code-graph` 是可选的代码图谱能力——基于 [graphify](https://github.com/safishamsi/graphify)（Tree-sitter AST 解析 + Louvain 社区检测）构建结构化代码理解。其他 20 个 skill **不需要安装任何额外依赖**。
+aiops 的 23 个 skill 中，`/code-graph` 是可选的代码图谱能力——基于 [graphify](https://github.com/safishamsi/graphify)（Tree-sitter AST 解析 + Louvain 社区检测）构建结构化代码理解。其他 22 个 skill **不需要安装任何额外依赖**。
 
 **什么时候需要？** 当你想用 `/aiops 帮我看看架构有哪些可以优化` 时，代码图谱会提供更精确的分析。不用也能跑，只是精度稍低。
 
@@ -111,14 +111,14 @@ npx -y github:yugasun/aiops --uninstall
 
 ## 功能清单
 
-### Skills（21 个 Tier 1）
+### Skills（23 个 Tier 1）
 
 
 | 层      | Skills                                                                |
 | ------ | --------------------------------------------------------------------- |
 | **路由** | `/aiops` — Flow Conductor，推断场景并分步引导                                   |
 | **设置** | `/aiops-setup` — issue 跟踪、triage 标签、领域文档                              |
-| **对齐** | `/grill-with-docs`、`/grilling`、`/domain-modeling`、`/architect-design` |
+| **对齐** | `/explore`、`/grill-with-docs`、`/grilling`、`/domain-modeling`、`/architect-design` |
 | **规划** | `/to-prd`、`/to-issues`、`/handoff`、`/prototype`                        |
 | **交付** | `/aiops-implement` → `/lean` → `/tdd` → `/prune` → `/review`          |
 | **架构** | `/improve-codebase-architecture` — 多模态扫描 + 深化机会                     |

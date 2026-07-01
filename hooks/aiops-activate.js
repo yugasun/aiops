@@ -32,12 +32,21 @@ function findLeanSkill() {
 }
 
 // ─── Strip YAML frontmatter ────────────────────────────────────────────────
+// Shared with scripts/adapters/utils.js. Falls back to inline when installed
+// without scripts/ (e.g. via plugin install).
 
-function stripFrontmatter(content) {
-  if (!content.startsWith("---")) return content;
-  const second = content.indexOf("---", 3);
-  if (second === -1) return content;
-  return content.slice(second + 3).trimStart();
+let stripFrontmatter;
+try {
+  stripFrontmatter = require(path.resolve(
+    __dirname, "..", "scripts", "adapters", "utils"
+  )).stripFrontmatter;
+} catch {
+  stripFrontmatter = (content) => {
+    if (!content.startsWith("---")) return content;
+    const second = content.indexOf("---", 3);
+    if (second === -1) return content;
+    return content.slice(second + 3).trimStart();
+  };
 }
 
 // ─── Main ──────────────────────────────────────────────────────────────────

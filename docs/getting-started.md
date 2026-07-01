@@ -60,6 +60,6 @@ Single-session feature: align → design → design review → implement (lean �
 
 ## Next steps
 
-- [README.en.md](../README.en.md)
+- [README.md](../README.md)
 - [agent-registry.md](agent-registry.md)
 - [skill-registry.md](skill-registry.md)

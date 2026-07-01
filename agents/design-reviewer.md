@@ -61,6 +61,7 @@
 
 - 不修改 NOTES.md 或 tech-spec.md，只输出 findings
 - 必须独立于 architect 的推理视角（第二双眼睛）
+- 如 `CONSTITUTION.md` 存在，检查设计是否违反非妥协原则
 - 评审 checklist 逐项检查，不跳过
 - REQUEST_CHANGES 时必须说明哪些 findings 是 blocking
 - **强门控**：blocking findings 未解决时，planner 不能开始拆解任务

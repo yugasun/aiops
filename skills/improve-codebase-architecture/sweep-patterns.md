@@ -198,7 +198,7 @@ Output a JSON array:
 
 ## Cross-validation
 
-After all 4 agents complete, a synthesis agent receives all findings and:
+After all 6 agents complete, a synthesis agent receives all findings and:
 
 1. **De-duplicates**: Same module flagged by multiple agents = higher confidence
 2. **Ranks by convergence**: 3+ agents agree → Strong. 2 agents → Worth exploring. 1 agent → Speculative
@@ -206,3 +206,94 @@ After all 4 agents complete, a synthesis agent receives all findings and:
 4. **Produces the final candidate list** for the HTML report
 
 The convergence count is recorded as the recommendation strength badge on each candidate card.
+
+## Agent 5: Security agent
+
+**Purpose**: Identify modules where untrusted data enters or secrets are mishandled.
+
+**Prompt template**:
+
+```
+You are the Security agent in an architecture review.
+
+1. Query /code-graph query modules to get all modules
+2. Identify trust boundaries — where does external input enter the system?
+   - HTTP handlers, CLI argument parsers, file readers, env var consumers
+3. For each boundary, check if input validation happens AT the boundary or deeper
+   - Validation pushed downstream = architectural smell (the seam owns too little)
+4. Look for modules that mix auth/authz logic with business logic
+5. Check for secret handling patterns: hardcoded strings, unguarded env reads
+
+Output a JSON array:
+[
+  {
+    "module": "src/api/handlers.ts",
+    "issue": "validation-downstream",
+    "evidence": "raw request body passed to service layer without sanitisation",
+    "trust_boundary": true,
+    "risk": "high",
+    "confidence": "high"
+  }
+]
+```
+
+**Output schema**:
+```json
+{
+  "findings": [
+    {
+      "module": "string — module id",
+      "issue": "validation-downstream | mixed-auth-logic | secret-exposure | unguarded-input",
+      "evidence": "string — what makes it risky",
+      "trust_boundary": true,
+      "risk": "high | medium | low",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+```
+
+## Agent 6: Performance agent
+
+**Purpose**: Identify structural causes of performance risk — not profiler data, but architectural patterns that make performance hard to improve.
+
+**Prompt template**:
+
+```
+You are the Performance agent in an architecture review.
+
+1. Query /code-graph query god-nodes for modules with the highest in-degree
+2. Identify synchronous-looking call chains that span 3+ modules (deep call stacks with no async boundary)
+3. Look for modules that load broad state to serve narrow queries
+   - A module that reads 10 fields to return 1 is a depth problem, not a query problem
+4. Identify missing caching seams — hot paths (high in-degree modules) with no observable cache layer
+5. Check for modules that make multiple external calls (DB, HTTP, filesystem) in a single interface
+
+Output a JSON array:
+[
+  {
+    "module": "src/data/loader.ts",
+    "issue": "broad-state-narrow-query",
+    "evidence": "loads full user record for email-only lookups — 12 callers",
+    "upgrade_path": "add projection parameter to loader interface",
+    "impact": "high",
+    "confidence": "medium"
+  }
+]
+```
+
+**Output schema**:
+```json
+{
+  "findings": [
+    {
+      "module": "string — module id",
+      "issue": "broad-state-narrow-query | deep-sync-chain | missing-cache-seam | fan-out-calls",
+      "evidence": "string — structural pattern observed",
+      "upgrade_path": "string — architectural change that would fix it",
+      "impact": "high | medium | low",
+      "confidence": "high | medium | low"
+    }
+  ]
+}
+```

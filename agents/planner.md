@@ -102,6 +102,7 @@ small | medium | large
 
 - 不跳过 Design Reviewer 的 APPROVE 直接拆任务（DESIGN_REVIEW.md 必须存在且 Verdict 为 APPROVE）
 - 不跳过 Architect 的设计决策直接拆任务
+- 如 `CONSTITUTION.md` 存在，任务拆分须遵循非妥协原则（如测试覆盖率底线）
 - 每个 issue 必须有明确的完成标准（Acceptance Criteria）
 - 不写实现代码
 - issue 文件命名：三位数编号 + kebab-case（如 `001-add-auth-middleware.md`）

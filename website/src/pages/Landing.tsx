@@ -140,7 +140,7 @@ function Hero() {
 
       <div className="flex justify-center gap-4 sm:gap-6 flex-wrap max-w-3xl mx-auto" style={{ animation: 'fadeUp 0.6s 0.4s ease both' }}>
         {[
-          { num: '21', key: 'stat.skills' },
+          { num: '23', key: 'stat.skills' },
           { num: '9', key: 'stat.agents' },
           { num: '6', key: 'stat.ides' },
           { num: '-43%', key: 'stat.diff' },
@@ -266,7 +266,7 @@ function GatesSection() {
     <Section id="gates" label={t('gates.label')} title={t('gates.title')} desc={t('gates.desc')}>
       <Tabs value={active} onValueChange={setActive}>
         <TabsList className="bg-muted/50 h-auto gap-1 p-1 mb-4 flex flex-wrap">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <TabsTrigger key={i} value={String(i)}
               className="font-mono text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary border border-transparent px-3 py-1.5 rounded-lg">
               <span className={cn(
@@ -280,7 +280,7 @@ function GatesSection() {
           ))}
         </TabsList>
 
-        {[1, 2, 3, 4, 5].map((i) => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <TabsContent key={i} value={String(i)}>
             <Card className="bg-card/60 backdrop-blur-xl">
               <CardContent className="p-4 text-sm text-muted-foreground min-h-[4rem]">

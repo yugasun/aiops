@@ -24,7 +24,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
 const os = require("os");
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -57,102 +56,7 @@ function fail(msg) { console.log(`  ${c.red("✗")} ${msg}`); }
 
 // ─── IDE Provider Definitions ────────────────────────────────────────────────
 
-const PROVIDERS = [
-  {
-    id: "claude-code",
-    label: "Claude Code",
-    aliases: ["claude", "claude-code"],
-    detect: () => hasCommand("claude") || hasDir(path.join(HOME, ".claude")),
-    globalAgentsDir: path.join(HOME, ".claude", "agents"),
-    localAgentsDir: ".claude/agents",
-    globalSkillsDir: path.join(HOME, ".claude", "skills"),
-    localSkillsDir: ".claude/skills",
-    agentFormat: "md-yaml",
-  },
-  {
-    id: "cursor",
-    label: "Cursor",
-    aliases: ["cursor"],
-    detect: () =>
-      hasMacApp("Cursor") ||
-      hasDir(path.join(HOME, ".cursor")) ||
-      hasDir(path.join(HOME, ".agents")),
-    globalAgentsDir: path.join(HOME, ".cursor", "agents"),
-    localAgentsDir: ".cursor/agents",
-    globalSkillsDir: path.join(HOME, ".cursor", "skills"),
-    localSkillsDir: ".cursor/skills",
-    agentFormat: "md-yaml",
-  },
-  {
-    id: "copilot",
-    label: "GitHub Copilot",
-    aliases: ["copilot", "github-copilot", "github"],
-    detect: () => hasDir(path.join(HOME, ".github")) || hasVSCodeExt("github.copilot"),
-    globalAgentsDir: path.join(HOME, ".github", "agents"),
-    localAgentsDir: ".github/agents",
-    globalSkillsDir: path.join(HOME, ".github", "skills"),
-    localSkillsDir: ".github/skills",
-    agentFormat: "md-yaml",
-  },
-  {
-    id: "codex",
-    label: "Codex CLI",
-    aliases: ["codex"],
-    detect: () =>
-      hasCommand("codex") ||
-      hasDir(path.join(HOME, ".codex")) ||
-      hasDir(path.join(HOME, ".agents")),
-    globalAgentsDir: path.join(HOME, ".codex", "agents"),
-    localAgentsDir: ".codex/agents",
-    globalSkillsDir: path.join(HOME, ".agents", "skills"),
-    localSkillsDir: ".agents/skills",
-    agentFormat: "toml",
-  },
-  {
-    id: "windsurf",
-    label: "Windsurf",
-    aliases: ["windsurf"],
-    detect: () => hasDir(path.join(HOME, ".windsurf")) || hasMacApp("Windsurf"),
-    globalAgentsDir: path.join(HOME, ".windsurf", "agents"),
-    localAgentsDir: ".windsurf/agents",
-    globalSkillsDir: path.join(HOME, ".windsurf", "skills"),
-    localSkillsDir: ".windsurf/skills",
-    agentFormat: "md-yaml",
-  },
-];
-
-// ─── Detection Helpers ───────────────────────────────────────────────────────
-
-function hasCommand(cmd) {
-  try {
-    execSync(`command -v ${cmd}`, { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function hasDir(p) {
-  return fs.existsSync(p) && fs.statSync(p).isDirectory();
-}
-
-function hasMacApp(name) {
-  if (process.platform !== "darwin") return false;
-  const dirs = ["/Applications", path.join(HOME, "Applications")];
-  return dirs.some((d) => fs.existsSync(path.join(d, `${name}.app`)));
-}
-
-function hasVSCodeExt(needle) {
-  try {
-    const out = execSync("code --list-extensions 2>/dev/null || true", {
-      encoding: "utf8",
-      timeout: 5000,
-    });
-    return out.toLowerCase().includes(needle.toLowerCase());
-  } catch {
-    return false;
-  }
-}
+const { PROVIDERS, hasCommand, hasDir } = require("../scripts/providers");
 
 // ─── CLI Parser ──────────────────────────────────────────────────────────────
 
@@ -388,6 +292,9 @@ function installSkills(provider, isGlobal) {
   // Get the adapter for this provider (null if no dedicated adapter)
   const adapter = getAdapter(provider.id);
 
+  // Collect always-on skills for batch installation
+  const alwaysOnSkills = [];
+
   for (const name of tier1) {
     const srcDir = path.join(skillsDir, name);
     if (!hasDir(srcDir)) continue;
@@ -395,44 +302,27 @@ function installSkills(provider, isGlobal) {
     const skillMdPath = path.join(srcDir, "SKILL.md");
     const isAlwaysOn = alwaysOnNames.has(name) && fs.existsSync(skillMdPath);
 
-    // ── Always-on skills: compile through adapter if available ──
-    if (isAlwaysOn && adapter && adapter.compileAlwaysOn) {
+    if (isAlwaysOn && adapter && adapter.installAlwaysOn) {
       const content = fs.readFileSync(skillMdPath, "utf8");
-
-      // Extract description from frontmatter
       const descMatch = content.match(/^description:\s*>?\s*([\s\S]*?)(?:\n---|\n[a-z])/m);
       const description = descMatch
         ? descMatch[1].replace(/\n\s+/g, " ").trim()
         : name;
-
-      const skill = { name, content, description };
-      const compiled = adapter.compileAlwaysOn(skill);
-
-      if (adapter.rulesDir) {
-        // Cursor/Windsurf style: write .mdc to rules directory
-        const rulesDir = isGlobal
-          ? adapter.rulesDir.global
-          : path.resolve(adapter.rulesDir.local);
-        fs.mkdirSync(rulesDir, { recursive: true });
-        fs.writeFileSync(path.join(rulesDir, compiled.filename), compiled.content, "utf8");
-        ok(`${name}.mdc (always-on) → ${c.dim(rulesDir)}`);
-      } else if (adapter.instructionsFile) {
-        // Copilot style: write single instructions file
-        const filePath = isGlobal
-          ? adapter.instructionsFile.global
-          : path.resolve(adapter.instructionsFile.local);
-        fs.mkdirSync(path.dirname(filePath), { recursive: true });
-        fs.writeFileSync(filePath, compiled.content, "utf8");
-        ok(`${compiled.filename} (always-on) → ${c.dim(path.dirname(filePath))}`);
-      }
+      alwaysOnSkills.push({ name, content, description });
       continue;
     }
 
-    // ── Regular skills: copy as-is (existing behavior) ──
+    // ── Regular skills: copy as-is ──
     const destDir = path.join(destBase, name);
     fs.mkdirSync(destDir, { recursive: true });
     copyDirSync(srcDir, destDir);
     ok(`${name}/ → ${c.dim(destDir)}`);
+  }
+
+  // ── Always-on skills: delegate to adapter ──
+  if (alwaysOnSkills.length > 0 && adapter && adapter.installAlwaysOn) {
+    const dest = adapter.installAlwaysOn(alwaysOnSkills, { isGlobal });
+    ok(`${alwaysOnSkills.length} always-on skill(s) → ${c.dim(dest)}`);
   }
 }
 

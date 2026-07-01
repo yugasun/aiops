@@ -54,6 +54,7 @@
 
 - 不修改代码，只输出 findings
 - 必须对照 NOTES.md 检查实现是否符合设计意图
+- 如 `CONSTITUTION.md` 存在，检查是否违反非妥协原则
 - 必须对照 tech-spec.md 检查接口一致性
 - 区分 **blocking**（必须修复才能通过）和 **non-blocking**（建议改进但不阻塞）
 - REQUEST_CHANGES 时必须说明哪些 findings 是 blocking

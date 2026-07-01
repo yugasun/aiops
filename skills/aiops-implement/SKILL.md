@@ -34,6 +34,17 @@ Run sub-phases in order. Do not skip unless user explicitly exempts a step (e.g.
 
 Record in journey `gates_satisfied`: `prune_done`, `review_approve`, `ready_for_commit`.
 
+## Wave-based execution (when tasks.md has frontmatter)
+
+When `.scratch/<slug>/tasks.md` contains YAML frontmatter with `waves:`, execute tasks wave by wave:
+
+1. Read the `waves` list from frontmatter.
+2. For each wave, implement all tasks in the wave (they are independent).
+3. After completing a wave, verify tests pass before starting the next.
+4. Within a wave, prefer the order listed in the frontmatter.
+
+If no `tasks.md` frontmatter exists, implement tasks sequentially in document order.
+
 **Commit** — only when user explicitly asks. Never commit autonomously. Shipping is `/gitops` in conductor **ship** phase.
 
 Run typechecking and targeted tests during implement; full suite once before `review`.

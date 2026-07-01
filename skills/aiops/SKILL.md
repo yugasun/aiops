@@ -36,15 +36,17 @@ Agents: `architect`, `design-reviewer`, `planner`, `prototyper`, `builder`, `ui-
 
 | Task type | Phases (abbrev) | Grill | Ends at |
 | --- | --- | --- | --- |
-| **Feature** | align → design → design_review → (planning if multi) → delivery → ship | yes | `/aiops-implement` |
-| **Feature + UI** | + ui_mockup before design_review | yes | `/aiops-implement` |
-| **Bug** | diagnose → delivery → ship | no | `/aiops-implement` |
-| **Incoming** | triage → (align if unclear) → delivery → ship | conditional | `/aiops-implement` |
-| **Architecture health** | architecture_scan → align → design → design_review → … | yes | `/aiops-implement` |
+| **Feature** | align → design → design_review → task_breakdown → delivery → drift_check → ship | yes | `/gitops` |
+| **Feature + UI** | + ui_mockup before design_review | yes | `/gitops` |
+| **Bug** | diagnose → delivery → drift_check → ship | no | `/gitops` |
+| **Incoming** | triage → (align if unclear) → delivery → drift_check → ship | conditional | `/gitops` |
+| **Architecture health** | architecture_scan → align → design → design_review → task_breakdown → delivery → drift_check → ship | yes | `/gitops` |
 | **Prototype** | prototype only | — | `VERDICT.md` |
 | **New personal skill** | skill_authoring checklist | yes | new `SKILL.md` |
 
-**Multi-session**: after design_review → `planning_prd` → `planning_issues` → fresh session per issue (`current_issue` in journey) → delivery per issue.
+**Explore** (opt-in): when `explore_requested`, insert `explore` phase after bootstrap (if any) and before task-specific phases.
+
+**Multi-session**: after design_review → `planning_prd` → `planning_issues` → `issue_session` → delivery per issue. Single-session: after design_review → `task_breakdown` → delivery.
 
 **Prototype branch** (optional): handoff → `/prototype` → handoff back; require `VERDICT.md` before planner/builder.
 
@@ -52,7 +54,7 @@ Lean is **not** active during grill/alignment phases.
 
 ## Multi-session heuristic
 
-Recommend **multi-session** when: 3+ modules, multiple slices, near smart zone, or AFK per-issue. **Default single-session** — do not ask unless heuristics suggest multi; confirm once before `planning_prd` only when recommending multi.
+Recommend **multi-session** when: 3+ modules, multiple slices, near smart zone, or AFK per-issue. **Default single-session** — single-session still includes `task_breakdown` (lightweight tasks.md); multi-session uses full `planning_prd` → `planning_issues` → `issue_session`.
 
 ## New personal skill checklist
 

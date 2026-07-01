@@ -6,6 +6,7 @@
 
 ## Available Skills
 
+- `/explore` — 自由探索，讨论想法和权衡，不产生文件
 - `/grilling` — 深度提问，暴露隐含假设
 - `/grill-with-docs` — 带领域文档的 grill
 - `/domain-modeling` — 领域模型构建

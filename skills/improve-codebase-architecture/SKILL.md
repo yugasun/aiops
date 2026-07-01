@@ -27,35 +27,23 @@ Before exploring, check for a code graph:
 
 ### 2. Multi-modal sweep
 
-Run 4 perspective agents in parallel using the Agent tool. Each agent queries the code graph from a different angle. See [sweep-patterns.md](sweep-patterns.md) for agent prompt templates.
+Run 6 perspective agents in parallel using the Agent tool. Each agent queries the code graph from a different angle. See [sweep-patterns.md](sweep-patterns.md) for agent prompt templates.
 
-**Structure agent** — Identify shallow modules:
-- Query `/code-graph query shallow` for modules where interface ≈ implementation
-- Query `/code-graph query god-nodes` for critical modules with high in-degree
-- For each shallow god-node, apply the **deletion test**: would deleting it concentrate complexity or just move it?
-- Output: list of shallow modules ranked by architectural impact
+**Structure agent** — Identify shallow modules (god-nodes where interface ≈ implementation)
 
-**Data-flow agent** — Trace cross-module data flow:
-- Query `/code-graph query deps` and `/code-graph query rdeps` for the top 10 most-connected modules
-- Identify modules where data crosses a seam unnecessarily (leakage)
-- Look for modules that transform data they shouldn't own
-- Output: list of seam leakage points with affected modules
+**Data-flow agent** — Trace cross-module data flow and seam leakage
 
-**Change agent** — Identify friction from change patterns:
-- Query `/code-graph query hotspot` for modules that are both high-coupling and recently changed
-- Run `git log --oneline -30` to find the most-changed files
-- Cross-reference: hotspots that appear in both code graph and git log are high-confidence friction signals
-- Output: list of hotspot modules with coupling × change frequency score
+**Change agent** — Identify friction from hotspots: high-coupling + high-churn modules
 
-**Test agent** — Map test coverage gaps:
-- Query `/code-graph query modules` to get all modules
-- For each module, check if corresponding test files exist (grep for test patterns)
-- Identify untested seams — modules with high in-degree but no test coverage
-- Output: list of untested critical modules
+**Test agent** — Map untested critical seams (high in-degree, zero test coverage)
+
+**Security agent** — Identify trust boundary violations and auth/business logic mixing
+
+**Performance agent** — Structural performance risks: broad-state queries, missing cache seams, deep sync chains
 
 ### 3. Cross-validate
 
-Spawn a synthesis agent that receives all 4 perspectives:
+Spawn a synthesis agent that receives all 6 perspectives:
 - De-duplicate findings (same module flagged by multiple agents = higher confidence)
 - Rank by convergence: findings confirmed by 2+ agents rank highest
 - Apply the **deletion test** to the top findings

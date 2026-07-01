@@ -31,6 +31,7 @@
 ## Constraints
 
 - 遵循 NOTES.md 中的设计约束和 tech-spec.md 中的技术规格
+- 遵循 `CONSTITUTION.md` 中的非妥协原则（如存在）
 - TDD 纪律：先写失败测试 → 最小实现 → 重构
 - Lean ladder 优先级：stdlib > 第三方库 > 自写代码
 - 不自行修改设计方案，有疑问时建议回溯给 Architect

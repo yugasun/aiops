@@ -5,6 +5,7 @@
     { "name": "aiops", "personal": true, "role": "router" },
     { "name": "aiops-implement", "personal": true, "role": "delivery" },
     { "name": "aiops-setup", "personal": true, "role": "setup" },
+    { "name": "explore", "personal": false, "role": "alignment" },
     { "name": "lean", "personal": false, "role": "discipline", "alwaysOn": true },
     { "name": "file-refactor", "personal": false, "role": "discipline" },
     { "name": "prune", "personal": false, "role": "delivery-gate" },
@@ -26,18 +27,9 @@
     { "name": "code-graph", "personal": false, "role": "infrastructure" }
   ],
   "tier2Deferred": [
-    {
-      "name": "codebase-design",
-      "handoff": "Deferred; use /domain-modeling and /grill-with-docs for design vocabulary until forked."
-    },
-    {
-      "name": "writing-great-skills",
-      "handoff": "Deferred; follow aiops skill authoring principles in CONTEXT.md and skill-registry.md."
-    },
-    {
-      "name": "teach",
-      "handoff": "Deferred; not part of the engineering bundle."
-    }
+    { "name": "codebase-design" },
+    { "name": "writing-great-skills" },
+    { "name": "teach" }
   ],
   "agents": [
     {

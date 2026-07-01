@@ -16,111 +16,22 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from router import (  # noqa: E402
+from gates import check_all_gates  # noqa: E402
+from journey_state import (  # noqa: E402
+    JourneyState,
+    advance_journey,
+    initial_journey,
+    read_journey,
+    write_journey,
+)
+from phases import (  # noqa: E402
     TERMINAL_PHASE_ID,
     FlowPhase,
     FlowState,
-    JourneyState,
-    advance_journey,
-    check_all_gates,
-    initial_journey,
     plan_flow,
 )
 
-# ─── Simple YAML I/O (no PyYAML dependency) ─────────────────────────────────
-
 _SCRATCH_ROOT = Path(".scratch")
-
-
-def _read_journey(path: Path) -> JourneyState:
-    """Parse a flow.state.yaml file into JourneyState.
-
-    Handles the known schema only — scalars, simple lists, null.
-    """
-    text = path.read_text(encoding="utf-8")
-    data: dict[str, object] = {}
-    current_list_key: str | None = None
-
-    for line in text.splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        # List item
-        if stripped.startswith("- ") and current_list_key:
-            val = stripped[2:].strip().strip('"').strip("'")
-            lst = data.setdefault(current_list_key, [])
-            assert isinstance(lst, list)
-            lst.append(val)
-            continue
-
-        current_list_key = None
-
-        if ":" not in stripped:
-            continue
-
-        key, _, raw = stripped.partition(":")
-        key = key.strip()
-        raw = raw.strip()
-
-        if raw == "" or raw.startswith("#"):
-            # Next lines may be list items
-            current_list_key = key
-            data[key] = []
-        elif raw == "null":
-            data[key] = None
-        elif raw == "[]":
-            data[key] = []
-        elif raw.isdigit():
-            data[key] = int(raw)
-        else:
-            data[key] = raw.strip('"').strip("'")
-
-    return JourneyState(
-        version=int(data.get("version", 1)),
-        slug=str(data.get("slug", "")),
-        task_kind=data.get("task_kind", "feature_idea"),  # type: ignore[arg-type]
-        delivery_mode=data.get("delivery_mode", "single_session"),  # type: ignore[arg-type]
-        user_description=str(data.get("user_description", "")),
-        current_phase_id=str(data.get("current_phase_id", "")),
-        phases_done=data.get("phases_done", []),  # type: ignore[arg-type]
-        gates_satisfied=data.get("gates_satisfied", []),  # type: ignore[arg-type]
-        current_issue=data.get("current_issue"),  # type: ignore[arg-type]
-    )
-
-
-def _write_journey(journey: JourneyState, path: Path) -> None:
-    """Serialize JourneyState to flow.state.yaml."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    lines = [
-        f"version: {journey.version}",
-        f"slug: {journey.slug}",
-        f"task_kind: {journey.task_kind}",
-        f"delivery_mode: {journey.delivery_mode}",
-        f'user_description: "{journey.user_description}"',
-        f"current_phase_id: {journey.current_phase_id}",
-    ]
-    # phases_done
-    if journey.phases_done:
-        lines.append("phases_done:")
-        for item in journey.phases_done:
-            lines.append(f"  - {item}")
-    else:
-        lines.append("phases_done: []")
-    # gates_satisfied
-    if journey.gates_satisfied:
-        lines.append("gates_satisfied:")
-        for item in journey.gates_satisfied:
-            lines.append(f"  - {item}")
-    else:
-        lines.append("gates_satisfied: []")
-    # current_issue
-    if journey.current_issue:
-        lines.append(f"current_issue: {journey.current_issue}")
-    else:
-        lines.append("current_issue: null")
-
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def _journey_to_dict(j: JourneyState) -> dict:
@@ -158,6 +69,7 @@ def _state_from_args(args: argparse.Namespace) -> FlowState:
         needs_runnable_answer=args.prototype,
         delivery_mode="multi_session" if args.multi else "single_session",
         triage_unclear=args.triage_unclear,
+        explore_requested=args.explore,
     )
 
 
@@ -176,6 +88,7 @@ def _cmd_plan(args: argparse.Namespace) -> int:
             "needs_runnable_answer": state.needs_runnable_answer,
             "delivery_mode": state.delivery_mode,
             "triage_unclear": state.triage_unclear,
+            "explore_requested": state.explore_requested,
         },
         "phases": [_phase_to_dict(p) for p in plan.phases],
         "overlays": list(plan.overlays),
@@ -197,7 +110,7 @@ def _cmd_init(args: argparse.Namespace) -> int:
         print(f"Error: {path} already exists. Use --force to overwrite.", file=sys.stderr)
         return 1
 
-    _write_journey(journey, path)
+    write_journey(journey, path)
     print(f"Wrote {path}")
     print(f"  task_kind: {state.task_kind}")
     print(f"  delivery_mode: {state.delivery_mode}")
@@ -213,7 +126,7 @@ def _cmd_advance(args: argparse.Namespace) -> int:
         print(f"Error: {path} not found. Run 'init' first.", file=sys.stderr)
         return 1
 
-    journey = _read_journey(path)
+    journey = read_journey(path)
 
     if journey.current_phase_id == TERMINAL_PHASE_ID:
         print(f"Journey '{args.slug}' is already done.", file=sys.stderr)
@@ -230,7 +143,7 @@ def _cmd_advance(args: argparse.Namespace) -> int:
     plan = plan_flow(state)
     journey = advance_journey(journey, plan)
 
-    _write_journey(journey, path)
+    write_journey(journey, path)
     print(f"Advanced: {args.slug}")
     print(f"  current_phase_id: {journey.current_phase_id}")
     print(f"  phases_done: {journey.phases_done}")
@@ -244,7 +157,7 @@ def _cmd_validate(args: argparse.Namespace) -> int:
         print(f"Error: {path} not found.", file=sys.stderr)
         return 1
 
-    journey = _read_journey(path)
+    journey = read_journey(path)
     scratch_dir = _SCRATCH_ROOT / args.slug
 
     if not journey.gates_satisfied:
@@ -289,6 +202,7 @@ def _build_parser() -> argparse.ArgumentParser:
         p.add_argument("--prototype", action="store_true")
         p.add_argument("--ui", action="store_true")
         p.add_argument("--triage-unclear", action="store_true")
+        p.add_argument("--explore", action="store_true")
 
     # plan
     p_plan = sub.add_parser("plan", help="Print flow plan as JSON")

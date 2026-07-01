@@ -78,6 +78,27 @@ Expert override: `/aiops <agent-name> …` skips narration but still updates `fl
 - body_zh: 独立检查设计是否过度工程、是否与领域文档一致。未 APPROVE 不会进入实现。
 - artifact_zh: `DESIGN_REVIEW.md`（需 Verdict: APPROVE）
 
+### explore
+
+- title_zh: 自由探索
+- title_en: Explore ideas
+- body_zh: 在动手之前，我们先聊聊想法、比较方案、权衡利弊。不会写入任何文件。
+- artifact_zh: 方案对比（仅在对话中，不持久化）
+
+### task_breakdown
+
+- title_zh: 任务拆分
+- title_en: Task breakdown
+- body_zh: 把实现工作拆成有序的垂直切片子任务，每个子任务有明确验收标准，在当前会话内依次完成。
+- artifact_zh: `tasks.md`（有序子任务列表）
+
+### task_breakdown_review
+
+- title_zh: 确认父任务
+- title_en: Confirm parent tasks
+- body_zh: 我已生成粗粒度父任务，请确认或调整后我再展开子任务。
+- artifact_zh: 父任务列表（已确认）
+
 ### planning_prd
 
 - title_zh: 写成 PRD
@@ -118,6 +139,13 @@ Expert override: `/aiops <agent-name> …` skips narration but still updates `fl
 - title_en: Implement with quality gates
 - body_zh: 按最小代码实现，依次经过测试、精简、评审。只有你明确要求才会提交。
 - artifact_zh: 源码 + 测试 + `REVIEW.md` APPROVE
+
+### drift_check
+
+- title_zh: 漂移检测
+- title_en: Drift check
+- body_zh: 对照设计规格检查实现是否偏离，确保代码忠实于设计意图。
+- artifact_zh: `DRIFT_REPORT.md`
 
 ### ship
 

@@ -17,7 +17,7 @@ const agents: Agent[] = [
   {
     id: 'architect', icon: '🏛️', role: { en: 'Alignment', zh: '对齐' },
     desc: { en: 'Clarifies the problem and turns decisions into NOTES.md and tech-spec.md', zh: '澄清问题，并把决策写入 NOTES.md 和 tech-spec.md' },
-    skills: ['grilling', 'grill-with-docs', 'domain-modeling', 'architect-design', 'improve-codebase-architecture', 'code-graph'],
+    skills: ['explore', 'grilling', 'grill-with-docs', 'domain-modeling', 'architect-design', 'improve-codebase-architecture', 'code-graph'],
     outputs: ['NOTES.md', 'tech-spec.md'],
     color: 'text-purple-400',
   },
@@ -85,6 +85,7 @@ const sequences = [
   { type: { en: 'Bug', zh: 'Bug' }, agents: ['builder', 'code-reviewer', 'gitops'] },
   { type: { en: 'Incoming', zh: '请求' }, agents: ['triage', 'builder', 'code-reviewer', 'gitops'] },
   { type: { en: 'Prototype', zh: '原型' }, agents: ['prototyper'] },
+  { type: { en: 'Architecture health', zh: '架构健康' }, agents: ['architect', 'design-reviewer', 'planner', 'builder', 'code-reviewer', 'quality-auditor', 'gitops'] },
 ]
 
 const artifacts = [

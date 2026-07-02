@@ -34,6 +34,7 @@ const categories: SkillCategory[] = [
       { name: '/grill-with-docs', desc: { en: 'Grounds decisions in CONTEXT.md, ADRs, and existing project notes.', zh: '基于 CONTEXT.md、ADR 和项目笔记做对齐。' } },
       { name: '/domain-modeling', desc: { en: 'Builds shared vocabulary so later design and review use the same terms.', zh: '建立共享词汇，避免后续设计和评审各说各话。' } },
       { name: '/architect-design', desc: { en: 'Turns aligned requirements into a technical design the builder can follow.', zh: '把已对齐需求转成 builder 能执行的技术设计。' } },
+      { name: '/explore', desc: { en: 'Think through an idea without creating delivery artifacts — opt-in discussion partner.', zh: '在不产生交付产物的情况下深入思考一个想法——可选的讨论伙伴。' } },
       { name: '/improve-codebase-architecture', desc: { en: 'Finds evidence-backed refactor opportunities before choosing one to implement.', zh: '先找有证据的重构机会，再选择一项实现。' } },
       { name: '/code-graph', desc: { en: 'Optional graphify-backed code graph for architecture and impact analysis.', zh: '可选的 graphify 代码图谱，用于架构和影响分析。' } },
     ],

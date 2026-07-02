@@ -1,6 +1,6 @@
 # User-facing narration for Flow Conductor
 
-Plain-language templates keyed by `narration_key` from `skills/aiops/scripts/router.py`.
+Plain-language templates keyed by `narration_key` from `skills/aiops/scripts/phases.py`.
 
 ## Language
 
@@ -62,7 +62,7 @@ Expert override: `/aiops <agent-name> …` skips narration but still updates `fl
 - title_zh: 设计方案
 - title_en: Design spec
 - body_zh: 把对齐结论整理成设计笔记和技术规格，供实现和评审使用。
-- artifact_zh: `NOTES.md` + `tech-spec.md`
+- artifact_zh: `NOTES.md` + `tech-spec.md` + 可选的 `CONTEXT.md` / ADR 更新
 
 ### ui_mockup
 

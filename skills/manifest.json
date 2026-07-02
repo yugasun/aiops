@@ -34,7 +34,7 @@
   "agents": [
     {
       "name": "architect",
-      "skills": ["grilling", "grill-with-docs", "domain-modeling", "architect-design", "improve-codebase-architecture", "code-graph"],
+      "skills": ["explore", "grilling", "grill-with-docs", "domain-modeling", "architect-design", "improve-codebase-architecture", "code-graph"],
       "role": "alignment",
       "outputs": [".scratch/<feature>/NOTES.md", ".scratch/<feature>/tech-spec.md"]
     },

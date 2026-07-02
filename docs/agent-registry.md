@@ -19,7 +19,7 @@ From [`skills/manifest.json`](../skills/manifest.json) `agents` array:
 
 | Agent | Role | Skills | Key Outputs |
 |-------|------|--------|-------------|
-| `architect` | alignment | grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture | NOTES.md, tech-spec.md |
+| `architect` | alignment | explore, grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture, code-graph | NOTES.md, tech-spec.md |
 | `design-reviewer` | design-gate | review | DESIGN_REVIEW.md |
 | `planner` | planning | to-prd, to-issues, handoff, aiops-setup | PRD.md, plan.md, issues/ |
 | `prototyper` | prototype | prototype, lean | VERDICT.md, prototype/ |

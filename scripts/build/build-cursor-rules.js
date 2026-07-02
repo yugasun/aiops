@@ -10,50 +10,25 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
-const SKILLS_DIR = path.join(ROOT, "skills");
-const MANIFEST_PATH = path.join(SKILLS_DIR, "manifest.json");
 const OUTPUT_DIR = path.join(ROOT, ".cursor", "rules");
 
 const { getAdapter } = require("../adapters");
+const { loadAlwaysOnSkills } = require("../lib/manifest");
 const cursor = getAdapter("cursor");
 
-// ─── Load always-on skills ─────────────────────────────────────────────────
+// ─── Generate .mdc files ───────────────────────────────────────────────────
 
-const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
-const alwaysOnSkills = (manifest.tier1 || []).filter((s) => s.alwaysOn);
+const skills = loadAlwaysOnSkills(ROOT);
 
-if (alwaysOnSkills.length === 0) {
+if (skills.length === 0) {
   console.log("No alwaysOn skills found in manifest. Nothing to generate.");
   process.exit(0);
 }
 
-// ─── Generate .mdc files ───────────────────────────────────────────────────
-
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-for (const entry of alwaysOnSkills) {
-  const skillPath = path.join(SKILLS_DIR, entry.name, "SKILL.md");
-  if (!fs.existsSync(skillPath)) {
-    console.log(`  ⚠ ${entry.name}/SKILL.md not found, skipping`);
-    continue;
-  }
-
-  const content = fs.readFileSync(skillPath, "utf8");
-
-  // Extract description from frontmatter
-  const descMatch = content.match(
-    /^description:\s*>?\s*([\s\S]*?)(?:\n---|\n[a-z])/m
-  );
-  const description = descMatch
-    ? descMatch[1].replace(/\n\s+/g, " ").trim()
-    : entry.name;
-
-  const compiled = cursor.compileAlwaysOn({
-    name: entry.name,
-    content,
-    description,
-  });
-
+for (const skill of skills) {
+  const compiled = cursor.compileAlwaysOn(skill);
   fs.writeFileSync(
     path.join(OUTPUT_DIR, compiled.filename),
     compiled.content,
@@ -62,6 +37,4 @@ for (const entry of alwaysOnSkills) {
   console.log(`  ✓ .cursor/rules/${compiled.filename}`);
 }
 
-console.log(
-  `✓ ${alwaysOnSkills.length} cursor rule(s) generated → ${OUTPUT_DIR}`
-);
+console.log(`✓ ${skills.length} cursor rule(s) generated → ${OUTPUT_DIR}`);

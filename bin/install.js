@@ -38,6 +38,12 @@ const AIOps_ROOT = path.resolve(__dirname, "..");
 // Adapter registry — converts skills to IDE-native formats
 const { getAdapter } = require("../scripts/adapters");
 
+// Shared manifest module — single source of truth for skill and agent loading
+const {
+  loadAgents: loadAgentsFromManifest,
+  loadAllSkills,
+} = require("../scripts/lib/manifest");
+
 // ─── Color helpers ───────────────────────────────────────────────────────────
 
 const c = {
@@ -140,28 +146,6 @@ ${c.bold("Examples:")}
   npx -y github:${REPO} --list                  # show what was detected
   npx -y github:${REPO} --uninstall             # remove installed files
 `);
-}
-
-// ─── Agent Compiler ──────────────────────────────────────────────────────────
-
-function loadAgents() {
-  const agentsDir = path.join(AIOps_ROOT, "agents");
-  if (!hasDir(agentsDir)) return [];
-
-  return fs
-    .readdirSync(agentsDir)
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => {
-      const name = path.basename(f, ".md");
-      const content = fs.readFileSync(path.join(agentsDir, f), "utf8");
-
-      // Extract description from Identity section (first sentence)
-      const identityMatch = content.match(/## Identity\n\n(.+?)(?:\n\n|\n## )/s);
-      const identity = identityMatch ? identityMatch[1].trim() : "";
-      const desc = identity.split(/[。.]/)[0].slice(0, 120);
-
-      return { name, content, description: desc };
-    });
 }
 
 function compileMdYaml(agent) {
@@ -270,53 +254,22 @@ function installSkills(provider, isGlobal) {
 
   fs.mkdirSync(destBase, { recursive: true });
 
-  // Read manifest to get tier1 skills + alwaysOn metadata
-  const manifestPath = path.join(skillsDir, "manifest.json");
-  let tier1 = [];
-  let alwaysOnNames = new Set();
-  if (fs.existsSync(manifestPath)) {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-    tier1 = (manifest.tier1 || []).map((s) => s.name);
-    // Collect alwaysOn skill names from manifest
-    for (const s of manifest.tier1 || []) {
-      if (s.alwaysOn) alwaysOnNames.add(s.name);
-    }
-  } else {
-    // Fallback: all subdirectories with SKILL.md
-    tier1 = fs.readdirSync(skillsDir).filter((d) => {
-      const p = path.join(skillsDir, d, "SKILL.md");
-      return fs.existsSync(p);
-    });
-  }
-
-  // Get the adapter for this provider (null if no dedicated adapter)
+  // Use shared manifest module for skill loading
+  const allSkills = loadAllSkills(AIOps_ROOT);
   const adapter = getAdapter(provider.id);
 
-  // Collect always-on skills for batch installation
-  const alwaysOnSkills = [];
+  const alwaysOnSkills = allSkills.filter((s) => s.alwaysOn);
+  const regularSkills = allSkills.filter((s) => !s.alwaysOn);
 
-  for (const name of tier1) {
-    const srcDir = path.join(skillsDir, name);
+  // ── Regular skills: copy as-is ──
+  for (const skill of regularSkills) {
+    const srcDir = path.join(skillsDir, skill.name);
     if (!hasDir(srcDir)) continue;
 
-    const skillMdPath = path.join(srcDir, "SKILL.md");
-    const isAlwaysOn = alwaysOnNames.has(name) && fs.existsSync(skillMdPath);
-
-    if (isAlwaysOn && adapter && adapter.installAlwaysOn) {
-      const content = fs.readFileSync(skillMdPath, "utf8");
-      const descMatch = content.match(/^description:\s*>?\s*([\s\S]*?)(?:\n---|\n[a-z])/m);
-      const description = descMatch
-        ? descMatch[1].replace(/\n\s+/g, " ").trim()
-        : name;
-      alwaysOnSkills.push({ name, content, description });
-      continue;
-    }
-
-    // ── Regular skills: copy as-is ──
-    const destDir = path.join(destBase, name);
+    const destDir = path.join(destBase, skill.name);
     fs.mkdirSync(destDir, { recursive: true });
     copyDirSync(srcDir, destDir);
-    ok(`${name}/ → ${c.dim(destDir)}`);
+    ok(`${skill.name}/ → ${c.dim(destDir)}`);
   }
 
   // ── Always-on skills: delegate to adapter ──
@@ -396,7 +349,7 @@ function main() {
   }
 
   // Load agents
-  const agents = loadAgents();
+  const agents = loadAgentsFromManifest(AIOps_ROOT);
   if (agents.length === 0) {
     log(c.yellow("Warning: no agent definitions found in agents/"));
   }

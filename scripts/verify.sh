@@ -81,9 +81,26 @@ elif plugins[0].get("strict") is not False:
     print("ERROR plugin strict must be false")
     errors += 1
 
+# --- package.json version ---
+pkg_path = root / "package.json"
+if pkg_path.is_file():
+    pkg = json.loads(pkg_path.read_text())
+    if pkg.get("version") != release:
+        print(f"ERROR package.json version {pkg.get('version')!r} != manifest {release!r}")
+        errors += 1
+
 # --- skill refs ---
 tier1 = {entry["name"] for entry in manifest["tier1"]}
 tier1_slash = {f"/{name}" for name in tier1}
+
+# --- agent skills must exist in tier1 ---
+for agent_entry in manifest.get("agents", []):
+    agent_name = agent_entry["name"]
+    for skill in agent_entry.get("skills", []):
+        if skill not in tier1:
+            print(f"ERROR agent {agent_name}: skill '{skill}' not in tier1")
+            errors += 1
+
 slash_ref = re.compile(r"`(/[a-z][a-z0-9-]*)`")
 for path in sorted(skills_root.rglob("*.md")):
     text = path.read_text()

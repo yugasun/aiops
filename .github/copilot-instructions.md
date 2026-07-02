@@ -1,6 +1,6 @@
 # Copilot Instructions
 
-## Minimal solution discipline: YAGNI ladder, stdlib and native first, shortest working diff. Use during delivery when writing code, or when the user says lean, lean mode, yagni, ponytail, lazy mode, or complains about over-engineering.
+## >
 
 # Lean
 

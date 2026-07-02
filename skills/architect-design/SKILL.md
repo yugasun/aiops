@@ -2,14 +2,15 @@
 name: architect-design
 description: >
   Structured design process for the architect agent. Guides from grill conclusions
-  to complete NOTES.md + tech-spec.md through constraint gathering, module identification,
-  interface design, alternative exploration, and risk analysis. Use when the architect
-  needs to produce design decisions and technical specifications.
+  to complete NOTES.md + tech-spec.md plus needed domain documentation updates
+  through constraint gathering, module identification, interface design,
+  alternative exploration, and risk analysis. Use when the architect needs to
+  produce design decisions and technical specifications.
 ---
 
 # Architect Design
 
-Structured design process: from grill/domain-modeling conclusions to complete `NOTES.md` + `tech-spec.md`.
+Structured design process: from grill/domain-modeling conclusions to complete `NOTES.md` + `tech-spec.md` + any needed domain documentation updates.
 
 ## Vocabulary
 
@@ -104,14 +105,25 @@ Pick the strongest, or propose a hybrid. Record in `NOTES.md`:
 - **Rejected alternatives**: at least one, with reason for rejection
 - **Constraints imposed**: what this decision locks in
 
-### Step 6: Specification output
+### Step 6: Domain documentation pass
 
-Produce two artifacts:
+Before finalizing the design artifacts, run a short `/domain-modeling` pass:
+
+1. Extract new or changed domain terms from the design.
+2. Add only project-specific domain language to `CONTEXT.md`; skip general engineering terms.
+3. Check each design decision against the ADR threshold: hard to reverse, surprising without context, and a real trade-off with alternatives.
+4. Create `docs/adr/NNNN-slug.md` only for decisions that meet all three criteria; otherwise skip the ADR.
+5. Record the outcome in `NOTES.md` so downstream agents know whether domain docs were changed or intentionally left alone.
+
+### Step 7: Specification output
+
+Produce the primary design artifacts:
 
 **`NOTES.md`** — design decisions, trade-off analysis, constraints:
 - Problem statement (one sentence)
 - Context (existing system, known constraints, relevant ADRs)
 - Design decisions (chosen + rejected + rationale + constraints imposed)
+- Domain docs (CONTEXT.md updates, ADRs created, ADRs skipped with brief reason)
 - Scope (in scope / out of scope)
 - Open questions (blocking items must be resolved before planner)
 
@@ -128,6 +140,7 @@ Produce two artifacts:
 - Do not write implementation code (interface signatures and pseudocode only)
 - Every design decision must list at least one rejected alternative with reason
 - Name modules using `CONTEXT.md` domain terms; if introducing a new term, add it to `CONTEXT.md`
+- ADRs stay optional: write one only when the `/domain-modeling` ADR threshold is met
 - Existing ADRs are not re-litigated unless friction warrants it (mark explicitly)
 - Open questions with blocking items must be flagged — planner cannot start until resolved
 - Label each module as **new** or **deepening** existing modules

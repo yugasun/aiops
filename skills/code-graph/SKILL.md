@@ -138,6 +138,8 @@ Query the existing graph without rebuilding. Requires `graphify-out/graph.json` 
 
 Query execution reads `graphify-out/graph.json` + `.scratch/graph/annotations.json` and produces structured text output. See [query-patterns.md](query-patterns.md) for output formats.
 
+Maintainers: executable query implementation lives at `skills/aiops/scripts/code_graph_query.py`. Run it as `python3 <aiops-root>/skills/aiops/scripts/code_graph_query.py <subcommand>`.
+
 | Subcommand | Output | Data source |
 | --- | --- | --- |
 | `modules` | List all nodes with purpose, depth, edge count | graph.json nodes + annotations |

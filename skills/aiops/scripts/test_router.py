@@ -8,11 +8,23 @@ from pathlib import Path
 # Allow running from repo root: python3 -m unittest skills.aiops.scripts.test_router
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from gates import GATE_ARTIFACTS, check_all_gates, check_gate  # noqa: E402
+from gates import (  # noqa: E402
+    GATE_ARTIFACTS,
+    PHASE_GATES,
+    check_all_gates,
+    check_gate,
+    check_phase_gates,
+    is_gate_in_phase,
+    satisfy_gate,
+)
 from journey_state import (  # noqa: E402
     advance_journey,
     initial_journey,
     narration_progress,
+    plan_hash_from_phases,
+    read_journey,
+    state_from_snapshot,
+    write_journey,
 )
 from phases import TERMINAL_PHASE_ID, FlowState, plan_flow  # noqa: E402
 
@@ -192,6 +204,14 @@ class JourneyTests(unittest.TestCase):
         idx = journey.phase_index(plan)
         self.assertEqual(idx, len(plan.phases) - 1)
 
+    def test_phase_index_rejects_unknown_phase(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        journey = initial_journey(state, "x", "y")
+        journey.current_phase_id = "missing_phase"
+        with self.assertRaises(ValueError):
+            journey.phase_index(plan)
+
     def test_narration_progress(self):
         state = FlowState(task_kind="bug_fix")
         plan = plan_flow(state)
@@ -208,6 +228,106 @@ class JourneyTests(unittest.TestCase):
             journey = advance_journey(journey, plan)
         step, total = narration_progress(journey, plan)
         self.assertEqual(step, total)
+
+    # ── Journey control module: state snapshot ──
+
+    def test_initial_journey_stores_state_snapshot(self):
+        state = FlowState(
+            task_kind="feature_idea",
+            has_codebase=False,
+            issue_tracker_configured=True,
+            explore_requested=True,
+        )
+        journey = initial_journey(state, "test-snap", "snapshot test")
+        self.assertFalse(journey.state_has_codebase)
+        self.assertTrue(journey.state_issue_tracker_configured)
+        self.assertTrue(journey.state_explore_requested)
+        self.assertFalse(journey.state_triage_unclear)
+
+    def test_state_snapshot_roundtrips_through_yaml(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state = FlowState(
+                task_kind="feature_idea",
+                has_codebase=False,
+                issue_tracker_configured=True,
+                needs_runnable_answer=True,
+                triage_unclear=True,
+                explore_requested=True,
+            )
+            journey = initial_journey(state, "roundtrip", "test yaml")
+            path = Path(tmpdir) / "flow.state.yaml"
+            write_journey(journey, path)
+
+            loaded = read_journey(path)
+            self.assertFalse(loaded.state_has_codebase)
+            self.assertTrue(loaded.state_issue_tracker_configured)
+            self.assertTrue(loaded.state_needs_runnable_answer)
+            self.assertTrue(loaded.state_triage_unclear)
+            self.assertTrue(loaded.state_explore_requested)
+            self.assertEqual(loaded.task_kind, "feature_idea")
+
+    def test_state_from_snapshot_produces_same_plan(self):
+        state = FlowState(
+            task_kind="feature_with_ui",
+            has_codebase=False,
+            issue_tracker_configured=True,
+            explore_requested=True,
+        )
+        plan1 = plan_flow(state)
+        journey = initial_journey(state, "x", "y")
+
+        # Reconstruct state from snapshot
+        state2 = state_from_snapshot(journey)
+        plan2 = plan_flow(state2)
+
+        ids1 = [p.phase_id for p in plan1.phases]
+        ids2 = [p.phase_id for p in plan2.phases]
+        self.assertEqual(ids1, ids2)
+
+    def test_plan_hash_computed_on_init(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        journey = initial_journey(state, "hash-test", "")
+        expected = plan_hash_from_phases(plan.phases)
+        self.assertEqual(journey.plan_hash, expected)
+        self.assertTrue(len(journey.plan_hash) > 0)
+
+    def test_plan_hash_detects_drift(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        plan = plan_flow(state)
+        journey = initial_journey(state, "drift", "")
+
+        # Simulate a different plan by changing the hash
+        journey.plan_hash = "different|plan|hash"
+        reconstructed = state_from_snapshot(journey)
+        new_plan = plan_flow(reconstructed)
+        new_hash = plan_hash_from_phases(new_plan.phases)
+
+        self.assertNotEqual(journey.plan_hash, new_hash)
+
+    def test_yaml_v1_backward_compat(self):
+        """V1 files (no state: block) should read with defaults."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "flow.state.yaml"
+            path.write_text(
+                "version: 1\n"
+                "slug: legacy\n"
+                "task_kind: bug_fix\n"
+                "delivery_mode: single_session\n"
+                'user_description: "old format"\n'
+                "current_phase_id: diagnose\n"
+                "phases_done: []\n"
+                "gates_satisfied: []\n"
+                "current_issue: null\n",
+                encoding="utf-8",
+            )
+            journey = read_journey(path)
+            self.assertEqual(journey.version, 1)
+            self.assertEqual(journey.slug, "legacy")
+            # Defaults for missing state fields
+            self.assertTrue(journey.state_has_codebase)
+            self.assertFalse(journey.state_issue_tracker_configured)
+            self.assertEqual(journey.plan_hash, "")
 
 
 class GateValidationTests(unittest.TestCase):
@@ -247,6 +367,18 @@ class GateValidationTests(unittest.TestCase):
             passed, _ = check_gate("bootstrap_done", Path(tmpdir))
             self.assertTrue(passed)
 
+    def test_bootstrap_gate_uses_project_root_from_scratch_dir(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            scratch = root / ".scratch" / "feature"
+            scratch.mkdir(parents=True)
+            passed, _ = check_gate("bootstrap_done", scratch)
+            self.assertFalse(passed)
+
+            (root / "docs" / "agents").mkdir(parents=True)
+            passed, _ = check_gate("bootstrap_done", scratch)
+            self.assertTrue(passed)
+
     def test_check_all_gates(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             (Path(tmpdir) / "DESIGN_REVIEW.md").write_text("APPROVE")
@@ -259,6 +391,68 @@ class GateValidationTests(unittest.TestCase):
             self.assertTrue(results[0][1])
             # prototype_verdict fails (no VERDICT.md)
             self.assertFalse(results[1][1])
+
+    # ── Phase-aware gate lifecycle ──
+
+    def test_phase_gates_mapping_covers_gate_phases(self):
+        self.assertIn("bootstrap", PHASE_GATES)
+        self.assertIn("design_review", PHASE_GATES)
+        self.assertIn("delivery", PHASE_GATES)
+        self.assertIn("drift_check", PHASE_GATES)
+
+    def test_is_gate_in_phase(self):
+        self.assertTrue(is_gate_in_phase("design_review", "design_review_approve"))
+        self.assertTrue(is_gate_in_phase("delivery", "review_approve"))
+        self.assertFalse(is_gate_in_phase("alignment", "design_review_approve"))
+        self.assertFalse(is_gate_in_phase("design_review", "review_approve"))
+
+    def test_check_phase_gates_empty_for_gateless_phase(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            results = check_phase_gates("alignment", Path(tmpdir))
+            self.assertEqual(results, [])
+
+    def test_check_phase_gates_design_review(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "DESIGN_REVIEW.md").write_text("APPROVE")
+            results = check_phase_gates("design_review", Path(tmpdir))
+            self.assertEqual(len(results), 1)
+            self.assertTrue(results[0][1])  # design_review_approve passes
+
+    def test_satisfy_gate_adds_to_journey(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        journey = initial_journey(state, "x", "y")
+        updated, msg = satisfy_gate(journey, "delivery", "prune_done")
+        self.assertIn("prune_done", updated.gates_satisfied)
+        self.assertIn("satisfied", msg)
+
+    def test_satisfy_gate_rejects_unknown_gate_for_phase(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        journey = initial_journey(state, "x", "y")
+        updated, msg = satisfy_gate(journey, "design_review", "review_approve")
+        self.assertNotIn("review_approve", updated.gates_satisfied)
+        self.assertIn("not required", msg)
+
+    def test_satisfy_gate_idempotent(self):
+        state = FlowState(task_kind="bug_fix", issue_tracker_configured=True)
+        journey = initial_journey(state, "x", "y")
+        updated, _ = satisfy_gate(journey, "delivery", "prune_done")
+        updated2, msg = satisfy_gate(updated, "delivery", "prune_done")
+        self.assertIn("already satisfied", msg)
+        self.assertEqual(updated.gates_satisfied, updated2.gates_satisfied)
+
+    def test_satisfy_gate_preserves_state_snapshot(self):
+        state = FlowState(
+            task_kind="feature_idea",
+            has_codebase=False,
+            issue_tracker_configured=True,
+            explore_requested=True,
+        )
+        journey = initial_journey(state, "snap", "test")
+        updated, _ = satisfy_gate(journey, "delivery", "prune_done")
+        # Snapshot fields survive gate satisfaction
+        self.assertFalse(updated.state_has_codebase)
+        self.assertTrue(updated.state_explore_requested)
+        self.assertEqual(updated.plan_hash, journey.plan_hash)
 
 
 class TaskDagTests(unittest.TestCase):

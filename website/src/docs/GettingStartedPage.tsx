@@ -10,7 +10,7 @@ const content = {
     promise: 'Three minutes to the first /aiops run',
     prereqs: {
       title: 'Prerequisites',
-      items: ['Node.js 18+', 'Cursor, Claude Code, Codex, Copilot, or Windsurf', 'A codebase for agent-assisted development'],
+      items: ['Node.js 18+', 'Cursor, Claude Code, Codex, Copilot, or OpenCode', 'A codebase for agent-assisted development'],
     },
     steps: [
       {
@@ -42,7 +42,7 @@ const content = {
       { title: 'Task routing', body: 'aiops decides whether this is a feature, bug, architecture task, or larger planning job.' },
       { title: 'Step-by-step prompts', body: 'You see the current phase instead of guessing which skill or agent to invoke.' },
       { title: 'Saved progress', body: 'The workflow writes state under .scratch/ so a later session can continue safely.' },
-      { title: 'Delivery checks', body: 'Implementation goes through tests, pruning, review, and your final commit approval.' },
+      { title: 'Delivery checks', body: 'Implementation goes through tests, pruning, code review, drift check against tech-spec, and your final commit approval.' },
     ],
     example: {
       title: 'Example — health endpoint',
@@ -71,7 +71,7 @@ const content = {
     promise: '三分钟跑通第一次 /aiops',
     prereqs: {
       title: '前置条件',
-      items: ['Node.js 18+', 'Cursor、Claude Code、Codex、Copilot 或 Windsurf', '一个你想用 AI 辅助开发的代码库'],
+      items: ['Node.js 18+', 'Cursor、Claude Code、Codex、Copilot 或 OpenCode', '一个你想用 AI 辅助开发的代码库'],
     },
     steps: [
       {
@@ -101,7 +101,7 @@ const content = {
       { title: '任务分流', body: 'aiops 判断这是功能、Bug、架构任务，还是需要先规划的大任务。' },
       { title: '分步提示', body: '你会看到当前阶段，不需要猜该调用哪个 skill 或 agent。' },
       { title: '自动保存进度', body: '工作流把状态写到 .scratch/，后续会话可以安全接上。' },
-      { title: '交付检查', body: '实现会经过测试、精简、评审，最后等你确认提交。' },
+      { title: '交付检查', body: '实现会经过测试、精简、代码评审、对照 tech-spec 的漂移检查，最后等你确认提交。' },
     ],
     example: {
       title: '示例 — health 接口',

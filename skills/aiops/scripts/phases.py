@@ -178,6 +178,13 @@ def _bug_phases() -> list[FlowPhase]:
 def _architecture_health_phases(state: FlowState) -> list[FlowPhase]:
     return [
         FlowPhase(
+            "graph_build",
+            "/code-graph",
+            "architect",
+            "graph_build",
+            "Build or refresh code graph when missing or stale; skip when graphify-out/graph.json is fresh.",
+        ),
+        FlowPhase(
             "architecture_scan",
             "/improve-codebase-architecture",
             "architect",

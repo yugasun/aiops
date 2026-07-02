@@ -12,7 +12,7 @@
    ```
 
 5. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
-6. New skill references: update `docs/agents/skill-registry.md`.
+6. New skill references: update `docs/skill-registry.md`.
 
 ## Skill authoring
 
@@ -26,6 +26,6 @@ User-facing: `README.md`, `docs/getting-started.md`. Domain: `CONTEXT.md`. Archi
 
 ## Code style
 
-- **File size limit: 500 lines.** Split files that approach this limit. See `CLAUDE.md` for splitting order and rules.
-- TypeScript/React: extract types → utils → hooks → sub-components → constants, in that order.
+- **File size limit: 500 lines.** Split files that approach this limit.
 - Mirror existing package layout — don't invent new patterns.
+- For conventions that apply to target projects using aiops, see `docs/target-project-conventions.md`.

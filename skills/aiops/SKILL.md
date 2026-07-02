@@ -40,9 +40,11 @@ Agents: `architect`, `design-reviewer`, `planner`, `prototyper`, `builder`, `ui-
 | **Feature + UI** | + ui_mockup before design_review | yes | `/gitops` |
 | **Bug** | diagnose → delivery → drift_check → ship | no | `/gitops` |
 | **Incoming** | triage → (align if unclear) → delivery → drift_check → ship | conditional | `/gitops` |
-| **Architecture health** | architecture_scan → align → design → design_review → task_breakdown → delivery → drift_check → ship | yes | `/gitops` |
+| **Architecture health** | graph_build → architecture_scan → align → design → design_review → task_breakdown → delivery → drift_check → ship | yes | `/gitops` |
 | **Prototype** | prototype only | — | `VERDICT.md` |
 | **New personal skill** | skill_authoring checklist | yes | new `SKILL.md` |
+
+Dispatch rows for `AGENTS.md` live in `skills/manifest.json` → `dispatch`. Phase order detail: `skills/aiops/scripts/phases.py`.
 
 **Explore** (opt-in): when `explore_requested`, insert `explore` phase after bootstrap (if any) and before task-specific phases.
 
@@ -67,6 +69,6 @@ Recommend **multi-session** when: 3+ modules, multiple slices, near smart zone, 
 
 - Journey file format: [journey.md](journey.md)
 - User narration keys: [narration.md](narration.md)
-- State operations: `python3 <aiops-root>/skills/aiops/scripts/flow_cli.py {plan,init,advance,validate}`
+- State operations: `python3 <aiops-root>/skills/aiops/scripts/flow_cli.py {plan,init,advance,validate,satisfy-gate,phase-gates}`
 - Project config yaml: [aiops-setup/aiops-yaml.md](../aiops-setup/aiops-yaml.md)
 - Vocabulary: target `CONTEXT.md`; skill registry: `docs/skill-registry.md`

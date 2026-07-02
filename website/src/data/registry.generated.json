@@ -1,0 +1,527 @@
+{
+  "manifestVersion": 3,
+  "version": "1.4.0",
+  "generatedAt": "2026-07-02T10:24:25.033Z",
+  "categoryOrder": [
+    "router",
+    "alignment",
+    "planning",
+    "delivery",
+    "quality",
+    "design"
+  ],
+  "skillOrder": {
+    "router": [
+      "aiops",
+      "aiops-setup"
+    ],
+    "alignment": [
+      "grilling",
+      "grill-with-docs",
+      "domain-modeling",
+      "architect-design",
+      "explore",
+      "improve-codebase-architecture",
+      "code-graph"
+    ],
+    "planning": [
+      "to-prd",
+      "to-issues",
+      "handoff",
+      "triage"
+    ],
+    "delivery": [
+      "aiops-implement",
+      "tdd",
+      "prototype",
+      "diagnosing-bugs",
+      "gitops"
+    ],
+    "quality": [
+      "lean",
+      "file-refactor",
+      "prune",
+      "review"
+    ],
+    "design": [
+      "ui-mockup"
+    ]
+  },
+  "skills": [
+    {
+      "name": "aiops",
+      "category": "router",
+      "role": "router",
+      "alwaysOn": false,
+      "descriptionEn": "Flow Conductor for the aiops bundle. One entry — infers task type, shows plain-language steps, tracks journey in flow.state.yaml, dispatches skill + agent per phase."
+    },
+    {
+      "name": "aiops-implement",
+      "category": "delivery",
+      "role": "delivery",
+      "alwaysOn": false,
+      "descriptionEn": "Delivery overlay — orchestrates lean ladder, tdd, prune, review with sub-phase gates; commits only on user approval."
+    },
+    {
+      "name": "aiops-setup",
+      "category": "router",
+      "role": "setup",
+      "alwaysOn": false,
+      "descriptionEn": "Configure a target project for the aiops bundle — issue tracker, triage labels, domain doc layout. Silent defaults on inline bootstrap; full prompts on explicit /aiops-setup."
+    },
+    {
+      "name": "explore",
+      "category": "alignment",
+      "role": "alignment",
+      "alwaysOn": false,
+      "descriptionEn": "Free-form thinking partner. Discuss ideas, compare options, name tradeoffs. No artifacts committed."
+    },
+    {
+      "name": "lean",
+      "category": "quality",
+      "role": "discipline",
+      "alwaysOn": true,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "file-refactor",
+      "category": "quality",
+      "role": "discipline",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "prune",
+      "category": "quality",
+      "role": "delivery-gate",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "grill-with-docs",
+      "category": "alignment",
+      "role": "alignment",
+      "alwaysOn": false,
+      "descriptionEn": "Relentless interview that sharpens a plan and updates CONTEXT.md and ADRs as decisions land."
+    },
+    {
+      "name": "grilling",
+      "category": "alignment",
+      "role": "alignment",
+      "alwaysOn": false,
+      "descriptionEn": "Interview the user relentlessly about a plan or design. Use when stress-testing a plan before building, or on any grill trigger phrase."
+    },
+    {
+      "name": "domain-modeling",
+      "category": "alignment",
+      "role": "alignment",
+      "alwaysOn": false,
+      "descriptionEn": "Build and sharpen a project's domain model — glossary, ubiquitous language, ADRs. Use when changing the model, not just reading CONTEXT.md."
+    },
+    {
+      "name": "tdd",
+      "category": "delivery",
+      "role": "delivery-gate",
+      "alwaysOn": false,
+      "descriptionEn": "Test-driven development — vertical red-green-refactor slices through public interfaces."
+    },
+    {
+      "name": "diagnosing-bugs",
+      "category": "delivery",
+      "role": "bug",
+      "alwaysOn": false,
+      "descriptionEn": "Diagnosis loop for hard bugs and performance regressions. Use when the user says diagnose/debug, or reports broken/failing/slow behavior."
+    },
+    {
+      "name": "triage",
+      "category": "planning",
+      "role": "incoming",
+      "alwaysOn": false,
+      "descriptionEn": "Move issues and external PRs through triage roles — categorise, verify, grill if needed, write agent-ready briefs."
+    },
+    {
+      "name": "to-prd",
+      "category": "planning",
+      "role": "planning",
+      "alwaysOn": false,
+      "descriptionEn": "Synthesize the current conversation into a PRD and publish to the issue tracker. No interview — use what you already know."
+    },
+    {
+      "name": "to-issues",
+      "category": "planning",
+      "role": "planning",
+      "alwaysOn": false,
+      "descriptionEn": "Break a plan or PRD into vertical-slice issues on the project issue tracker."
+    },
+    {
+      "name": "handoff",
+      "category": "planning",
+      "role": "cross-session",
+      "alwaysOn": false,
+      "descriptionEn": "Compact the current conversation into a handoff document for another agent to pick up."
+    },
+    {
+      "name": "prototype",
+      "category": "delivery",
+      "role": "prototype",
+      "alwaysOn": false,
+      "descriptionEn": "Throwaway prototype to answer a design question — terminal logic explorer or multi-variant UI on one route."
+    },
+    {
+      "name": "review",
+      "category": "quality",
+      "role": "delivery-gate",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "gitops",
+      "category": "delivery",
+      "role": "delivery",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "ui-mockup",
+      "category": "design",
+      "role": "design",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "category": "alignment",
+      "role": "architecture-health",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "architect-design",
+      "category": "alignment",
+      "role": "alignment",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    },
+    {
+      "name": "code-graph",
+      "category": "alignment",
+      "role": "infrastructure",
+      "alwaysOn": false,
+      "descriptionEn": ">"
+    }
+  ],
+  "tier2": [
+    "codebase-design",
+    "writing-great-skills",
+    "teach"
+  ],
+  "agents": [
+    {
+      "name": "architect",
+      "skills": [
+        "explore",
+        "grilling",
+        "grill-with-docs",
+        "domain-modeling",
+        "architect-design",
+        "improve-codebase-architecture",
+        "code-graph"
+      ],
+      "role": "alignment",
+      "outputs": [
+        "NOTES.md",
+        "tech-spec.md"
+      ]
+    },
+    {
+      "name": "design-reviewer",
+      "skills": [
+        "review"
+      ],
+      "role": "design-gate",
+      "outputs": [
+        "DESIGN_REVIEW.md",
+        "DRIFT_REPORT.md"
+      ]
+    },
+    {
+      "name": "planner",
+      "skills": [
+        "to-prd",
+        "to-issues",
+        "handoff",
+        "aiops-setup"
+      ],
+      "role": "planning",
+      "outputs": [
+        "PRD.md",
+        "plan.md",
+        "issues/"
+      ]
+    },
+    {
+      "name": "prototyper",
+      "skills": [
+        "prototype",
+        "lean"
+      ],
+      "role": "prototype",
+      "outputs": [
+        "VERDICT.md",
+        "prototype/"
+      ]
+    },
+    {
+      "name": "builder",
+      "skills": [
+        "aiops-implement",
+        "tdd",
+        "lean",
+        "code-graph"
+      ],
+      "role": "delivery",
+      "outputs": [
+        "source code",
+        "test files"
+      ]
+    },
+    {
+      "name": "ui-designer",
+      "skills": [
+        "ui-mockup"
+      ],
+      "role": "design",
+      "outputs": [
+        "mockups/",
+        "design-notes.md"
+      ]
+    },
+    {
+      "name": "code-reviewer",
+      "skills": [
+        "review"
+      ],
+      "role": "delivery-gate",
+      "outputs": [
+        "REVIEW.md"
+      ]
+    },
+    {
+      "name": "quality-auditor",
+      "skills": [
+        "prune"
+      ],
+      "role": "delivery-gate",
+      "outputs": [
+        "prune findings"
+      ]
+    },
+    {
+      "name": "gitops",
+      "skills": [
+        "gitops"
+      ],
+      "role": "delivery",
+      "outputs": [
+        "commit + push"
+      ]
+    }
+  ],
+  "dispatch": [
+    {
+      "taskType": "Feature",
+      "grill": "yes",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Feature + UI",
+      "grill": "yes",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Bug",
+      "grill": "no",
+      "prototypeVerdict": "no",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Incoming",
+      "grill": "conditional",
+      "prototypeVerdict": "no",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Architecture health",
+      "grill": "yes (you pick the item)",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Prototype",
+      "grill": "—",
+      "prototypeVerdict": "—",
+      "endsAt": "VERDICT.md"
+    },
+    {
+      "taskType": "New personal skill",
+      "grill": "yes",
+      "prototypeVerdict": "—",
+      "endsAt": "new SKILL.md"
+    }
+  ],
+  "sequences": [
+    {
+      "taskType": "Feature",
+      "agents": [
+        "architect",
+        "design-reviewer",
+        "planner",
+        "builder",
+        "code-reviewer",
+        "quality-auditor",
+        "gitops"
+      ]
+    },
+    {
+      "taskType": "Feature + UI",
+      "agents": [
+        "architect",
+        "ui-designer",
+        "design-reviewer",
+        "planner",
+        "builder",
+        "code-reviewer",
+        "quality-auditor",
+        "gitops"
+      ]
+    },
+    {
+      "taskType": "Bug",
+      "agents": [
+        "builder",
+        "code-reviewer",
+        "gitops"
+      ]
+    },
+    {
+      "taskType": "Incoming",
+      "agents": [
+        "triage",
+        "builder",
+        "code-reviewer",
+        "gitops"
+      ]
+    },
+    {
+      "taskType": "Architecture health",
+      "agents": [
+        "architect",
+        "design-reviewer",
+        "planner",
+        "builder",
+        "code-reviewer",
+        "quality-auditor",
+        "gitops"
+      ]
+    },
+    {
+      "taskType": "Prototype",
+      "agents": [
+        "prototyper"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "NOTES.md",
+      "producer": "architect",
+      "consumers": [
+        "design-reviewer",
+        "planner",
+        "builder",
+        "code-reviewer"
+      ]
+    },
+    {
+      "file": "tech-spec.md",
+      "producer": "architect",
+      "consumers": [
+        "design-reviewer",
+        "planner",
+        "builder",
+        "code-reviewer"
+      ]
+    },
+    {
+      "file": "DESIGN_REVIEW.md",
+      "producer": "design-reviewer",
+      "consumers": [
+        "planner",
+        "architect"
+      ]
+    },
+    {
+      "file": "PRD.md",
+      "producer": "planner",
+      "consumers": [
+        "builder"
+      ]
+    },
+    {
+      "file": "plan.md",
+      "producer": "planner",
+      "consumers": [
+        "builder"
+      ]
+    },
+    {
+      "file": "issues/*.md",
+      "producer": "planner",
+      "consumers": [
+        "builder"
+      ]
+    },
+    {
+      "file": "VERDICT.md",
+      "producer": "prototyper",
+      "consumers": [
+        "architect",
+        "builder"
+      ]
+    },
+    {
+      "file": "mockups/",
+      "producer": "ui-designer",
+      "consumers": [
+        "builder",
+        "code-reviewer"
+      ]
+    },
+    {
+      "file": "REVIEW.md",
+      "producer": "code-reviewer",
+      "consumers": [
+        "builder",
+        "quality-auditor",
+        "gitops"
+      ]
+    },
+    {
+      "file": "DRIFT_REPORT.md",
+      "producer": "design-reviewer",
+      "consumers": [
+        "builder",
+        "gitops"
+      ]
+    },
+    {
+      "file": "prune findings",
+      "producer": "quality-auditor",
+      "consumers": [
+        "builder"
+      ]
+    }
+  ]
+}

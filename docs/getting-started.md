@@ -5,7 +5,7 @@ Install aiops in a **target project** (your app repo, not this aiops meta-repo),
 ## Prerequisites
 
 - Node.js 18+
-- Cursor, Claude Code, Codex, Copilot, or Windsurf
+- Cursor, Claude Code, Codex, Copilot, or OpenCode
 - A codebase for agent-assisted development
 
 ## 1. Install

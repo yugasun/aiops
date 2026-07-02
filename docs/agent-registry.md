@@ -20,10 +20,10 @@ From [`skills/manifest.json`](../skills/manifest.json) `agents` array:
 | Agent | Role | Skills | Key Outputs |
 |-------|------|--------|-------------|
 | `architect` | alignment | explore, grilling, grill-with-docs, domain-modeling, architect-design, improve-codebase-architecture, code-graph | NOTES.md, tech-spec.md |
-| `design-reviewer` | design-gate | review | DESIGN_REVIEW.md |
+| `design-reviewer` | design-gate | review (design + drift modes) | DESIGN_REVIEW.md, DRIFT_REPORT.md |
 | `planner` | planning | to-prd, to-issues, handoff, aiops-setup | PRD.md, plan.md, issues/ |
 | `prototyper` | prototype | prototype, lean | VERDICT.md, prototype/ |
-| `builder` | delivery | aiops-implement, tdd, lean | source code + tests |
+| `builder` | delivery | aiops-implement, tdd, lean, code-graph | source code + tests |
 | `ui-designer` | design | ui-mockup | mockups/, design-notes.md |
 | `code-reviewer` | delivery-gate | review | REVIEW.md |
 | `quality-auditor` | delivery-gate | prune | prune findings |
@@ -72,5 +72,3 @@ Agents communicate through `.scratch/<feature>/` files. These files are the audi
 | `mockups/` | ui-designer | builder, code-reviewer |
 | `REVIEW.md` | code-reviewer | builder, quality-auditor, gitops |
 | prune findings | quality-auditor | builder |
-
-Full artifact formats: see [design spec](superpowers/specs/2026-06-26-agents-team-design.md).

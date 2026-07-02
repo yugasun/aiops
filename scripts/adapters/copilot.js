@@ -10,6 +10,7 @@
 const path = require("path");
 const os = require("os");
 const { stripFrontmatter, extractField } = require("./utils");
+const { compileAgent: compileAgentMd } = require("./default");
 
 /**
  * Compile an always-on skill into Copilot instructions format.
@@ -69,17 +70,7 @@ function compileSkill(skill) {
  * Compile an agent. Copilot uses same md-yaml format.
  */
 function compileAgent(agent) {
-  const content = `---
-name: ${agent.name}
-description: "${agent.description}"
----
-
-${agent.content}`;
-
-  return {
-    filename: `${agent.name}.md`,
-    content,
-  };
+  return compileAgentMd(agent, "md-yaml");
 }
 
 // ─── Adapter export ────────────────────────────────────────────────────────

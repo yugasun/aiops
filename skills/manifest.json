@@ -31,6 +31,15 @@
     { "name": "writing-great-skills" },
     { "name": "teach" }
   ],
+  "dispatch": [
+    { "taskType": "Feature", "grill": "yes", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
+    { "taskType": "Feature + UI", "grill": "yes", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
+    { "taskType": "Bug", "grill": "no", "prototypeVerdict": "no", "endsAt": "/gitops" },
+    { "taskType": "Incoming", "grill": "conditional", "prototypeVerdict": "no", "endsAt": "/gitops" },
+    { "taskType": "Architecture health", "grill": "yes (you pick the item)", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
+    { "taskType": "Prototype", "grill": "—", "prototypeVerdict": "—", "endsAt": "VERDICT.md" },
+    { "taskType": "New personal skill", "grill": "yes", "prototypeVerdict": "—", "endsAt": "new SKILL.md" }
+  ],
   "agents": [
     {
       "name": "architect",
@@ -42,7 +51,7 @@
       "name": "design-reviewer",
       "skills": ["review"],
       "role": "design-gate",
-      "outputs": [".scratch/<feature>/DESIGN_REVIEW.md"]
+      "outputs": [".scratch/<feature>/DESIGN_REVIEW.md", ".scratch/<feature>/DRIFT_REPORT.md"]
     },
     {
       "name": "planner",
@@ -58,7 +67,7 @@
     },
     {
       "name": "builder",
-      "skills": ["aiops-implement", "tdd", "lean"],
+      "skills": ["aiops-implement", "tdd", "lean", "code-graph"],
       "role": "delivery",
       "outputs": ["source code", "test files"]
     },

@@ -14,6 +14,8 @@
 - `/improve-codebase-architecture` — 架构健康扫描（Architecture health 任务类型使用）
 - `/code-graph` — 构建和查询代码图谱，为架构分析提供结构化数据
 
+**Phase dispatch**: Flow Conductor 每次只执行当前 phase 对应的一个 skill。上表其余技能仅供专家直调（`/aiops architect …`），不要在同一次回复里混用多个 phase 技能。
+
 ## Inputs
 
 - 用户原始需求描述

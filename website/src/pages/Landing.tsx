@@ -114,7 +114,7 @@ function Hero() {
             <span className="w-[9px] h-[9px] rounded-full bg-[#febc2e]" />
             <span className="w-[9px] h-[9px] rounded-full bg-[#28c840]" />
           </div>
-          <span className="opacity-60">Claude Code · Cursor · Copilot · Codex · Windsurf</span>
+          <span className="opacity-60">Claude Code · Cursor · Copilot · Codex · OpenCode</span>
         </div>
         <CardContent className="relative p-5">
           <div className="font-mono text-[0.72rem] text-muted-foreground mb-2">{t('hero.terminal.label')}</div>

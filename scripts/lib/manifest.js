@@ -111,6 +111,50 @@ function loadAgents(aiopsRoot) {
     });
 }
 
+// ─── Build helpers (AGENTS.md) ─────────────────────────────────────────────
+
+function parseAgentSections(content) {
+  const identityMatch = content.match(/## Identity\n\n(.+?)(?:\n\n## |\n$)/s);
+  const skillsMatch = content.match(/## Available Skills\n\n([\s\S]*?)(?:\n\n## |\n$)/);
+  const inputsMatch = content.match(/## Inputs\n\n([\s\S]*?)(?:\n\n## |\n$)/);
+
+  return {
+    identity: identityMatch ? identityMatch[1].trim() : "",
+    skills: skillsMatch ? skillsMatch[1].trim() : "",
+    inputs: inputsMatch ? inputsMatch[1].trim() : "",
+  };
+}
+
+function loadAgentsForBuild(aiopsRoot) {
+  const manifest = loadManifest(aiopsRoot);
+  return loadAgents(aiopsRoot).map((agent) => ({
+    ...agent,
+    ...parseAgentSections(agent.content),
+    manifestEntry: (manifest.agents || []).find((a) => a.name === agent.name),
+  }));
+}
+
+function formatDispatchTable(manifest) {
+  const rows = manifest.dispatch || [];
+  const lines = [
+    "| Task type | Grill | Prototype verdict | Ends at |",
+    "| --- | --- | --- | --- |",
+    ...rows.map(
+      (r) =>
+        `| ${r.taskType} | ${r.grill} | ${r.prototypeVerdict} | ${r.endsAt} |`
+    ),
+  ];
+  return lines.join("\n");
+}
+
+function loadLeanLadder(aiopsRoot) {
+  const skill = loadSkill(aiopsRoot, "lean");
+  if (!skill) return null;
+  const body = skill.content.replace(/^---[\s\S]*?---\n?/, "");
+  const ladderMatch = body.match(/## Ladder\n\n([\s\S]*?)(?:\n\n## |\n$)/);
+  return ladderMatch ? ladderMatch[1].trim() : null;
+}
+
 // ─── Private helpers ───────────────────────────────────────────────────────
 
 /**
@@ -141,4 +185,8 @@ module.exports = {
   loadAlwaysOnSkills,
   loadAllSkills,
   loadAgents,
+  parseAgentSections,
+  loadAgentsForBuild,
+  formatDispatchTable,
+  loadLeanLadder,
 };

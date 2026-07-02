@@ -34,6 +34,10 @@ Run sub-phases in order. Do not skip unless user explicitly exempts a step (e.g.
 
 Record in journey `gates_satisfied`: `prune_done`, `review_approve`, `ready_for_commit`.
 
+## File size
+
+If any file you touch approaches **500 lines**, invoke `/file-refactor` before advancing to prune — split per that skill (types → utils → hooks → sub-components). Skip only when the user exempts or the file is intentionally monolithic.
+
 ## Wave-based execution (when tasks.md has frontmatter)
 
 When `.scratch/<slug>/tasks.md` contains YAML frontmatter with `waves:`, execute tasks wave by wave:

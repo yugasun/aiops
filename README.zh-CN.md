@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-在 AI IDE 里输入 `/aiops`，用自然语言描述你想做的工作。aiops 会带你从澄清需求走到实现、评审和最终确认，并支持跨 **6 个 AI IDE** 恢复进度。
+aiops 是一套 AI 工程最佳实践——以 lean 纪律为核心、可恢复的工作流，以 skills 和 agents 的形式分发到 **5 个 IDE**（Cursor、Claude Code、Codex CLI、GitHub Copilot、OpenCode）以及通用的 AGENTS.md 协议。在 AI IDE 里输入 `/aiops`，用自然语言描述你想做的工作；aiops 会带你从澄清需求走到实现、评审和最终确认。
 
 入口：`**/aiops**`（引导式工作流，进度通过 `flow.state.yaml` 恢复）
 
@@ -67,7 +67,7 @@ npx -y github:yugasun/aiops --ide cursor
 npx -y github:yugasun/aiops --ide claude
 npx -y github:yugasun/aiops --ide codex
 npx -y github:yugasun/aiops --ide copilot
-npx -y github:yugasun/aiops --ide windsurf
+npx -y github:yugasun/aiops --ide opencode
 
 # 全局安装（到 ~/）
 npx -y github:yugasun/aiops -g
@@ -100,8 +100,8 @@ npx -y github:yugasun/aiops --uninstall
 | **Claude Code**    | `.claude/skills/`   | 通过 `/lean` 触发                     | `.claude/agents/*.md`   | SessionStart + SubagentStart |
 | **Cursor**         | `.cursor/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
 | **Codex CLI**      | `.agents/skills/`   | 通过 `AGENTS.md`                    | `.codex/agents/*.toml`  | —                            |
-| **Windsurf**       | `.windsurf/skills/` | `.windsurf/rules/lean.mdc`        | `.windsurf/agents/*.md` | —                            |
 | **GitHub Copilot** | `.github/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**       | `.opencode/skills/` | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
 | **通用 harness**     | —                   | `AGENTS.md`（项目根目录）                | —                       | —                            |
 
 
@@ -171,11 +171,10 @@ npx -y github:yugasun/aiops --uninstall
 ```
                     ┌─── 构建脚本 ────→ .cursor/rules/lean.mdc
                     │                   .github/copilot-instructions.md
-                    │                   .windsurf/rules/lean.mdc
                     │                   AGENTS.md
                     │
-skills/lean/SKILL.md ─── 安装时 ────→ Cursor / Copilot / Windsurf: always-on rules
-                    │                  Claude / Codex: skills 目录
+skills/lean/SKILL.md ─── 安装时 ────→ Cursor / Copilot: always-on rules
+                    │                  Claude / Codex / OpenCode: skills 目录
                     │
                     └─── hooks ──────→ SessionStart / SubagentStart
 ```

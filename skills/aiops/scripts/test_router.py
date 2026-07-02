@@ -73,12 +73,14 @@ class PlanFlowTests(unittest.TestCase):
         self.assertEqual(ids[0], "diagnose")
         self.assertNotIn("alignment", ids)
 
-    def test_architecture_health_starts_with_scan(self):
+    def test_architecture_health_starts_with_graph_build(self):
         state = FlowState(task_kind="architecture_health", issue_tracker_configured=True)
         plan = plan_flow(state)
         ids = [p.phase_id for p in plan.phases]
-        self.assertEqual(ids[0], "architecture_scan")
-        self.assertIn("improve-codebase-architecture", plan.phases[0].skill)
+        self.assertEqual(ids[0], "graph_build")
+        self.assertEqual(plan.phases[0].skill, "/code-graph")
+        self.assertEqual(ids[1], "architecture_scan")
+        self.assertIn("improve-codebase-architecture", plan.phases[1].skill)
 
     def test_unconfigured_prepends_bootstrap(self):
         plan = plan_flow(FlowState(task_kind="feature_idea"))

@@ -2,8 +2,7 @@
 // build-all.js — Run all build scripts to generate IDE-native artifacts
 //
 // Usage: node scripts/build/build-all.js
-// Generates: AGENTS.md, .cursor/rules/*.mdc, .github/copilot-instructions.md,
-//            .windsurf/rules/*.mdc
+// Generates: AGENTS.md, .cursor/rules/*.mdc, .github/copilot-instructions.md
 
 "use strict";
 
@@ -14,9 +13,9 @@ const BUILD_DIR = __dirname;
 
 const scripts = [
   "build-agents-md.js",
+  "build-website-registry.js",
   "build-cursor-rules.js",
   "build-copilot-instructions.js",
-  "build-windsurf-rules.js",
 ];
 
 console.log("aiops — building all IDE-native artifacts\n");

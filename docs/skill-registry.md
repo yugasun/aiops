@@ -37,7 +37,7 @@ From [`skills/manifest.json`](../../skills/manifest.json). These can be invoked 
 | `/to-issues` | Split a PRD into vertical implementation slices |
 | `/handoff` | Preserve context for another session |
 | `/prototype` | Validate a risky idea with disposable code |
-| `/review` | Check the diff against standards and the originating spec |
+| `/review` | Three modes: code (diff vs standards/spec), design (NOTES + tech-spec gate), drift (implementation vs spec before ship) |
 | `/gitops` | Commit and push after explicit approval |
 | `/ui-mockup` | Generate previewable HTML/CSS mockups for UI work |
 | `/improve-codebase-architecture` | Find evidence-backed architecture improvement opportunities |
@@ -50,7 +50,7 @@ Listed in `manifest.json` → `tier2Deferred`. Do **not** invoke these from bund
 
 | Name | Handoff |
 | --- | --- |
-| `codebase-design` | `/domain-modeling` + `/grill-with-docs` until forked |
+| `codebase-design` | [design-vocabulary.md](../skills/architect-design/design-vocabulary.md) in tier1; full skill deferred until forked |
 | `writing-great-skills` | CONTEXT.md authoring principles + new-skill checklist in `/aiops` |
 | `teach` | Not part of the engineering bundle |
 
@@ -64,7 +64,7 @@ Agents group these skills into phase owners. See [agent-registry.md](agent-regis
 | `design-reviewer` | review |
 | `planner` | to-prd, to-issues, handoff, aiops-setup |
 | `prototyper` | prototype, lean |
-| `builder` | aiops-implement, tdd, lean |
+| `builder` | aiops-implement, tdd, lean, code-graph |
 | `ui-designer` | ui-mockup |
 | `code-reviewer` | review |
 | `quality-auditor` | prune |

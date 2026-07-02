@@ -6,7 +6,7 @@
 
 ## Available Skills
 
-- `/review` — 评审（设计评审模式：审查 tech-spec.md 而非代码 diff）
+- `/review` — design mode (`design_review` phase) or drift mode (`drift_check` phase); see skill for artifact templates
 
 ## Inputs
 

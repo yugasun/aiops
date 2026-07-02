@@ -6,7 +6,7 @@ set -euo pipefail
 #        curl -fsSL ... | bash -s -- --ide cursor
 
 REPO="yugasun/aiops"
-PINNED_REF="main"
+PINNED_REF="v1.4.0"
 
 # --- Color helpers ---
 red()   { printf '\033[31m%s\033[0m\n' "$*"; }

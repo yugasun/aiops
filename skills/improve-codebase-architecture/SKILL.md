@@ -11,16 +11,15 @@ description: >
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-This command is _informed_ by the project's domain model and built on a shared design vocabulary:
+This command is _informed_ by the project's domain model and [design-vocabulary.md](../architect-design/design-vocabulary.md) — use those terms exactly in every suggestion.
 
-- The architecture vocabulary: **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality** — and the principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion — don't drift into "component," "service," "API," or "boundary."
-- The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
+The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
 
 ## Process
 
 ### 1. Graph check (optional)
 
-Before exploring, check for a code graph:
+`architecture_health` flows run a **`graph_build` phase** first (`phases.py`). If you arrive here without a graph, check for `graphify-out/graph.json`:
 
 - If `graphify-out/graph.json` exists, tell the user: "代码图谱已就绪（N 个模块），将基于图谱做增强分析。" Then query `/code-graph query god-nodes` and `/code-graph query communities` to get the global view. Query specific modules as needed via `/code-graph query`.
 - If no graph exists, tell the user: "未检测到代码图谱，使用有机探索模式。如需更精确的分析，可先运行 `/code-graph build`（需要先安装 graphify）。" Then fall back to organic exploration.
@@ -67,7 +66,7 @@ For each candidate, render a card with:
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-**Use CONTEXT.md vocabulary for the domain, and the architecture vocabulary above for the structure.** If `CONTEXT.md` defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
+**Use CONTEXT.md vocabulary for the domain, and [design-vocabulary.md](../architect-design/design-vocabulary.md) for structure.** If `CONTEXT.md` defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
 
 **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 

@@ -2,7 +2,7 @@
 
 [中文文档](README.zh-CN.md)
 
-Type `/aiops` in your AI IDE and describe the work you want done. aiops guides the task from clarification to implementation, review, and final approval, with resumable progress across **6 AI IDEs**.
+aiops is a set of AI engineering best practices — lean-gated, resumable workflow delivered as skills and agents to **5 IDEs** (Cursor, Claude Code, Codex CLI, GitHub Copilot, OpenCode) plus a generic AGENTS.md harness. Type `/aiops` in your AI IDE and describe the work you want done; aiops guides the task from clarification to implementation, review, and final approval.
 
 Entry: `**/aiops**` (guided workflow, resumable via `flow.state.yaml`).
 
@@ -57,17 +57,22 @@ uv tool install graphifyy
 graphify --version
 ```
 
-If you do not use uv, `pip install graphifyy` or `pipx install graphifyy` also works.
+If you do not use uv, `pip install graphifyy` or `pipx install graphifyy` also works. The PyPI package name is `graphifyy` (double-y) — the CLI command is `graphify`.
 
 ### CLI options
 
 ```bash
-npx -y github:yugasun/aiops --ide cursor
-npx -y github:yugasun/aiops -g
-npx -y github:yugasun/aiops --skills-only
-npx -y github:yugasun/aiops --agents-only
-npx -y github:yugasun/aiops --list
-npx -y github:yugasun/aiops --uninstall
+npx -y github:yugasun/aiops                        # install to all detected IDEs (project-local)
+npx -y github:yugasun/aiops --ide claude            # install to Claude Code only
+npx -y github:yugasun/aiops --ide cursor            # install to Cursor only
+npx -y github:yugasun/aiops --ide codex             # install to Codex CLI only
+npx -y github:yugasun/aiops --ide copilot           # install to GitHub Copilot only
+npx -y github:yugasun/aiops --ide opencode          # install to OpenCode only
+npx -y github:yugasun/aiops -g                      # global install to ~/<ide>/
+npx -y github:yugasun/aiops --skills-only           # only install skills
+npx -y github:yugasun/aiops --agents-only           # only install agents
+npx -y github:yugasun/aiops --list                  # show detected IDEs and install targets
+npx -y github:yugasun/aiops --uninstall             # remove installed files
 ```
 
 ### Claude Code Plugin (alternate)
@@ -79,16 +84,34 @@ npx -y github:yugasun/aiops --uninstall
 
 ## Supported IDEs
 
+5 IDEs plus a generic AGENTS.md harness for any tool that reads it.
 
 | IDE                 | Skills Path         | Always-On                         | Agents                  | Hooks                        |
 | ------------------- | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**     | `.claude/skills/`   | via `/lean`                       | `.claude/agents/*.md`   | SessionStart + SubagentStart |
 | **Cursor**          | `.cursor/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
 | **Codex CLI**       | `.agents/skills/`   | via `AGENTS.md`                   | `.codex/agents/*.toml`  | —                            |
-| **Windsurf**        | `.windsurf/skills/` | `.windsurf/rules/lean.mdc`        | `.windsurf/agents/*.md` | —                            |
 | **GitHub Copilot**  | `.github/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**        | `.opencode/skills/` | via `/lean`                       | `.opencode/agents/*.md` | —                            |
 | **Generic harness** | —                   | `AGENTS.md`                       | —                       | —                            |
 
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  /aiops (Flow Conductor)                                │
+│  ├── journey state  →  .scratch/<slug>/flow.state.yaml  │
+│  └── phase dispatch →  agents/*.md + skills/*/SKILL.md  │
+├─────────────────────────────────────────────────────────┤
+│  Adapter seam (scripts/adapters/*)                      │
+│  ├── cursor   → .cursor/rules/*.mdc + .cursor/agents/   │
+│  ├── claude   → .claude/skills/ + .claude/agents/       │
+│  ├── codex    → .codex/agents/*.toml + AGENTS.md        │
+│  ├── copilot  → .github/copilot-instructions.md         │
+│  └── opencode → .opencode/skills/ + .opencode/agents/   │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## Under the hood
 
@@ -130,6 +153,21 @@ Full list: [`skills/manifest.json`](skills/manifest.json)
 ### Delivery discipline
 
 Delivery sequence: **lean → TDD → prune → review → commit**. The final commit runs only when you explicitly approve it.
+
+Before writing any code, stop at the first rung that holds:
+
+```
+1. Does this need to exist? (YAGNI)
+2. Stdlib does it?
+3. Native platform feature?
+4. Already-installed dependency?
+5. One line?
+6. Minimum code that works
+```
+
+**Rules**: No unrequested abstractions. Deletion over addition; shortest working diff. Mark deliberate shortcuts with `// lean: <ceiling and upgrade path>`.
+
+**Never cut**: Trust-boundary validation, data-loss prevention, security, accessibility, explicitly requested behavior.
 
 ## In a target project
 

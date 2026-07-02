@@ -14,15 +14,7 @@ Structured design process: from grill/domain-modeling conclusions to complete `N
 
 ## Vocabulary
 
-Use these terms throughout the design. Consistent language prevents ambiguity.
-
-- **Module** — any unit with an interface and an implementation (function, class, package, or cross-cutting slice)
-- **Interface** — everything a caller must know to use the module: type signature, invariants, ordering constraints, error modes, performance characteristics
-- **Depth** — how much behaviour sits behind how little interface. Deep module = small interface + rich implementation. Shallow = interface nearly as complex as implementation (avoid)
-- **Seam** — the place where a module's interface lives; where behaviour can be altered without editing in that place
-- **Deletion test** — imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep
-
-Avoid: "component," "service," "API," "boundary" — these are overloaded or too narrow.
+Use [design-vocabulary.md](design-vocabulary.md) throughout — module, interface, depth, seam, deletion test, leverage, locality. Do not drift into "component," "service," "API," or "boundary."
 
 ## Inputs
 

@@ -1,7 +1,7 @@
 {
   "name": "@yugasun/aiops",
   "version": "1.4.0",
-  "description": "Flow Conductor for AI-assisted dev — install skills/agents to Cursor, Claude, Codex, Copilot, Windsurf",
+  "description": "AI engineering best practices — lean-gated, resumable workflow delivered as skills/agents to 5 IDEs + AGENTS.md",
   "bin": {
     "aiops": "./bin/install.js"
   },

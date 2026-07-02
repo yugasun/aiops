@@ -7,12 +7,13 @@
  * Other skills pass through as SKILL.md copies (existing behavior).
  *
  * Also exports createMdcAdapter() factory for any IDE that uses the
- * .mdc format with alwaysApply: true (e.g. Windsurf).
+ * .mdc format with alwaysApply: true.
  */
 
 const path = require("path");
 const os = require("os");
 const { stripFrontmatter, extractField } = require("./utils");
+const { compileAgent: compileAgentMd } = require("./default");
 
 /**
  * Compile an always-on skill into .mdc format.
@@ -57,31 +58,18 @@ function compileSkill(skill) {
 
 /**
  * Compile an agent definition. Uses markdown with YAML frontmatter.
- *
- * @param {Object} agent - { name, content, description }
- * @returns {{ filename: string, content: string }}
  */
 function compileAgent(agent) {
-  const content = `---
-name: ${agent.name}
-description: "${agent.description}"
----
-
-${agent.content}`;
-
-  return {
-    filename: `${agent.name}.md`,
-    content,
-  };
+  return compileAgentMd(agent, "md-yaml");
 }
 
 /**
  * Factory: create an adapter for any IDE that uses .mdc format.
- * Cursor and Windsurf share the same compilation logic; only
+ * Cursor and other IDEs that use the .mdc format share the same compilation logic; only
  * the rulesDir differs.
  *
- * @param {string} id - Provider identifier (e.g. "cursor", "windsurf")
- * @param {string} dirName - IDE directory name (e.g. ".cursor", ".windsurf")
+ * @param {string} id - Provider identifier (e.g. "cursor")
+ * @param {string} dirName - IDE directory name (e.g. ".cursor")
  * @returns {Object} adapter module
  */
 function createMdcAdapter(id, dirName) {

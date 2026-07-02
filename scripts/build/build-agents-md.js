@@ -10,47 +10,18 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
-const AGENTS_DIR = path.join(ROOT, "agents");
-const MANIFEST_PATH = path.join(ROOT, "skills", "manifest.json");
 const OUTPUT_PATH = path.join(ROOT, "AGENTS.md");
 
-// ─── Load manifest ─────────────────────────────────────────────────────────
+const {
+  loadManifest,
+  loadAgentsForBuild,
+  formatDispatchTable,
+  loadLeanLadder,
+} = require("../lib/manifest");
 
-const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
-
-// ─── Load agent definitions ────────────────────────────────────────────────
-
-const agents = fs
-  .readdirSync(AGENTS_DIR)
-  .filter((f) => f.endsWith(".md"))
-  .map((f) => {
-    const name = path.basename(f, ".md");
-    const content = fs.readFileSync(path.join(AGENTS_DIR, f), "utf8");
-
-    // Extract Identity section
-    const identityMatch = content.match(/## Identity\n\n(.+?)(?:\n\n)/s);
-    const identity = identityMatch ? identityMatch[1].trim() : "";
-
-    // Extract Skills section
-    const skillsMatch = content.match(/## Skills\n\n([\s\S]*?)(?:\n\n## |\n$)/);
-    const skills = skillsMatch ? skillsMatch[1].trim() : "";
-
-    // Find manifest entry for dispatch info
-    const manifestEntry = (manifest.agents || []).find((a) => a.name === name);
-
-    return { name, identity, skills, manifestEntry };
-  });
-
-// ─── Generate AGENTS.md ────────────────────────────────────────────────────
-
-const dispatchTable = `
-| Task type | Grill | Prototype verdict | Ends at |
-| --- | --- | --- | --- |
-| Feature | yes | only if /prototype ran | /aiops-implement |
-| Bug | no | no | /aiops-implement |
-| Incoming | only if still unclear after triage | no | /aiops-implement |
-| Architecture health | yes (you pick the item) | only if /prototype ran | /aiops-implement |
-`;
+const manifest = loadManifest(ROOT);
+const agents = loadAgentsForBuild(ROOT);
+const dispatchTable = formatDispatchTable(manifest);
 
 const agentSections = agents
   .map((a) => {
@@ -58,17 +29,21 @@ const agentSections = agents
     const outputs = a.manifestEntry
       ? a.manifestEntry.outputs.join(", ")
       : "—";
+    const skillsBlock = a.skills ? `\n**Skills**:\n\n${a.skills}\n` : "";
+    const inputsBlock = a.inputs ? `\n**Inputs**:\n\n${a.inputs}\n` : "";
     return `### ${a.name}
 
 **Role**: ${role}
 **Outputs**: ${outputs}
 
 ${a.identity}
-`;
+${skillsBlock}${inputsBlock}`;
   })
   .join("\n");
 
-const leanLadder = `1. Does this need to exist? (YAGNI)
+const leanLadder =
+  loadLeanLadder(ROOT) ||
+  `1. Does this need to exist? (YAGNI)
 2. Stdlib does it?
 3. Native platform feature?
 4. Already-installed dependency?
@@ -101,8 +76,6 @@ ${dispatchTable}
 
 ${agentSections}
 `;
-
-// ─── Write output ──────────────────────────────────────────────────────────
 
 fs.writeFileSync(OUTPUT_PATH, agentsMd, "utf8");
 console.log(`✓ AGENTS.md generated (${agents.length} agents, ${OUTPUT_PATH})`);

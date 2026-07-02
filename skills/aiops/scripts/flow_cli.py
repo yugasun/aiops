@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -34,6 +35,18 @@ from phases import (  # noqa: E402
 )
 
 _SCRATCH_ROOT = Path(".scratch")
+
+
+def _slug_from_description(desc: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", desc.lower()).strip("-") or "my-feature"
+
+
+def _resolve_slug(args: argparse.Namespace) -> str:
+    if args.slug and args.slug != "my-feature":
+        return args.slug
+    if args.description:
+        return _slug_from_description(args.description)
+    return args.slug
 
 
 def _journey_to_dict(j: JourneyState) -> dict:
@@ -89,7 +102,8 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     """Print canonical flow plan from FlowState flags."""
     state = _state_from_args(args)
     plan = plan_flow(state)
-    journey = initial_journey(state, args.slug, args.description)
+    slug = _resolve_slug(args)
+    journey = initial_journey(state, slug, args.description)
     out = {
         "state": {
             "task_kind": state.task_kind,
@@ -113,8 +127,9 @@ def _cmd_init(args: argparse.Namespace) -> int:
     """Write initial flow.state.yaml for a new journey."""
     state = _state_from_args(args)
     plan = plan_flow(state)
-    journey = initial_journey(state, args.slug, args.description)
-    path = _SCRATCH_ROOT / args.slug / "flow.state.yaml"
+    slug = _resolve_slug(args)
+    journey = initial_journey(state, slug, args.description)
+    path = _SCRATCH_ROOT / slug / "flow.state.yaml"
 
     if path.exists() and not args.force:
         print(f"Error: {path} already exists. Use --force to overwrite.", file=sys.stderr)

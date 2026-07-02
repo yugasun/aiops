@@ -6,7 +6,7 @@
 
 ## Available Skills
 
-- `/review` — 代码评审
+- `/review` — code mode; see skill for REVIEW.md template
 
 ## Inputs
 

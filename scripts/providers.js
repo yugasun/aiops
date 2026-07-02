@@ -68,6 +68,11 @@ const PROVIDERS = [
     localAgentsDir: ".claude/agents",
     globalSkillsDir: path.join(HOME, ".claude", "skills"),
     localSkillsDir: ".claude/skills",
+    hooksDir: path.join(HOME, ".claude", "hooks"),
+    localHooksDir: ".claude/hooks",
+    hooksConfigFile: path.join(HOME, ".claude", "hooks.json"),
+    localHooksConfigFile: ".claude/hooks.json",
+    hooksConfigTemplate: "claude-codex",
     agentFormat: "md-yaml",
   },
   {
@@ -76,12 +81,16 @@ const PROVIDERS = [
     aliases: ["cursor"],
     detect: () =>
       hasMacApp("Cursor") ||
-      hasDir(path.join(HOME, ".cursor")) ||
-      hasDir(path.join(HOME, ".agents")),
+      hasDir(path.join(HOME, ".cursor")),
     globalAgentsDir: path.join(HOME, ".cursor", "agents"),
     localAgentsDir: ".cursor/agents",
     globalSkillsDir: path.join(HOME, ".cursor", "skills"),
     localSkillsDir: ".cursor/skills",
+    hooksDir: path.join(HOME, ".cursor", "hooks"),
+    localHooksDir: ".cursor/hooks",
+    hooksConfigFile: path.join(HOME, ".cursor", "hooks.json"),
+    localHooksConfigFile: ".cursor/hooks.json",
+    hooksConfigTemplate: null,
     agentFormat: "md-yaml",
   },
   {
@@ -93,6 +102,11 @@ const PROVIDERS = [
     localAgentsDir: ".github/agents",
     globalSkillsDir: path.join(HOME, ".github", "skills"),
     localSkillsDir: ".github/skills",
+    hooksDir: path.join(HOME, ".github", "hooks"),
+    localHooksDir: ".github/hooks",
+    hooksConfigFile: path.join(HOME, ".github", "hooks.json"),
+    localHooksConfigFile: ".github/hooks.json",
+    hooksConfigTemplate: null,
     agentFormat: "md-yaml",
   },
   {
@@ -107,19 +121,36 @@ const PROVIDERS = [
     localAgentsDir: ".codex/agents",
     globalSkillsDir: path.join(HOME, ".agents", "skills"),
     localSkillsDir: ".agents/skills",
+    hooksDir: path.join(HOME, ".codex", "hooks"),
+    localHooksDir: ".codex/hooks",
+    hooksConfigFile: path.join(HOME, ".codex", "hooks.json"),
+    localHooksConfigFile: ".codex/hooks.json",
+    hooksConfigTemplate: "claude-codex",
     agentFormat: "toml",
   },
   {
-    id: "windsurf",
-    label: "Windsurf",
-    aliases: ["windsurf"],
-    detect: () => hasDir(path.join(HOME, ".windsurf")) || hasMacApp("Windsurf"),
-    globalAgentsDir: path.join(HOME, ".windsurf", "agents"),
-    localAgentsDir: ".windsurf/agents",
-    globalSkillsDir: path.join(HOME, ".windsurf", "skills"),
-    localSkillsDir: ".windsurf/skills",
+    id: "opencode",
+    label: "OpenCode",
+    aliases: ["opencode"],
+    detect: () =>
+      hasCommand("opencode") ||
+      hasDir(path.join(HOME, ".config", "opencode")) ||
+      hasDir(path.join(HOME, ".opencode")),
+    globalAgentsDir: path.join(HOME, ".config", "opencode", "agents"),
+    localAgentsDir: ".opencode/agents",
+    globalSkillsDir: path.join(HOME, ".config", "opencode", "skills"),
+    localSkillsDir: ".opencode/skills",
+    hooksDir: null,
+    localHooksDir: null,
+    hooksConfigFile: null,
+    localHooksConfigFile: null,
     agentFormat: "md-yaml",
   },
 ];
 
-module.exports = { PROVIDERS, hasCommand, hasDir, hasMacApp, hasVSCodeExt };
+function leanSkillCandidates(home = HOME, cwd = process.cwd()) {
+  const { leanSkillCandidates: build } = require("./lib/skill-paths");
+  return build(PROVIDERS, home, cwd);
+}
+
+module.exports = { PROVIDERS, hasCommand, hasDir, hasMacApp, hasVSCodeExt, leanSkillCandidates };

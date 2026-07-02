@@ -50,6 +50,13 @@ Expert override: `/aiops <agent-name> …` skips narration but still updates `fl
 - body_zh: 你已从架构报告里选了一项。我会 grill 这项改动的约束与边界，并更新领域文档。
 - artifact_zh: CONTEXT.md / ADR 更新 + 对齐结论
 
+### graph_build
+
+- title_zh: 准备代码图谱
+- title_en: Prepare code graph
+- body_zh: 如果还没有代码图谱，我会先构建一份（需要 graphify）。图谱已就绪且够新就跳过，直接进入架构扫描。
+- artifact_zh: `graphify-out/graph.json`（可选；跳过则扫描用有机探索）
+
 ### architecture_scan
 
 - title_zh: 扫描架构机会

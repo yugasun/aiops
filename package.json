@@ -14,6 +14,12 @@
     "scripts/",
     "agents/",
     "skills/",
-    "docs/"
+    "docs/",
+    "hooks/",
+    "scripts/providers.js",
+    "scripts/lib/",
+    "scripts/install/",
+    "scripts/adapters/",
+    "AGENTS.md"
   ]
 }

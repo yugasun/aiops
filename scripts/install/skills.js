@@ -5,7 +5,16 @@ const os = require("os");
 const { getAdapter } = require("../adapters");
 const { copyDirSync } = require("./fs-utils");
 
-function installSkills(fs, aiopsRoot, provider, isGlobal, loadAllSkills, hasDir, log) {
+function installSkills(
+  fs,
+  aiopsRoot,
+  provider,
+  isGlobal,
+  loadAllSkills,
+  hasDir,
+  log,
+  { skipAlwaysOn = false } = {}
+) {
   const skillsDir = path.join(aiopsRoot, "skills");
   if (!hasDir(skillsDir)) {
     log.skip("no skills/ directory found");
@@ -33,7 +42,7 @@ function installSkills(fs, aiopsRoot, provider, isGlobal, loadAllSkills, hasDir,
     log.ok(`${skill.name}/ → ${log.dim(destDir)}`);
   }
 
-  if (alwaysOnSkills.length > 0) {
+  if (alwaysOnSkills.length > 0 && !skipAlwaysOn) {
     if (adapter.installAlwaysOn) {
       const dest = adapter.installAlwaysOn(alwaysOnSkills, { isGlobal });
       log.ok(`${alwaysOnSkills.length} always-on skill(s) → ${log.dim(dest)}`);
@@ -47,6 +56,10 @@ function installSkills(fs, aiopsRoot, provider, isGlobal, loadAllSkills, hasDir,
         log.ok(`${skill.name}/ (always-on) → ${log.dim(destDir)}`);
       }
     }
+  } else if (alwaysOnSkills.length > 0 && skipAlwaysOn) {
+    log.skip(
+      `skipped ${alwaysOnSkills.length} always-on skill(s) (use default install for persistent lean)`
+    );
   }
 }
 

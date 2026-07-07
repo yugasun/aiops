@@ -13,6 +13,7 @@ const log = {
   msg: (m) => console.log(m),
   ok: (m) => console.log(`  ${c.green("✓")} ${m}`),
   skip: (m) => console.log(`  ${c.yellow("–")} ${m}`),
+  warn: (m) => console.log(`  ${c.yellow("!")} ${m}`),
   fail: (m) => console.log(`  ${c.red("✗")} ${m}`),
   bold: c.bold,
   cyan: c.cyan,

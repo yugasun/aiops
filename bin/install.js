@@ -38,6 +38,8 @@ function parseArgs(argv) {
     skillsOnly: false,
     agentsOnly: false,
     noSkills: false,
+    noHooks: false,
+    commandsOnly: false,
     help: false,
   };
 
@@ -67,11 +69,17 @@ function parseArgs(argv) {
       case "--skills-only":
         args.skillsOnly = true;
         break;
+      case "--commands-only":
+        args.commandsOnly = true;
+        break;
       case "--agents-only":
         args.agentsOnly = true;
         break;
       case "--no-skills":
         args.noSkills = true;
+        break;
+      case "--no-hooks":
+        args.noHooks = true;
         break;
       case "-h":
       case "--help":
@@ -79,6 +87,12 @@ function parseArgs(argv) {
         break;
     }
   }
+
+  if (args.commandsOnly) {
+    args.skillsOnly = true;
+    args.noHooks = true;
+  }
+
   return args;
 }
 
@@ -96,10 +110,17 @@ ${c.bold("Flags:")}
   --local            Project-local install to ./<ide>/ (default)
   --list             List detected IDEs, don't install
   --uninstall        Remove installed agents from all/specified IDEs
-  --skills-only      Only install skills
-  --agents-only      Only install agents
+  --skills-only      Install slash-command skills only (no hooks, agents, or always-on lean)
+  --commands-only    Alias for --skills-only
+  --agents-only      Only install agents + AGENTS.md (Codex global)
   --no-skills        Skip skills installation
+  --no-hooks         Install skills/agents but skip SessionStart hooks
   -h, --help         Show this help
+
+${c.bold("Install modes:")}
+  default            skills + hooks + agents + always-on lean discipline
+  --skills-only      explicit /aiops, /tdd, /review commands without session injection
+  --no-hooks         full workflow except Codex/Claude SessionStart hooks
 `);
 }
 
@@ -111,6 +132,14 @@ function filterTargets(detected, ide) {
       p.label.toLowerCase().includes(ide.toLowerCase()) ||
       (p.aliases && p.aliases.some((a) => a === ide.toLowerCase()))
   );
+}
+
+function shouldInstallHooks(args) {
+  return !args.noHooks && !args.skillsOnly && !args.commandsOnly;
+}
+
+function shouldSkipAlwaysOn(args) {
+  return args.skillsOnly || args.commandsOnly;
 }
 
 function main() {
@@ -152,6 +181,8 @@ function main() {
   log.msg("");
 
   let totalInstalled = 0;
+  const installHooksFlag = shouldInstallHooks(args);
+  const skipAlwaysOn = shouldSkipAlwaysOn(args);
 
   for (const provider of targets) {
     log.msg(c.bold(`[${provider.label}]`));
@@ -161,13 +192,19 @@ function main() {
         uninstallSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log);
         uninstallHooks(fs, provider, args.global, hasDir, log);
       } else {
-        installSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log);
-        installHooks(fs, AIOps_ROOT, provider, args.global, hasDir, log);
+        installSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log, {
+          skipAlwaysOn,
+        });
+        if (installHooksFlag) {
+          installHooks(fs, AIOps_ROOT, provider, args.global, hasDir, log);
+        } else {
+          log.skip("hooks (use default install for SessionStart lean injection)");
+        }
         totalInstalled++;
       }
     }
 
-    if (!args.skillsOnly) {
+    if (!args.skillsOnly && !args.commandsOnly) {
       if (args.uninstall) {
         uninstallAgents(fs, provider, agents, args.global, hasDir, log);
       } else {
@@ -190,4 +227,8 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { parseArgs, shouldInstallHooks, shouldSkipAlwaysOn };

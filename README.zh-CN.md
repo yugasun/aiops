@@ -73,8 +73,10 @@ npx -y github:yugasun/aiops --ide opencode
 npx -y github:yugasun/aiops -g
 
 # 选择性安装
-npx -y github:yugasun/aiops --skills-only     # 仅 skills
+npx -y github:yugasun/aiops --skills-only     # 仅 slash-command skills（无 hooks/agents/常驻 lean）
+npx -y github:yugasun/aiops --commands-only   # 同 --skills-only
 npx -y github:yugasun/aiops --agents-only     # 仅 agents
+npx -y github:yugasun/aiops --no-hooks        # skills + agents，跳过 SessionStart hooks
 
 # 查看检测到的 IDE（不安装）
 npx -y github:yugasun/aiops --list
@@ -99,10 +101,21 @@ npx -y github:yugasun/aiops --uninstall
 | ------------------ | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**    | `.claude/skills/`   | 通过 `/lean` 触发                     | `.claude/agents/*.md`   | SessionStart + SubagentStart |
 | **Cursor**         | `.cursor/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
-| **Codex CLI**      | `.agents/skills/`   | 通过 `AGENTS.md`                    | `.codex/agents/*.toml`  | —                            |
+| **Codex CLI**      | `.agents/skills/`   | `AGENTS.md` + SessionStart hooks  | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
 | **GitHub Copilot** | `.github/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
 | **OpenCode**       | `.opencode/skills/` | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
 | **通用 harness**     | —                   | `AGENTS.md`（项目根目录）                | —                       | —                            |
+
+### Codex / Claude 持久化行为
+
+默认安装会写入 skills、agents、常驻 lean 和 hooks；已有 `hooks.json` 条目会**合并**而非覆盖。
+
+| 模式 | Skills | Hooks | Agents | 常驻 lean |
+| --- | --- | --- | --- | --- |
+| 默认 | 是 | 是（合并） | 是 | 是（`AGENTS.md` + SessionStart） |
+| `--skills-only` / `--commands-only` | 是 | 否 | 否 | 否 |
+| `--no-hooks` | 是 | 否 | 是 | 是 |
+| `--agents-only` | 否 | 否 | 是 | 仅 `AGENTS.md` |
 
 
 ## 背后的能力

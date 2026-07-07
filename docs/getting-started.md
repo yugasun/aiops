@@ -14,7 +14,7 @@ Install aiops in a **target project** (your app repo, not this aiops meta-repo),
 npx -y github:yugasun/aiops
 ```
 
-Options: `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--agents-only`.
+Options: `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`.
 
 Or:
 

@@ -1,6 +1,12 @@
 "use strict";
 
 const path = require("path");
+const {
+  mergeHooksConfig,
+  stripAiopsHooks,
+  parseHooksConfig,
+  isEmptyHooksConfig,
+} = require("./hooks-merge");
 
 const HOOK_SCRIPTS = [
   "aiops-activate.js",
@@ -13,6 +19,16 @@ const HOOK_SCRIPTS = [
 const HOOK_CONFIG_TEMPLATES = {
   "claude-codex": "claude-codex-hooks.json",
 };
+
+function readExistingHooksConfig(fs, destConfig) {
+  if (!fs.existsSync(destConfig)) return null;
+  const raw = fs.readFileSync(destConfig, "utf8");
+  return parseHooksConfig(raw);
+}
+
+function writeHooksConfig(fs, destConfig, config) {
+  fs.writeFileSync(destConfig, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+}
 
 function installHooks(fs, aiopsRoot, provider, isGlobal, hasDir, log) {
   if (!provider.hooksDir) {
@@ -54,13 +70,30 @@ function installHooks(fs, aiopsRoot, provider, isGlobal, hasDir, log) {
     return;
   }
 
-  let config = fs.readFileSync(hooksConfigSrc, "utf8");
-  config = config.replace(/\$\{CLAUDE_PLUGIN_ROOT\}/g, destHooksDir);
+  let templateRaw = fs.readFileSync(hooksConfigSrc, "utf8");
+  templateRaw = templateRaw.replace(/\$\{CLAUDE_PLUGIN_ROOT\}/g, destHooksDir);
+  const incoming = parseHooksConfig(templateRaw);
+
   const destConfig = isGlobal
     ? provider.hooksConfigFile
     : path.resolve(provider.localHooksConfigFile);
-  fs.writeFileSync(destConfig, config, "utf8");
-  log.ok(`hooks → ${log.dim(destConfig)}`);
+
+  let existing = null;
+  if (fs.existsSync(destConfig)) {
+    try {
+      existing = readExistingHooksConfig(fs, destConfig);
+    } catch (err) {
+      const backupPath = `${destConfig}.bak.${Date.now()}`;
+      fs.copyFileSync(destConfig, backupPath);
+      log.warn(
+        `could not parse ${destConfig}; backed up to ${log.dim(backupPath)} (${err.message})`
+      );
+    }
+  }
+
+  const merged = mergeHooksConfig(existing, incoming);
+  writeHooksConfig(fs, destConfig, merged);
+  log.ok(`hooks merged → ${log.dim(destConfig)}`);
 }
 
 function uninstallHooks(fs, provider, isGlobal, hasDir, log) {
@@ -71,8 +104,13 @@ function uninstallHooks(fs, provider, isGlobal, hasDir, log) {
     : path.resolve(provider.localHooksDir);
 
   if (hasDir(destHooksDir)) {
-    fs.rmSync(destHooksDir, { recursive: true, force: true });
-    log.ok("removed hooks/");
+    for (const script of HOOK_SCRIPTS) {
+      const filePath = path.join(destHooksDir, script);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        log.ok(`removed hooks/${script}`);
+      }
+    }
   }
 
   if (!provider.hooksConfigFile) return;
@@ -81,10 +119,21 @@ function uninstallHooks(fs, provider, isGlobal, hasDir, log) {
     ? provider.hooksConfigFile
     : path.resolve(provider.localHooksConfigFile);
 
-  if (fs.existsSync(destConfig)) {
-    fs.unlinkSync(destConfig);
-    log.ok("removed hooks config");
+  if (!fs.existsSync(destConfig)) return;
+
+  try {
+    const existing = readExistingHooksConfig(fs, destConfig);
+    const stripped = stripAiopsHooks(existing);
+    if (isEmptyHooksConfig(stripped)) {
+      fs.unlinkSync(destConfig);
+      log.ok("removed hooks config (no remaining entries)");
+    } else {
+      writeHooksConfig(fs, destConfig, stripped);
+      log.ok("removed aiops hook entries (preserved your hooks)");
+    }
+  } catch (err) {
+    log.warn(`could not update ${destConfig}; left unchanged (${err.message})`);
   }
 }
 
-module.exports = { installHooks, uninstallHooks };
+module.exports = { installHooks, uninstallHooks, HOOK_SCRIPTS };

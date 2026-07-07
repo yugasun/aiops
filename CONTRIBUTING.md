@@ -4,15 +4,18 @@
 
 1. Edit skills under `skills/<name>/` — never commit installed copies to `.agents/skills/`.
 2. Update `skills/manifest.json` when adding or removing tier1 skills.
-3. On release: bump `version` in `skills/manifest.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` (keep all three equal).
-4. Before PR:
+3. On release: bump version once with `node scripts/sync-version.js <x.y.z>` (source of truth: `skills/manifest.json`). This updates `package.json` and Claude plugin metadata in one step. `install.sh` resolves the latest GitHub release at install time (no pinned version in the script).
+4. Merge to `main` with a bumped manifest version → GitHub Actions creates tag `v<version>` and a GitHub Release automatically. Manual: **Actions → Release → Run workflow**.
+5. Before PR:
 
    ```bash
-   bash scripts/verify.sh           # fast, no npm
+   node scripts/sync-version.js        # propagate manifest.version (if you edited manifest only)
+   node scripts/sync-version.js 1.4.2  # bump + sync all version files
+   bash scripts/verify.sh              # fast, no npm
    ```
 
-5. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
-6. New skill references: update `docs/skill-registry.md`.
+6. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
+7. New skill references: update `docs/skill-registry.md`.
 
 ## Skill authoring
 

@@ -1,99 +1,290 @@
 {
   "manifestVersion": 3,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "tier1": [
-    { "name": "aiops", "personal": true, "role": "router" },
-    { "name": "aiops-implement", "personal": true, "role": "delivery" },
-    { "name": "aiops-setup", "personal": true, "role": "setup" },
-    { "name": "explore", "personal": false, "role": "alignment" },
-    { "name": "lean", "personal": false, "role": "discipline", "alwaysOn": true },
-    { "name": "file-refactor", "personal": false, "role": "discipline" },
-    { "name": "prune", "personal": false, "role": "delivery-gate" },
-    { "name": "grill-with-docs", "personal": false, "role": "alignment" },
-    { "name": "grilling", "personal": false, "role": "alignment" },
-    { "name": "domain-modeling", "personal": false, "role": "alignment" },
-    { "name": "tdd", "personal": false, "role": "delivery-gate" },
-    { "name": "diagnosing-bugs", "personal": false, "role": "bug" },
-    { "name": "triage", "personal": false, "role": "incoming" },
-    { "name": "to-prd", "personal": false, "role": "planning" },
-    { "name": "to-issues", "personal": false, "role": "planning" },
-    { "name": "handoff", "personal": false, "role": "cross-session" },
-    { "name": "prototype", "personal": false, "role": "prototype" },
-    { "name": "review", "personal": false, "role": "delivery-gate" },
-    { "name": "gitops", "personal": true, "role": "delivery" },
-    { "name": "ui-mockup", "personal": false, "role": "design" },
-    { "name": "improve-codebase-architecture", "personal": false, "role": "architecture-health" },
-    { "name": "architect-design", "personal": false, "role": "alignment" },
-    { "name": "code-graph", "personal": false, "role": "infrastructure" }
+    {
+      "name": "aiops",
+      "personal": true,
+      "role": "router"
+    },
+    {
+      "name": "aiops-implement",
+      "personal": true,
+      "role": "delivery"
+    },
+    {
+      "name": "aiops-setup",
+      "personal": true,
+      "role": "setup"
+    },
+    {
+      "name": "explore",
+      "personal": false,
+      "role": "alignment"
+    },
+    {
+      "name": "lean",
+      "personal": false,
+      "role": "discipline",
+      "alwaysOn": true
+    },
+    {
+      "name": "file-refactor",
+      "personal": false,
+      "role": "discipline"
+    },
+    {
+      "name": "prune",
+      "personal": false,
+      "role": "delivery-gate"
+    },
+    {
+      "name": "grill-with-docs",
+      "personal": false,
+      "role": "alignment"
+    },
+    {
+      "name": "grilling",
+      "personal": false,
+      "role": "alignment"
+    },
+    {
+      "name": "domain-modeling",
+      "personal": false,
+      "role": "alignment"
+    },
+    {
+      "name": "tdd",
+      "personal": false,
+      "role": "delivery-gate"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "personal": false,
+      "role": "bug"
+    },
+    {
+      "name": "triage",
+      "personal": false,
+      "role": "incoming"
+    },
+    {
+      "name": "to-prd",
+      "personal": false,
+      "role": "planning"
+    },
+    {
+      "name": "to-issues",
+      "personal": false,
+      "role": "planning"
+    },
+    {
+      "name": "handoff",
+      "personal": false,
+      "role": "cross-session"
+    },
+    {
+      "name": "prototype",
+      "personal": false,
+      "role": "prototype"
+    },
+    {
+      "name": "review",
+      "personal": false,
+      "role": "delivery-gate"
+    },
+    {
+      "name": "gitops",
+      "personal": true,
+      "role": "delivery"
+    },
+    {
+      "name": "ui-mockup",
+      "personal": false,
+      "role": "design"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "personal": false,
+      "role": "architecture-health"
+    },
+    {
+      "name": "architect-design",
+      "personal": false,
+      "role": "alignment"
+    },
+    {
+      "name": "code-graph",
+      "personal": false,
+      "role": "infrastructure"
+    }
   ],
   "tier2Deferred": [
-    { "name": "codebase-design" },
-    { "name": "writing-great-skills" },
-    { "name": "teach" }
+    {
+      "name": "codebase-design"
+    },
+    {
+      "name": "writing-great-skills"
+    },
+    {
+      "name": "teach"
+    }
   ],
   "dispatch": [
-    { "taskType": "Feature", "grill": "yes", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
-    { "taskType": "Feature + UI", "grill": "yes", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
-    { "taskType": "Bug", "grill": "no", "prototypeVerdict": "no", "endsAt": "/gitops" },
-    { "taskType": "Incoming", "grill": "conditional", "prototypeVerdict": "no", "endsAt": "/gitops" },
-    { "taskType": "Architecture health", "grill": "yes (you pick the item)", "prototypeVerdict": "only if /prototype ran", "endsAt": "/gitops" },
-    { "taskType": "Prototype", "grill": "—", "prototypeVerdict": "—", "endsAt": "VERDICT.md" },
-    { "taskType": "New personal skill", "grill": "yes", "prototypeVerdict": "—", "endsAt": "new SKILL.md" }
+    {
+      "taskType": "Feature",
+      "grill": "yes",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Feature + UI",
+      "grill": "yes",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Bug",
+      "grill": "no",
+      "prototypeVerdict": "no",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Incoming",
+      "grill": "conditional",
+      "prototypeVerdict": "no",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Architecture health",
+      "grill": "yes (you pick the item)",
+      "prototypeVerdict": "only if /prototype ran",
+      "endsAt": "/gitops"
+    },
+    {
+      "taskType": "Prototype",
+      "grill": "—",
+      "prototypeVerdict": "—",
+      "endsAt": "VERDICT.md"
+    },
+    {
+      "taskType": "New personal skill",
+      "grill": "yes",
+      "prototypeVerdict": "—",
+      "endsAt": "new SKILL.md"
+    }
   ],
   "agents": [
     {
       "name": "architect",
-      "skills": ["explore", "grilling", "grill-with-docs", "domain-modeling", "architect-design", "improve-codebase-architecture", "code-graph"],
+      "skills": [
+        "explore",
+        "grilling",
+        "grill-with-docs",
+        "domain-modeling",
+        "architect-design",
+        "improve-codebase-architecture",
+        "code-graph"
+      ],
       "role": "alignment",
-      "outputs": [".scratch/<feature>/NOTES.md", ".scratch/<feature>/tech-spec.md"]
+      "outputs": [
+        ".scratch/<feature>/NOTES.md",
+        ".scratch/<feature>/tech-spec.md"
+      ]
     },
     {
       "name": "design-reviewer",
-      "skills": ["review"],
+      "skills": [
+        "review"
+      ],
       "role": "design-gate",
-      "outputs": [".scratch/<feature>/DESIGN_REVIEW.md", ".scratch/<feature>/DRIFT_REPORT.md"]
+      "outputs": [
+        ".scratch/<feature>/DESIGN_REVIEW.md",
+        ".scratch/<feature>/DRIFT_REPORT.md"
+      ]
     },
     {
       "name": "planner",
-      "skills": ["to-prd", "to-issues", "handoff", "aiops-setup"],
+      "skills": [
+        "to-prd",
+        "to-issues",
+        "handoff",
+        "aiops-setup"
+      ],
       "role": "planning",
-      "outputs": [".scratch/<feature>/PRD.md", ".scratch/<feature>/plan.md", ".scratch/<feature>/issues/"]
+      "outputs": [
+        ".scratch/<feature>/PRD.md",
+        ".scratch/<feature>/plan.md",
+        ".scratch/<feature>/issues/"
+      ]
     },
     {
       "name": "prototyper",
-      "skills": ["prototype", "lean"],
+      "skills": [
+        "prototype",
+        "lean"
+      ],
       "role": "prototype",
-      "outputs": [".scratch/<feature>/prototype/", ".scratch/<feature>/VERDICT.md"]
+      "outputs": [
+        ".scratch/<feature>/prototype/",
+        ".scratch/<feature>/VERDICT.md"
+      ]
     },
     {
       "name": "builder",
-      "skills": ["aiops-implement", "tdd", "lean", "code-graph"],
+      "skills": [
+        "aiops-implement",
+        "tdd",
+        "lean",
+        "code-graph"
+      ],
       "role": "delivery",
-      "outputs": ["source code", "test files"]
+      "outputs": [
+        "source code",
+        "test files"
+      ]
     },
     {
       "name": "ui-designer",
-      "skills": ["ui-mockup"],
+      "skills": [
+        "ui-mockup"
+      ],
       "role": "design",
-      "outputs": [".scratch/<feature>/mockups/", ".scratch/<feature>/mockups/design-notes.md"]
+      "outputs": [
+        ".scratch/<feature>/mockups/",
+        ".scratch/<feature>/mockups/design-notes.md"
+      ]
     },
     {
       "name": "code-reviewer",
-      "skills": ["review"],
+      "skills": [
+        "review"
+      ],
       "role": "delivery-gate",
-      "outputs": [".scratch/<feature>/REVIEW.md"]
+      "outputs": [
+        ".scratch/<feature>/REVIEW.md"
+      ]
     },
     {
       "name": "quality-auditor",
-      "skills": ["prune"],
+      "skills": [
+        "prune"
+      ],
       "role": "delivery-gate",
-      "outputs": ["prune findings"]
+      "outputs": [
+        "prune findings"
+      ]
     },
     {
       "name": "gitops",
-      "skills": ["gitops"],
+      "skills": [
+        "gitops"
+      ],
       "role": "delivery",
-      "outputs": ["git commit", "push confirmation"]
+      "outputs": [
+        "git commit",
+        "push confirmation"
+      ]
     }
   ]
 }

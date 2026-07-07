@@ -4,9 +4,11 @@ set -euo pipefail
 # aiops installer
 # Usage: curl -fsSL https://raw.githubusercontent.com/yugasun/aiops/main/install.sh | bash
 #        curl -fsSL ... | bash -s -- --ide cursor
+# Pin a ref: AIOPS_REF=v1.4.1 curl -fsSL ... | bash
 
 REPO="yugasun/aiops"
-PINNED_REF="v1.4.0"
+GITHUB="https://github.com/${REPO}"
+RAW="https://raw.githubusercontent.com/${REPO}/main"
 
 # --- Color helpers ---
 red()   { printf '\033[31m%s\033[0m\n' "$*"; }
@@ -29,19 +31,61 @@ check_node() {
   fi
 }
 
+resolve_latest_ref() {
+  if [[ -n "${AIOPS_REF:-}" ]]; then
+    printf '%s\n' "$AIOPS_REF"
+    return 0
+  fi
+
+  local resolver=""
+  local tmp_resolver=""
+
+  if [[ -f "${SCRIPT_DIR}/scripts/resolve-release-ref.js" ]]; then
+    resolver="${SCRIPT_DIR}/scripts/resolve-release-ref.js"
+  else
+    tmp_resolver="$(mktemp)"
+    curl -fsSL "${RAW}/scripts/resolve-release-ref.js" -o "$tmp_resolver"
+    resolver="$tmp_resolver"
+  fi
+
+  node "$resolver"
+  if [[ -n "$tmp_resolver" ]]; then
+    rm -f "$tmp_resolver"
+  fi
+}
+
+download_archive_url() {
+  local ref="$1"
+  if [[ "$ref" == "main" ]]; then
+    printf '%s/archive/refs/heads/main.tar.gz\n' "$GITHUB"
+  else
+    printf '%s/archive/refs/tags/%s.tar.gz\n' "$GITHUB" "$ref"
+  fi
+}
+
 # --- Main ---
 bold "aiops installer"
 echo ""
 
 check_node
 
-# If running from local clone (bin/install.js exists relative to this script)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Local clone: run installer directly
 if [[ -f "$SCRIPT_DIR/bin/install.js" ]]; then
   green "Local install.js found, running..."
   exec node "$SCRIPT_DIR/bin/install.js" "$@"
 fi
 
-# Otherwise, use npx to fetch from GitHub
-green "Fetching from github:${REPO}..."
-exec npx -y "github:${REPO}#${PINNED_REF}" "$@"
+REF="$(resolve_latest_ref)"
+ARCHIVE_URL="$(download_archive_url "$REF")"
+TMP_DIR="$(mktemp -d)"
+
+cleanup() {
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT
+
+green "Downloading ${REPO}@${REF}..."
+curl -fsSL "$ARCHIVE_URL" | tar -xz -C "$TMP_DIR" --strip-components=1
+exec node "$TMP_DIR/bin/install.js" "$@"

@@ -119,3 +119,5 @@ export function agentDisplay(agentId: string, agents: ReturnType<typeof buildAge
 }
 
 export const registryVersion = generated.version
+export const latestReleaseVersion =
+  generated.latestReleaseVersion ?? generated.version

@@ -24,4 +24,8 @@ assert.equal(shouldInstallHooks(parseArgs([])), true);
 assert.equal(shouldSkipAlwaysOn(parseArgs(["--skills-only"])), true);
 assert.equal(shouldSkipAlwaysOn(parseArgs([])), false);
 
+assert.equal(parseArgs(["uninstall", "--ide", "codex"]).uninstall, true);
+assert.equal(parseArgs(["uninstall", "--ide", "codex"]).ide, "codex");
+assert.equal(parseArgs(["--uninstall"]).uninstall, true);
+
 console.log("install-args.test.js: ok");

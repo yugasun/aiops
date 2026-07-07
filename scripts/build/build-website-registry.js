@@ -11,6 +11,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const OUTPUT = path.join(ROOT, "website", "src", "data", "registry.generated.json");
+const REPO = "yugasun/aiops";
 
 const { loadManifest, loadSkill } = require("../lib/manifest");
 
@@ -176,8 +177,64 @@ function skillCategory(name, role) {
   return SKILL_CATEGORY[name] || role || "alignment";
 }
 
-function main() {
+function packageVersion() {
+  return JSON.parse(
+    fs.readFileSync(path.join(ROOT, "package.json"), "utf8")
+  ).version;
+}
+
+function normalizeTag(tag) {
+  return (tag || "").replace(/^v/, "");
+}
+
+function githubHeaders() {
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "aiops-website-build",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
+
+async function githubGet(pathname) {
+  const res = await fetch(`https://api.github.com${pathname}`, {
+    headers: githubHeaders(),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function fetchLatestReleaseVersion() {
+  const fallback = packageVersion();
+
+  try {
+    const release = await githubGet(`/repos/${REPO}/releases/latest`);
+    const tag = normalizeTag(release.tag_name);
+    if (tag) return tag;
+  } catch (err) {
+    if (!String(err.message).includes("HTTP 404")) {
+      console.warn(`⚠ GitHub releases/latest: ${err.message}`);
+    }
+  }
+
+  try {
+    const tags = await githubGet(`/repos/${REPO}/tags?per_page=1`);
+    const tag = normalizeTag(tags[0]?.name);
+    if (tag) return tag;
+  } catch (err) {
+    console.warn(
+      `⚠ GitHub version unavailable, using package.json v${fallback} (${err.message})`
+    );
+  }
+
+  return fallback;
+}
+
+async function main() {
   const manifest = loadManifest(ROOT);
+  const latestReleaseVersion = await fetchLatestReleaseVersion();
 
   const skills = (manifest.tier1 || []).map((entry) => {
     const skill = loadSkill(ROOT, entry.name);
@@ -219,6 +276,7 @@ function main() {
   const payload = {
     manifestVersion: manifest.manifestVersion,
     version: manifest.version,
+    latestReleaseVersion,
     generatedAt: new Date().toISOString(),
     categoryOrder: CATEGORY_ORDER,
     skillOrder: SKILL_ORDER,
@@ -233,8 +291,11 @@ function main() {
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
   fs.writeFileSync(OUTPUT, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   console.log(
-    `✓ registry.generated.json (${skills.length} skills, ${agents.length} agents) → ${OUTPUT}`
+    `✓ registry.generated.json (${skills.length} skills, ${agents.length} agents, release v${latestReleaseVersion}) → ${OUTPUT}`
   );
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

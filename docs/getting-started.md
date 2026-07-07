@@ -14,7 +14,7 @@ Install aiops in a **target project** (your app repo, not this aiops meta-repo),
 npx -y github:yugasun/aiops
 ```
 
-Options: `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`.
+Options: `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`, `uninstall`.
 
 Or:
 
@@ -70,6 +70,7 @@ You normally do not edit the state file by hand.
 | Problem | Fix |
 | --- | --- |
 | `/aiops` not found | Re-run installer; restart IDE |
+| Remove aiops completely | `npx -y github:yugasun/aiops uninstall` (add `--ide codex` to target one IDE) |
 | Stale skill behavior | Re-install to refresh `skills/aiops/` |
 | The flow chose the wrong path | Say so in chat; aiops can re-triage the task |
 | Wrong skill cited | Check [skill-registry.md](skill-registry.md) |

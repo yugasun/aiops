@@ -19,8 +19,9 @@ const content = {
           { cmd: 'npx -y github:yugasun/aiops', desc: 'Recommended — single command' },
           { cmd: "npx skills@latest add yugasun/aiops -g -y --skill '*'", desc: 'Skills CLI (global)' },
           { cmd: 'curl -fsSL https://raw.githubusercontent.com/yugasun/aiops/main/install.sh | bash', desc: 'Alternative via curl' },
+          { cmd: 'npx -y github:yugasun/aiops uninstall', desc: 'Remove installed aiops files' },
         ],
-        note: 'Options: --ide cursor, -g (global), --list, --skills-only, --commands-only, --no-hooks, --agents-only. Restart your IDE after install.',
+        note: 'Options: --ide cursor, -g (global), --list, --skills-only, --commands-only, --no-hooks, --agents-only, uninstall. Restart your IDE after install.',
       },
       {
         num: 2, title: 'Start from your project chat',
@@ -79,8 +80,9 @@ const content = {
         body: [
           { cmd: 'npx -y github:yugasun/aiops', desc: '推荐 — 单条命令' },
           { cmd: "npx skills@latest add yugasun/aiops -g -y --skill '*'", desc: 'Skills CLI 全局安装' },
+          { cmd: 'npx -y github:yugasun/aiops uninstall', desc: '卸载已安装的 aiops 文件' },
         ],
-        note: '可选参数：--ide cursor、-g（全局）、--list、--skills-only、--commands-only、--no-hooks、--agents-only。装完重启 IDE。',
+        note: '可选参数：--ide cursor、-g（全局）、--list、--skills-only、--commands-only、--no-hooks、--agents-only、uninstall。装完重启 IDE。',
       },
       {
         num: 2, title: '从项目聊天框开始',

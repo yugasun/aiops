@@ -63,20 +63,61 @@ function installSkills(
   }
 }
 
+function uninstallAlwaysOn(fs, adapter, alwaysOnSkills, isGlobal, log) {
+  if (adapter.rulesDir) {
+    const rulesDir = isGlobal
+      ? adapter.rulesDir.global
+      : path.resolve(adapter.rulesDir.local);
+    for (const skill of alwaysOnSkills) {
+      const filePath = path.join(rulesDir, `${skill.name}.mdc`);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        log.ok(`removed ${skill.name}.mdc`);
+      }
+    }
+    return;
+  }
+
+  if (adapter.instructionsFile) {
+    const filePath = isGlobal
+      ? adapter.instructionsFile.global
+      : path.resolve(adapter.instructionsFile.local);
+    if (!fs.existsSync(filePath)) return;
+    const content = fs.readFileSync(filePath, "utf8");
+    if (content.startsWith("# Copilot Instructions\n\n## ")) {
+      fs.unlinkSync(filePath);
+      log.ok("removed copilot-instructions.md");
+    } else {
+      log.skip("copilot-instructions.md left unchanged (not aiops-generated)");
+    }
+  }
+}
+
+function isAiopsAgentsMd(content) {
+  return content.startsWith("# aiops — Agent Definitions");
+}
+
 function uninstallSkills(fs, aiopsRoot, provider, isGlobal, loadAllSkills, hasDir, log) {
   const destBase = isGlobal
     ? provider.globalSkillsDir
     : path.resolve(provider.localSkillsDir);
 
-  if (!hasDir(destBase)) return;
-
   const allSkills = loadAllSkills(aiopsRoot);
-  for (const skill of allSkills) {
-    const destDir = path.join(destBase, skill.name);
-    if (hasDir(destDir)) {
-      fs.rmSync(destDir, { recursive: true, force: true });
-      log.ok(`removed ${skill.name}/`);
+  const adapter = getAdapter(provider.id);
+  const alwaysOnSkills = allSkills.filter((s) => s.alwaysOn);
+
+  if (hasDir(destBase)) {
+    for (const skill of allSkills) {
+      const destDir = path.join(destBase, skill.name);
+      if (hasDir(destDir)) {
+        fs.rmSync(destDir, { recursive: true, force: true });
+        log.ok(`removed ${skill.name}/`);
+      }
     }
+  }
+
+  if (alwaysOnSkills.length > 0) {
+    uninstallAlwaysOn(fs, adapter, alwaysOnSkills, isGlobal, log);
   }
 }
 
@@ -104,4 +145,32 @@ function installAgentsMd(fs, aiopsRoot, provider, isGlobal, log) {
   log.ok(`AGENTS.md → ${log.dim(path.dirname(destPath))}`);
 }
 
-module.exports = { installSkills, uninstallSkills, installAgentsMd };
+function uninstallAgentsMd(fs, aiopsRoot, provider, isGlobal, log) {
+  const home = os.homedir();
+  let destPath;
+  if (isGlobal) {
+    if (provider.id !== "codex") return;
+    destPath = path.join(home, ".codex", "AGENTS.md");
+  } else {
+    destPath = path.resolve("AGENTS.md");
+  }
+
+  if (!fs.existsSync(destPath)) return;
+
+  const content = fs.readFileSync(destPath, "utf8");
+  if (isAiopsAgentsMd(content)) {
+    fs.unlinkSync(destPath);
+    log.ok(`removed AGENTS.md → ${log.dim(path.dirname(destPath))}`);
+  } else {
+    log.skip("AGENTS.md left unchanged (not aiops-generated)");
+  }
+}
+
+module.exports = {
+  installSkills,
+  uninstallSkills,
+  installAgentsMd,
+  uninstallAgentsMd,
+  isAiopsAgentsMd,
+  uninstallAlwaysOn,
+};

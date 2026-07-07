@@ -1,6 +1,7 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { I18nProvider, useI18n } from './lib/i18n'
+import { latestReleaseVersion } from './data/registry'
 import { Button } from './components/ui/button'
 import Landing from './pages/Landing'
 import DocsLayout from './docs/DocsLayout'
@@ -19,7 +20,7 @@ function Nav() {
       <Link to="/" className="group font-mono font-bold text-lg text-foreground hover:no-underline flex items-center gap-2">
         <span className="h-2 w-2 rounded-full bg-[var(--cyan)] shadow-[0_0_10px_rgba(34,211,238,0.45)]" />
         <span>ai<span className="text-primary">ops</span></span>
-        <span className="hidden sm:inline rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-[0.62rem] font-normal text-muted-foreground">v1.4.0</span>
+        <span className="hidden sm:inline rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-[0.62rem] font-normal text-muted-foreground">v{latestReleaseVersion}</span>
       </Link>
       <div className="flex items-center gap-1">
         <Link to="/docs/getting-started"

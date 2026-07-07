@@ -24,6 +24,7 @@ const {
   installSkills,
   uninstallSkills,
   installAgentsMd,
+  uninstallAgentsMd,
 } = require("../scripts/install/skills");
 const { installHooks, uninstallHooks } = require("../scripts/install/hooks");
 const { hasDir } = require("../scripts/providers");
@@ -45,6 +46,10 @@ function parseArgs(argv) {
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
+    if (i === 0 && a === "uninstall") {
+      args.uninstall = true;
+      continue;
+    }
     switch (a) {
       case "--all":
         args.all = true;
@@ -102,6 +107,10 @@ ${c.bold("aiops")} v${VERSION} — AI-assisted dev workflow installer
 
 ${c.bold("Usage:")}
   npx -y github:${REPO} [flags]
+  npx -y github:${REPO} uninstall [flags]
+
+${c.bold("Commands:")}
+  uninstall          Remove installed aiops files (skills, hooks, agents, AGENTS.md)
 
 ${c.bold("Flags:")}
   --all              Install to all detected IDEs (default)
@@ -109,7 +118,7 @@ ${c.bold("Flags:")}
   -g, --global       Global install to ~/<ide>/
   --local            Project-local install to ./<ide>/ (default)
   --list             List detected IDEs, don't install
-  --uninstall        Remove installed agents from all/specified IDEs
+  --uninstall        Alias for the uninstall command
   --skills-only      Install slash-command skills only (no hooks, agents, or always-on lean)
   --commands-only    Alias for --skills-only
   --agents-only      Only install agents + AGENTS.md (Codex global)
@@ -121,6 +130,11 @@ ${c.bold("Install modes:")}
   default            skills + hooks + agents + always-on lean discipline
   --skills-only      explicit /aiops, /tdd, /review commands without session injection
   --no-hooks         full workflow except Codex/Claude SessionStart hooks
+
+${c.bold("Uninstall:")}
+  uninstall          remove skills, hooks (aiops entries only), agents, AGENTS.md
+  uninstall --skills-only   remove skills + hooks only
+  uninstall --agents-only   remove agents + AGENTS.md only
 `);
 }
 
@@ -150,7 +164,7 @@ function main() {
     process.exit(0);
   }
 
-  log.msg(c.bold(`aiops installer v${VERSION}`));
+  log.msg(c.bold(`aiops ${args.uninstall ? "uninstaller" : "installer"} v${VERSION}`));
   log.msg("");
 
   const detected = PROVIDERS.filter((p) => p.detect());
@@ -207,6 +221,7 @@ function main() {
     if (!args.skillsOnly && !args.commandsOnly) {
       if (args.uninstall) {
         uninstallAgents(fs, provider, agents, args.global, hasDir, log);
+        uninstallAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
       } else {
         installAgents(fs, provider, agents, args.global, log);
         installAgentsMd(fs, AIOps_ROOT, provider, args.global, log);

@@ -74,7 +74,9 @@ npx -y github:yugasun/aiops --commands-only         # alias for --skills-only
 npx -y github:yugasun/aiops --agents-only           # only install agents
 npx -y github:yugasun/aiops --no-hooks              # skills + agents, skip SessionStart hooks
 npx -y github:yugasun/aiops --list                  # show detected IDEs and install targets
-npx -y github:yugasun/aiops --uninstall             # remove installed files
+npx -y github:yugasun/aiops uninstall                 # remove installed files
+npx -y github:yugasun/aiops uninstall --ide codex   # uninstall from Codex only
+npx -y github:yugasun/aiops --uninstall             # alias for uninstall
 ```
 
 ### Claude Code Plugin (alternate)
@@ -108,7 +110,7 @@ Default install writes skills, agents, always-on lean, and hooks. Existing `hook
 | `--no-hooks` | yes | no | yes | yes |
 | `--agents-only` | no | no | yes | via `AGENTS.md` only |
 
-To opt out of lean after a full install: use `--uninstall`, or remove aiops entries from `~/.codex/hooks.json` / `~/.claude/hooks.json` manually.
+To opt out of lean after a full install: run `npx -y github:yugasun/aiops uninstall`, or remove aiops entries from `~/.codex/hooks.json` / `~/.claude/hooks.json` manually.
 
 
 ## Architecture

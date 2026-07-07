@@ -1,6 +1,6 @@
 {
   "name": "@yugasun/aiops",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "AI engineering best practices — lean-gated, resumable workflow delivered as skills/agents to 5 IDEs + AGENTS.md",
   "bin": {
     "aiops": "./bin/install.js"

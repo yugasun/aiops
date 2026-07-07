@@ -82,7 +82,9 @@ npx -y github:yugasun/aiops --no-hooks        # skills + agents，跳过 Session
 npx -y github:yugasun/aiops --list
 
 # 卸载
-npx -y github:yugasun/aiops --uninstall
+npx -y github:yugasun/aiops uninstall
+npx -y github:yugasun/aiops uninstall --ide codex
+npx -y github:yugasun/aiops --uninstall             # 同上
 ```
 
 ### Claude Code 插件（备选）

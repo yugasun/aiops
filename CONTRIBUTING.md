@@ -4,18 +4,29 @@
 
 1. Edit skills under `skills/<name>/` — never commit installed copies to `.agents/skills/`.
 2. Update `skills/manifest.json` when adding or removing tier1 skills.
-3. On release: bump version once with `node scripts/sync-version.js <x.y.z>` (source of truth: `skills/manifest.json`). This updates `package.json` and Claude plugin metadata in one step. `install.sh` resolves the latest GitHub release at install time (no pinned version in the script).
-4. Merge to `main` with a bumped manifest version → GitHub Actions creates tag `v<version>` and a GitHub Release automatically. Manual: **Actions → Release → Run workflow**.
-5. Before PR:
+3. Prefer [Conventional Commits](https://www.conventionalcommits.org/) on `main`:
+   - `feat:` → minor release
+   - `fix:` → patch release
+   - `feat!:` / `fix!:` / `BREAKING CHANGE` → major release
+4. Merge to `main` with a `feat`/`fix` commit → GitHub Actions bumps version (`skills/manifest.json`, `package.json`, Claude plugin metadata), tags `v<version>`, and creates a GitHub Release. Release commits use `chore(release): vX.Y.Z [skip ci]`.
+5. Manual override: **Actions → Release → Run workflow** with a version, or bump locally before merge:
+
+   ```bash
+   node scripts/sync-version.js 1.4.2  # bump + sync all version files
+   ```
+
+   If the merge commit already changed `skills/manifest.json` version, Release uses that version (no second bump).
+6. Before PR:
 
    ```bash
    node scripts/sync-version.js        # propagate manifest.version (if you edited manifest only)
-   node scripts/sync-version.js 1.4.2  # bump + sync all version files
    bash scripts/verify.sh              # fast, no npm
    ```
 
-6. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
-7. New skill references: update `docs/skill-registry.md`.
+7. Router changes: `skills/aiops/scripts/router.py` + `skills/aiops/scripts/test_router.py` + `skills/aiops/scripts/flow_cli.py`.
+8. New skill references: update `docs/skill-registry.md`.
+
+`install.sh` resolves the latest GitHub release at install time (no pinned version in the script).
 
 ## Skill authoring
 

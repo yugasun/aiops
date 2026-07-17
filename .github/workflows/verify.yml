@@ -21,10 +21,14 @@ jobs:
       - name: Run tests
         run: |
           node scripts/test/sync-version.test.js
+          node scripts/test/bump-from-commits.test.js
           node scripts/test/resolve-release-ref.test.js
           node scripts/test/adapters.test.js
           node scripts/test/hooks-merge.test.js
           node scripts/test/install-args.test.js
+          node scripts/test/agents-md.test.js
+          node scripts/test/prompts.test.js
+          node scripts/test/skills-shared-path.test.js
           node scripts/test/package-files.test.js
           node scripts/test/uninstall-skills.test.js
           python3 skills/aiops/scripts/test_router.py

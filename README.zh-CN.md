@@ -61,8 +61,14 @@ graphify --version
 
 ### CLI 选项
 
+默认是**交互安装**：↑↓ 移动、空格勾选 IDE、`ctrl+a` 全选，再选项目/全局与是否装 hooks。CI 请加 `--yes`。
+
 ```bash
-# 指定 IDE
+npx -y github:yugasun/aiops                        # 交互安装
+npx -y github:yugasun/aiops --yes                  # 非交互：全部已检测 IDE、项目级、含 hooks
+npx -y github:yugasun/aiops --all                  # 同 --yes
+
+# 指定 IDE（未加 --yes 时仍会询问范围 / hooks）
 npx -y github:yugasun/aiops --ide cursor
 npx -y github:yugasun/aiops --ide claude
 npx -y github:yugasun/aiops --ide codex
@@ -98,19 +104,20 @@ npx -y github:yugasun/aiops --uninstall             # 同上
 
 ## 支持的 IDE
 
+项目级 **skills**：Cursor / Codex / Copilot / OpenCode 统一写入 `.agents/skills/`（与 Amp、Antigravity、Cline、Gemini CLI、Warp 等遵循 [skills](https://github.com/vercel-labs/skills) 通用路径的 Agent 共用，只拷贝一次）。Claude Code 仍用 `.claude/skills/`。agents、hooks、常驻 lean 仍按 IDE 分别安装。
 
 | IDE                | Skills 路径           | Always-On                         | Agents                  | Hooks                        |
 | ------------------ | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**    | `.claude/skills/`   | 通过 `/lean` 触发                     | `.claude/agents/*.md`   | SessionStart + SubagentStart |
-| **Cursor**         | `.cursor/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
+| **Cursor**         | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
 | **Codex CLI**      | `.agents/skills/`   | `AGENTS.md` + SessionStart hooks  | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
-| **GitHub Copilot** | `.github/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
-| **OpenCode**       | `.opencode/skills/` | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
+| **GitHub Copilot** | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**       | `.agents/skills/`   | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
 | **通用 harness**     | —                   | `AGENTS.md`（项目根目录）                | —                       | —                            |
 
 ### Codex / Claude 持久化行为
 
-默认安装会写入 skills、agents、常驻 lean 和 hooks；已有 `hooks.json` 条目会**合并**而非覆盖。
+完整安装（交互默认，或 `--yes`）会写入 skills、agents、常驻 lean 和 hooks；已有 `hooks.json` 条目会**合并**而非覆盖。
 
 | 模式 | Skills | Hooks | Agents | 常驻 lean |
 | --- | --- | --- | --- | --- |

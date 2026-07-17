@@ -68,6 +68,7 @@ const PROVIDERS = [
     localAgentsDir: ".claude/agents",
     globalSkillsDir: path.join(HOME, ".claude", "skills"),
     localSkillsDir: ".claude/skills",
+    sharedSkills: false,
     hooksDir: path.join(HOME, ".claude", "hooks"),
     localHooksDir: ".claude/hooks",
     hooksConfigFile: path.join(HOME, ".claude", "hooks.json"),
@@ -85,7 +86,9 @@ const PROVIDERS = [
     globalAgentsDir: path.join(HOME, ".cursor", "agents"),
     localAgentsDir: ".cursor/agents",
     globalSkillsDir: path.join(HOME, ".cursor", "skills"),
-    localSkillsDir: ".cursor/skills",
+    // Project skills shared with Amp/Cline/Codex/Copilot/OpenCode/Warp/… (vercel-labs/skills)
+    localSkillsDir: ".agents/skills",
+    sharedSkills: true,
     hooksDir: path.join(HOME, ".cursor", "hooks"),
     localHooksDir: ".cursor/hooks",
     hooksConfigFile: path.join(HOME, ".cursor", "hooks.json"),
@@ -101,7 +104,8 @@ const PROVIDERS = [
     globalAgentsDir: path.join(HOME, ".github", "agents"),
     localAgentsDir: ".github/agents",
     globalSkillsDir: path.join(HOME, ".github", "skills"),
-    localSkillsDir: ".github/skills",
+    localSkillsDir: ".agents/skills",
+    sharedSkills: true,
     hooksDir: path.join(HOME, ".github", "hooks"),
     localHooksDir: ".github/hooks",
     hooksConfigFile: path.join(HOME, ".github", "hooks.json"),
@@ -121,6 +125,7 @@ const PROVIDERS = [
     localAgentsDir: ".codex/agents",
     globalSkillsDir: path.join(HOME, ".agents", "skills"),
     localSkillsDir: ".agents/skills",
+    sharedSkills: true,
     hooksDir: path.join(HOME, ".codex", "hooks"),
     localHooksDir: ".codex/hooks",
     hooksConfigFile: path.join(HOME, ".codex", "hooks.json"),
@@ -139,7 +144,8 @@ const PROVIDERS = [
     globalAgentsDir: path.join(HOME, ".config", "opencode", "agents"),
     localAgentsDir: ".opencode/agents",
     globalSkillsDir: path.join(HOME, ".config", "opencode", "skills"),
-    localSkillsDir: ".opencode/skills",
+    localSkillsDir: ".agents/skills",
+    sharedSkills: true,
     hooksDir: null,
     localHooksDir: null,
     hooksConfigFile: null,
@@ -148,9 +154,40 @@ const PROVIDERS = [
   },
 ];
 
+/** Agents that read project-local `.agents/skills` (skills CLI universal path). */
+const UNIVERSAL_SKILLS_CONSUMERS = [
+  "Amp",
+  "Antigravity",
+  "Cline",
+  "Codex",
+  "Cursor",
+  "Deep Agents",
+  "Gemini CLI",
+  "GitHub Copilot",
+  "Kimi Code CLI",
+  "OpenCode",
+  "Warp",
+];
+
+/** Legacy project-local skill roots from pre-shared-path installs. */
+const LEGACY_LOCAL_SKILLS_DIRS = [
+  ".cursor/skills",
+  ".github/skills",
+  ".opencode/skills",
+];
+
 function leanSkillCandidates(home = HOME, cwd = process.cwd()) {
   const { leanSkillCandidates: build } = require("./lib/skill-paths");
   return build(PROVIDERS, home, cwd);
 }
 
-module.exports = { PROVIDERS, hasCommand, hasDir, hasMacApp, hasVSCodeExt, leanSkillCandidates };
+module.exports = {
+  PROVIDERS,
+  UNIVERSAL_SKILLS_CONSUMERS,
+  LEGACY_LOCAL_SKILLS_DIRS,
+  hasCommand,
+  hasDir,
+  hasMacApp,
+  hasVSCodeExt,
+  leanSkillCandidates,
+};

@@ -14,7 +14,11 @@ Install aiops in a **target project** (your app repo, not this aiops meta-repo),
 npx -y github:yugasun/aiops
 ```
 
-Options: `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`, `uninstall`.
+Default is interactive (`↑↓` / `space` / `ctrl+a` for IDEs, then scope and hooks). For CI: `npx -y github:yugasun/aiops --yes`.
+
+Project-local skills for Cursor / Codex / Copilot / OpenCode install once under `.agents/skills/` (shared universal path). Claude Code uses `.claude/skills/`.
+
+Options: `--yes` / `--all`, `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`, `uninstall`.
 
 Or:
 

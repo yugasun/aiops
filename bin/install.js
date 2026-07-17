@@ -2,6 +2,9 @@
 
 /**
  * aiops installer — detects AI IDEs and installs skills + agents
+ *
+ * Default: interactive (pick IDEs, scope, hooks) — like vercel-labs/skills.
+ * Non-interactive: --yes / --all / --ide + flags.
  */
 
 "use strict";
@@ -23,23 +26,36 @@ const { installAgents, uninstallAgents } = require("../scripts/install/agents");
 const {
   installSkills,
   uninstallSkills,
+  uninstallLegacyLocalSkills,
   installAgentsMd,
   uninstallAgentsMd,
+  skillsDestPath,
+  agentsMdDestPath,
 } = require("../scripts/install/skills");
 const { installHooks, uninstallHooks } = require("../scripts/install/hooks");
 const { hasDir } = require("../scripts/providers");
+const {
+  canPrompt,
+  isCancelled,
+  promptIdes,
+  promptScope,
+  promptHooks,
+} = require("../scripts/install/prompts");
 
 function parseArgs(argv) {
   const args = {
-    all: true,
+    all: false,
     ide: null,
     global: false,
+    scopeExplicit: false,
+    yes: false,
     list: false,
     uninstall: false,
     skillsOnly: false,
     agentsOnly: false,
     noSkills: false,
     noHooks: false,
+    hooksExplicit: false,
     commandsOnly: false,
     help: false,
   };
@@ -53,17 +69,23 @@ function parseArgs(argv) {
     switch (a) {
       case "--all":
         args.all = true;
+        args.yes = true;
         break;
       case "--ide":
         args.ide = argv[++i];
-        args.all = false;
         break;
       case "-g":
       case "--global":
         args.global = true;
+        args.scopeExplicit = true;
         break;
       case "--local":
         args.global = false;
+        args.scopeExplicit = true;
+        break;
+      case "-y":
+      case "--yes":
+        args.yes = true;
         break;
       case "--list":
         args.list = true;
@@ -85,6 +107,7 @@ function parseArgs(argv) {
         break;
       case "--no-hooks":
         args.noHooks = true;
+        args.hooksExplicit = true;
         break;
       case "-h":
       case "--help":
@@ -96,6 +119,7 @@ function parseArgs(argv) {
   if (args.commandsOnly) {
     args.skillsOnly = true;
     args.noHooks = true;
+    args.hooksExplicit = true;
   }
 
   return args;
@@ -113,8 +137,10 @@ ${c.bold("Commands:")}
   uninstall          Remove installed aiops files (skills, hooks, agents, AGENTS.md)
 
 ${c.bold("Flags:")}
-  --all              Install to all detected IDEs (default)
-  --ide <name>       Install to specific IDE: claude, cursor, copilot, codex
+  (default)          Interactive: ↑↓/space/ctrl+a IDEs, then scope + hooks
+  -y, --yes          Skip prompts; install to all detected IDEs (project-local)
+  --all              Same as --yes; install to every detected IDE
+  --ide <name>       Install to specific IDE: claude, cursor, copilot, codex, opencode
   -g, --global       Global install to ~/<ide>/
   --local            Project-local install to ./<ide>/ (default)
   --list             List detected IDEs, don't install
@@ -127,9 +153,14 @@ ${c.bold("Flags:")}
   -h, --help         Show this help
 
 ${c.bold("Install modes:")}
-  default            skills + hooks + agents + always-on lean discipline
+  interactive        ↑↓ move, space toggle, ctrl+a all, enter confirm
+  --yes / --all      skills + hooks + agents + always-on lean, no prompts
   --skills-only      explicit /aiops, /tdd, /review commands without session injection
   --no-hooks         full workflow except Codex/Claude SessionStart hooks
+
+${c.bold("Non-interactive tip:")}
+  npx -y github:${REPO} --yes
+  npx -y github:${REPO} --ide cursor -g --no-hooks
 
 ${c.bold("Uninstall:")}
   uninstall          remove skills, hooks (aiops entries only), agents, AGENTS.md
@@ -156,7 +187,87 @@ function shouldSkipAlwaysOn(args) {
   return args.skillsOnly || args.commandsOnly;
 }
 
-function main() {
+function targetsSupportHooks(targets) {
+  return targets.some((p) => p.hooksDir && p.hooksConfigTemplate);
+}
+
+function showNonInteractiveTip() {
+  log.msg(c.dim("Tip: use --yes (-y) or --all to install without prompts."));
+  log.msg(c.dim(`  npx -y github:${REPO} --yes`));
+  log.msg(c.dim(`  npx -y github:${REPO} --ide cursor -g`));
+}
+
+/**
+ * Resolve targets / scope / hooks — interactive when possible.
+ * Mutates args.global and args.noHooks when prompts answer.
+ */
+async function resolveInstallChoices(args, detected) {
+  let targets;
+
+  if (args.ide) {
+    targets = filterTargets(detected, args.ide);
+  } else if (args.all || args.yes || args.uninstall || detected.length === 1) {
+    targets = detected;
+    if (detected.length === 1 && !args.yes && !args.all && !args.uninstall) {
+      log.msg(`Installing to: ${c.cyan(detected[0].label)}`);
+    }
+  } else if (canPrompt()) {
+    log.msg("");
+    targets = await promptIdes(detected);
+    if (isCancelled(targets)) {
+      log.msg(c.dim("Installation cancelled."));
+      process.exit(0);
+    }
+    log.msg("");
+  } else {
+    log.msg(c.red("Non-interactive terminal: choose targets explicitly."));
+    showNonInteractiveTip();
+    process.exit(1);
+  }
+
+  if (args.ide && targets.length === 0) {
+    log.msg(c.red(`IDE "${args.ide}" not detected or not supported.`));
+    process.exit(1);
+  }
+
+  if (args.uninstall) {
+    return targets;
+  }
+
+  const skipPrompts = args.yes || args.all;
+
+  if (!args.scopeExplicit && !skipPrompts && canPrompt()) {
+    const scope = await promptScope();
+    if (isCancelled(scope)) {
+      log.msg(c.dim("Installation cancelled."));
+      process.exit(0);
+    }
+    args.global = scope;
+    log.msg("");
+  }
+
+  const hooksRelevant =
+    !args.hooksExplicit &&
+    !args.skillsOnly &&
+    !args.agentsOnly &&
+    !args.commandsOnly &&
+    targetsSupportHooks(targets);
+
+  if (hooksRelevant && !skipPrompts && canPrompt()) {
+    const wantHooks = await promptHooks(true);
+    if (isCancelled(wantHooks)) {
+      log.msg(c.dim("Installation cancelled."));
+      process.exit(0);
+    }
+    args.noHooks = !wantHooks;
+    args.hooksExplicit = true;
+    log.msg("");
+  }
+
+  return targets;
+}
+
+async function main() {
   const args = parseArgs(process.argv.slice(2));
 
   if (args.help) {
@@ -174,12 +285,6 @@ function main() {
     process.exit(1);
   }
 
-  const targets = filterTargets(detected, args.ide);
-  if (args.ide && targets.length === 0) {
-    log.msg(c.red(`IDE "${args.ide}" not detected or not supported.`));
-    process.exit(1);
-  }
-
   if (args.list) {
     log.msg(c.bold("Detected AI IDEs:"));
     for (const p of PROVIDERS) {
@@ -189,6 +294,12 @@ function main() {
     process.exit(0);
   }
 
+  if (!args.uninstall && !args.yes && !args.all && !args.ide && canPrompt()) {
+    log.msg(c.dim("Interactive install — pass --yes to skip prompts."));
+  }
+
+  const targets = await resolveInstallChoices(args, detected);
+
   const agents = loadAgentsFromManifest(AIOps_ROOT);
   const mode = args.global ? "global" : "project-local";
   log.msg(c.bold(`Mode: ${mode}  |  Targets: ${targets.map((t) => t.id).join(", ")}`));
@@ -197,17 +308,26 @@ function main() {
   let totalInstalled = 0;
   const installHooksFlag = shouldInstallHooks(args);
   const skipAlwaysOn = shouldSkipAlwaysOn(args);
+  const seenSkillsDest = new Set();
+  const seenAgentsMd = new Set();
 
   for (const provider of targets) {
     log.msg(c.bold(`[${provider.label}]`));
 
     if (!args.agentsOnly && !args.noSkills) {
+      const skillsKey = skillsDestPath(provider, args.global);
+      const skipSkillFiles = seenSkillsDest.has(skillsKey);
+      if (!skipSkillFiles) seenSkillsDest.add(skillsKey);
+
       if (args.uninstall) {
-        uninstallSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log);
+        uninstallSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log, {
+          skipSkillFiles,
+        });
         uninstallHooks(fs, provider, args.global, hasDir, log);
       } else {
         installSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log, {
           skipAlwaysOn,
+          skipSkillFiles,
         });
         if (installHooksFlag) {
           installHooks(fs, AIOps_ROOT, provider, args.global, hasDir, log);
@@ -221,15 +341,27 @@ function main() {
     if (!args.skillsOnly && !args.commandsOnly) {
       if (args.uninstall) {
         uninstallAgents(fs, provider, agents, args.global, hasDir, log);
-        uninstallAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+        const mdKey = agentsMdDestPath(provider, args.global);
+        if (mdKey && !seenAgentsMd.has(mdKey)) {
+          seenAgentsMd.add(mdKey);
+          uninstallAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+        }
       } else {
         installAgents(fs, provider, agents, args.global, log);
-        installAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+        const mdKey = agentsMdDestPath(provider, args.global);
+        if (mdKey && !seenAgentsMd.has(mdKey)) {
+          seenAgentsMd.add(mdKey);
+          installAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+        }
         totalInstalled += agents.length;
       }
     }
 
     log.msg("");
+  }
+
+  if (args.uninstall && !args.global && !args.agentsOnly) {
+    uninstallLegacyLocalSkills(fs, AIOps_ROOT, loadAllSkills, hasDir, log);
   }
 
   if (args.uninstall) {
@@ -243,7 +375,17 @@ function main() {
 }
 
 if (require.main === module) {
-  main();
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }
 
-module.exports = { parseArgs, shouldInstallHooks, shouldSkipAlwaysOn };
+module.exports = {
+  parseArgs,
+  shouldInstallHooks,
+  shouldSkipAlwaysOn,
+  targetsSupportHooks,
+  resolveInstallChoices,
+  skillsDestPath,
+};

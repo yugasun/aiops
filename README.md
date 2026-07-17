@@ -61,22 +61,26 @@ If you do not use uv, `pip install graphifyy` or `pipx install graphifyy` also w
 
 ### CLI options
 
+Default install is **interactive** (arrow keys + space to pick IDEs, `ctrl+a` for all, then project vs global and hooks). Use `--yes` in CI.
+
 ```bash
-npx -y github:yugasun/aiops                        # install to all detected IDEs (project-local)
-npx -y github:yugasun/aiops --ide claude            # install to Claude Code only
-npx -y github:yugasun/aiops --ide cursor            # install to Cursor only
-npx -y github:yugasun/aiops --ide codex             # install to Codex CLI only
-npx -y github:yugasun/aiops --ide copilot           # install to GitHub Copilot only
-npx -y github:yugasun/aiops --ide opencode          # install to OpenCode only
-npx -y github:yugasun/aiops -g                      # global install to ~/<ide>/
-npx -y github:yugasun/aiops --skills-only           # slash-command skills only (no hooks/agents/always-on lean)
-npx -y github:yugasun/aiops --commands-only         # alias for --skills-only
-npx -y github:yugasun/aiops --agents-only           # only install agents
-npx -y github:yugasun/aiops --no-hooks              # skills + agents, skip SessionStart hooks
-npx -y github:yugasun/aiops --list                  # show detected IDEs and install targets
-npx -y github:yugasun/aiops uninstall                 # remove installed files
-npx -y github:yugasun/aiops uninstall --ide codex   # uninstall from Codex only
-npx -y github:yugasun/aiops --uninstall             # alias for uninstall
+npx -y github:yugasun/aiops                        # interactive install
+npx -y github:yugasun/aiops --yes                  # non-interactive: all detected IDEs, project-local, with hooks
+npx -y github:yugasun/aiops --all                  # same as --yes
+npx -y github:yugasun/aiops --ide claude           # Claude Code only (still prompts scope/hooks unless --yes)
+npx -y github:yugasun/aiops --ide cursor           # Cursor only
+npx -y github:yugasun/aiops --ide codex            # Codex CLI only
+npx -y github:yugasun/aiops --ide copilot          # GitHub Copilot only
+npx -y github:yugasun/aiops --ide opencode         # OpenCode only
+npx -y github:yugasun/aiops -g                     # global install to ~/<ide>/
+npx -y github:yugasun/aiops --skills-only          # slash-command skills only (no hooks/agents/always-on lean)
+npx -y github:yugasun/aiops --commands-only        # alias for --skills-only
+npx -y github:yugasun/aiops --agents-only          # only install agents
+npx -y github:yugasun/aiops --no-hooks             # skills + agents, skip SessionStart hooks
+npx -y github:yugasun/aiops --list                 # show detected IDEs and install targets
+npx -y github:yugasun/aiops uninstall              # remove installed files
+npx -y github:yugasun/aiops uninstall --ide codex  # uninstall from Codex only
+npx -y github:yugasun/aiops --uninstall            # alias for uninstall
 ```
 
 ### Claude Code Plugin (alternate)
@@ -90,18 +94,20 @@ npx -y github:yugasun/aiops --uninstall             # alias for uninstall
 
 5 IDEs plus a generic AGENTS.md harness for any tool that reads it.
 
+Project-local **skills** for Cursor / Codex / Copilot / OpenCode install once to `.agents/skills/` (shared with Amp, Antigravity, Cline, Gemini CLI, Warp, and other agents that follow the [skills](https://github.com/vercel-labs/skills) universal path). Claude Code keeps `.claude/skills/`. Agents, hooks, and always-on lean remain per-IDE.
+
 | IDE                 | Skills Path         | Always-On                         | Agents                  | Hooks                        |
 | ------------------- | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**     | `.claude/skills/`   | via `/lean`                       | `.claude/agents/*.md`   | SessionStart + SubagentStart |
-| **Cursor**          | `.cursor/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
+| **Cursor**          | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
 | **Codex CLI**       | `.agents/skills/`   | `AGENTS.md` + SessionStart hooks  | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
-| **GitHub Copilot**  | `.github/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
-| **OpenCode**        | `.opencode/skills/` | via `/lean`                       | `.opencode/agents/*.md` | —                            |
+| **GitHub Copilot**  | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**        | `.agents/skills/`   | via `/lean`                       | `.opencode/agents/*.md` | —                            |
 | **Generic harness** | —                   | `AGENTS.md`                       | —                       | —                            |
 
 ### Codex / Claude persistence
 
-Default install writes skills, agents, always-on lean, and hooks. Existing `hooks.json` entries are **merged**, not replaced.
+Full install (interactive default, or `--yes`) writes skills, agents, always-on lean, and hooks. Existing `hooks.json` entries are **merged**, not replaced.
 
 | Mode | Skills | Hooks | Agents | Always-on lean |
 | --- | --- | --- | --- | --- |
@@ -122,11 +128,12 @@ To opt out of lean after a full install: run `npx -y github:yugasun/aiops uninst
 │  └── phase dispatch →  agents/*.md + skills/*/SKILL.md  │
 ├─────────────────────────────────────────────────────────┤
 │  Adapter seam (scripts/adapters/*)                      │
+│  ├── shared   → .agents/skills/ (project skills once)   │
 │  ├── cursor   → .cursor/rules/*.mdc + .cursor/agents/   │
 │  ├── claude   → .claude/skills/ + .claude/agents/       │
 │  ├── codex    → .codex/agents/*.toml + AGENTS.md        │
 │  ├── copilot  → .github/copilot-instructions.md         │
-│  └── opencode → .opencode/skills/ + .opencode/agents/   │
+│  └── opencode → .opencode/agents/                       │
 └─────────────────────────────────────────────────────────┘
 ```
 

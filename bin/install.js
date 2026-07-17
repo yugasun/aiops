@@ -40,6 +40,7 @@ const {
   promptIdes,
   promptScope,
   promptHooks,
+  promptAgentsMd,
 } = require("../scripts/install/prompts");
 
 function parseArgs(argv) {
@@ -56,6 +57,8 @@ function parseArgs(argv) {
     noSkills: false,
     noHooks: false,
     hooksExplicit: false,
+    agentsMd: false,
+    agentsMdExplicit: false,
     commandsOnly: false,
     help: false,
   };
@@ -109,6 +112,14 @@ function parseArgs(argv) {
         args.noHooks = true;
         args.hooksExplicit = true;
         break;
+      case "--agents-md":
+        args.agentsMd = true;
+        args.agentsMdExplicit = true;
+        break;
+      case "--no-agents-md":
+        args.agentsMd = false;
+        args.agentsMdExplicit = true;
+        break;
       case "-h":
       case "--help":
         args.help = true;
@@ -147,7 +158,9 @@ ${c.bold("Flags:")}
   --uninstall        Alias for the uninstall command
   --skills-only      Install slash-command skills only (no hooks, agents, or always-on lean)
   --commands-only    Alias for --skills-only
-  --agents-only      Only install agents + AGENTS.md (Codex global)
+  --agents-only      Only install agents (skip skills/hooks)
+  --agents-md        Append aiops section to AGENTS.md (off by default; never overwrites)
+  --no-agents-md     Do not touch AGENTS.md (default)
   --no-skills        Skip skills installation
   --no-hooks         Install skills/agents but skip SessionStart hooks
   -h, --help         Show this help
@@ -157,15 +170,17 @@ ${c.bold("Install modes:")}
   --yes / --all      skills + hooks + agents + always-on lean, no prompts
   --skills-only      explicit /aiops, /tdd, /review commands without session injection
   --no-hooks         full workflow except Codex/Claude SessionStart hooks
+  --agents-md        optional AGENTS.md append for Codex / generic harness
 
 ${c.bold("Non-interactive tip:")}
   npx -y github:${REPO} --yes
   npx -y github:${REPO} --ide cursor -g --no-hooks
+  npx -y github:${REPO} --yes --agents-md
 
 ${c.bold("Uninstall:")}
-  uninstall          remove skills, hooks (aiops entries only), agents, AGENTS.md
+  uninstall          remove skills, hooks (aiops entries only), agents; strip AGENTS.md section
   uninstall --skills-only   remove skills + hooks only
-  uninstall --agents-only   remove agents + AGENTS.md only
+  uninstall --agents-only   remove agents + AGENTS.md aiops section only
 `);
 }
 
@@ -264,6 +279,22 @@ async function resolveInstallChoices(args, detected) {
     log.msg("");
   }
 
+  const agentsMdRelevant =
+    !args.agentsMdExplicit &&
+    !args.skillsOnly &&
+    !args.commandsOnly;
+
+  if (agentsMdRelevant && !skipPrompts && canPrompt()) {
+    const wantAgentsMd = await promptAgentsMd();
+    if (isCancelled(wantAgentsMd)) {
+      log.msg(c.dim("Installation cancelled."));
+      process.exit(0);
+    }
+    args.agentsMd = wantAgentsMd;
+    args.agentsMdExplicit = true;
+    log.msg("");
+  }
+
   return targets;
 }
 
@@ -348,10 +379,12 @@ async function main() {
         }
       } else {
         installAgents(fs, provider, agents, args.global, log);
-        const mdKey = agentsMdDestPath(provider, args.global);
-        if (mdKey && !seenAgentsMd.has(mdKey)) {
-          seenAgentsMd.add(mdKey);
-          installAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+        if (args.agentsMd) {
+          const mdKey = agentsMdDestPath(provider, args.global);
+          if (mdKey && !seenAgentsMd.has(mdKey)) {
+            seenAgentsMd.add(mdKey);
+            installAgentsMd(fs, AIOps_ROOT, provider, args.global, log);
+          }
         }
         totalInstalled += agents.length;
       }

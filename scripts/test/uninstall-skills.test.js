@@ -60,6 +60,17 @@ const codex = { id: "codex" };
 uninstallAgentsMd(fs, aiopsRoot, codex, false, log);
 assert.equal(fs.existsSync(agentsMd), false);
 
+fs.writeFileSync(
+  agentsMd,
+  "# Custom AGENTS\n\n<!-- aiops:agents-md:start -->\n# aiops — Agent Definitions\n<!-- aiops:agents-md:end -->\n"
+);
+actions.length = 0;
+uninstallAgentsMd(fs, aiopsRoot, codex, false, log);
+assert.equal(fs.existsSync(agentsMd), true);
+assert.match(fs.readFileSync(agentsMd, "utf8"), /Custom AGENTS/);
+assert.doesNotMatch(fs.readFileSync(agentsMd, "utf8"), /aiops:agents-md/);
+assert.match(actions[0], /removed aiops section/);
+
 fs.writeFileSync(agentsMd, "# Custom AGENTS\n");
 actions.length = 0;
 uninstallAgentsMd(fs, aiopsRoot, codex, false, log);

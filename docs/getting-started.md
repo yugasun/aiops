@@ -18,7 +18,7 @@ Default is interactive (`↑↓` / `space` / `ctrl+a` for IDEs, then scope and h
 
 Project-local skills for Cursor / Codex / Copilot / OpenCode install once under `.agents/skills/` (shared universal path). Claude Code uses `.claude/skills/`.
 
-Options: `--yes` / `--all`, `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`, `uninstall`.
+Options: `--yes` / `--all`, `--ide cursor`, `-g` (global), `--list`, `--skills-only`, `--commands-only`, `--no-hooks`, `--agents-only`, `--agents-md` (optional append to `AGENTS.md`, never overwrites), `uninstall`.
 
 Or:
 

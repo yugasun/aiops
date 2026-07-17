@@ -22,9 +22,17 @@ assert.deepEqual(parseArgs(["--commands-only"]), {
   noSkills: false,
   noHooks: true,
   hooksExplicit: true,
+  agentsMd: false,
+  agentsMdExplicit: false,
   commandsOnly: true,
   help: false,
 });
+
+assert.equal(parseArgs([]).agentsMd, false);
+assert.equal(parseArgs(["--agents-md"]).agentsMd, true);
+assert.equal(parseArgs(["--agents-md"]).agentsMdExplicit, true);
+assert.equal(parseArgs(["--no-agents-md"]).agentsMd, false);
+assert.equal(parseArgs(["--no-agents-md"]).agentsMdExplicit, true);
 
 assert.equal(parseArgs([]).all, false);
 assert.equal(parseArgs([]).yes, false);

@@ -409,6 +409,26 @@ async function promptHooks(defaultYes = true) {
   });
 }
 
+/** @returns {Promise<boolean | typeof cancelSymbol>} */
+async function promptAgentsMd() {
+  return select({
+    message: "Append aiops section to AGENTS.md?",
+    initialValue: false,
+    options: [
+      {
+        value: false,
+        label: "No",
+        hint: "default — leave project AGENTS.md untouched",
+      },
+      {
+        value: true,
+        label: "Yes",
+        hint: "append marked block (never overwrites your content)",
+      },
+    ],
+  });
+}
+
 module.exports = {
   canPrompt,
   cancelSymbol,
@@ -418,4 +438,5 @@ module.exports = {
   promptIdes,
   promptScope,
   promptHooks,
+  promptAgentsMd,
 };

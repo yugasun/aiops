@@ -76,6 +76,7 @@ npx -y github:yugasun/aiops -g                     # global install to ~/<ide>/
 npx -y github:yugasun/aiops --skills-only          # slash-command skills only (no hooks/agents/always-on lean)
 npx -y github:yugasun/aiops --commands-only        # alias for --skills-only
 npx -y github:yugasun/aiops --agents-only          # only install agents
+npx -y github:yugasun/aiops --agents-md            # append aiops block to AGENTS.md (never overwrites)
 npx -y github:yugasun/aiops --no-hooks             # skills + agents, skip SessionStart hooks
 npx -y github:yugasun/aiops --list                 # show detected IDEs and install targets
 npx -y github:yugasun/aiops uninstall              # remove installed files
@@ -100,10 +101,12 @@ Project-local **skills** for Cursor / Codex / Copilot / OpenCode install once to
 | ------------------- | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**     | `.claude/skills/`   | via `/lean`                       | `.claude/agents/*.md`   | SessionStart + SubagentStart |
 | **Cursor**          | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
-| **Codex CLI**       | `.agents/skills/`   | `AGENTS.md` + SessionStart hooks  | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
+| **Codex CLI**       | `.agents/skills/`   | SessionStart hooks                | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
 | **GitHub Copilot**  | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
 | **OpenCode**        | `.agents/skills/`   | via `/lean`                       | `.opencode/agents/*.md` | —                            |
-| **Generic harness** | —                   | `AGENTS.md`                       | —                       | —                            |
+| **Generic harness** | —                   | optional `AGENTS.md` append       | —                       | —                            |
+
+`AGENTS.md` is **off by default**. Pass `--agents-md` (or say yes in the interactive prompt) to append a marked aiops block — never overwrite your existing file.
 
 ### Codex / Claude persistence
 
@@ -111,10 +114,11 @@ Full install (interactive default, or `--yes`) writes skills, agents, always-on 
 
 | Mode | Skills | Hooks | Agents | Always-on lean |
 | --- | --- | --- | --- | --- |
-| default | yes | yes (merged) | yes | yes (`AGENTS.md`, SessionStart) |
+| default | yes | yes (merged) | yes | yes (SessionStart / IDE rules; no `AGENTS.md`) |
 | `--skills-only` / `--commands-only` | yes | no | no | no |
 | `--no-hooks` | yes | no | yes | yes |
-| `--agents-only` | no | no | yes | via `AGENTS.md` only |
+| `--agents-only` | no | no | yes | no |
+| `--agents-md` | (with agents) | — | — | append marked block to `AGENTS.md` |
 
 To opt out of lean after a full install: run `npx -y github:yugasun/aiops uninstall`, or remove aiops entries from `~/.codex/hooks.json` / `~/.claude/hooks.json` manually.
 

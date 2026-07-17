@@ -82,6 +82,7 @@ npx -y github:yugasun/aiops -g
 npx -y github:yugasun/aiops --skills-only     # 仅 slash-command skills（无 hooks/agents/常驻 lean）
 npx -y github:yugasun/aiops --commands-only   # 同 --skills-only
 npx -y github:yugasun/aiops --agents-only     # 仅 agents
+npx -y github:yugasun/aiops --agents-md       # append aiops 区块到 AGENTS.md（不覆盖）
 npx -y github:yugasun/aiops --no-hooks        # skills + agents，跳过 SessionStart hooks
 
 # 查看检测到的 IDE（不安装）
@@ -110,10 +111,12 @@ npx -y github:yugasun/aiops --uninstall             # 同上
 | ------------------ | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
 | **Claude Code**    | `.claude/skills/`   | 通过 `/lean` 触发                     | `.claude/agents/*.md`   | SessionStart + SubagentStart |
 | **Cursor**         | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
-| **Codex CLI**      | `.agents/skills/`   | `AGENTS.md` + SessionStart hooks  | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
+| **Codex CLI**      | `.agents/skills/`   | SessionStart hooks                | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
 | **GitHub Copilot** | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
 | **OpenCode**       | `.agents/skills/`   | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
-| **通用 harness**     | —                   | `AGENTS.md`（项目根目录）                | —                       | —                            |
+| **通用 harness**     | —                   | 可选 append `AGENTS.md`              | —                       | —                            |
+
+`AGENTS.md` **默认不写**。加 `--agents-md`（或交互里选 Yes）才会 append 带标记的 aiops 区块，不会覆盖你已有内容。
 
 ### Codex / Claude 持久化行为
 
@@ -121,10 +124,11 @@ npx -y github:yugasun/aiops --uninstall             # 同上
 
 | 模式 | Skills | Hooks | Agents | 常驻 lean |
 | --- | --- | --- | --- | --- |
-| 默认 | 是 | 是（合并） | 是 | 是（`AGENTS.md` + SessionStart） |
+| 默认 | 是 | 是（合并） | 是 | 是（SessionStart / IDE rules；不写 `AGENTS.md`） |
 | `--skills-only` / `--commands-only` | 是 | 否 | 否 | 否 |
 | `--no-hooks` | 是 | 否 | 是 | 是 |
-| `--agents-only` | 否 | 否 | 是 | 仅 `AGENTS.md` |
+| `--agents-only` | 否 | 否 | 是 | 否 |
+| `--agents-md` | （随 agents） | — | — | append 标记区块到 `AGENTS.md` |
 
 
 ## 背后的能力

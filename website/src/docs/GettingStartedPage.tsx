@@ -21,7 +21,7 @@ const content = {
           { cmd: 'curl -fsSL https://raw.githubusercontent.com/yugasun/aiops/main/install.sh | bash', desc: 'Alternative via curl' },
           { cmd: 'npx -y github:yugasun/aiops uninstall', desc: 'Remove installed aiops files' },
         ],
-        note: 'Interactive: ↑↓/space/ctrl+a IDEs, then scope + hooks. Project skills → .agents/skills (shared). CI: --yes. Also: --ide cursor, -g, --list, --skills-only, --no-hooks, uninstall. Restart IDE after install.',
+        note: 'Interactive: ↑↓/space/ctrl+a IDEs, then scope + hooks. Project skills → .agents/skills (shared). AGENTS.md off by default (--agents-md appends). CI: --yes. Restart IDE after install.',
       },
       {
         num: 2, title: 'Start from your project chat',
@@ -82,7 +82,7 @@ const content = {
           { cmd: "npx skills@latest add yugasun/aiops -g -y --skill '*'", desc: 'Skills CLI 全局安装' },
           { cmd: 'npx -y github:yugasun/aiops uninstall', desc: '卸载已安装的 aiops 文件' },
         ],
-        note: '交互安装：↑↓/空格/ctrl+a 选 IDE，再选范围与 hooks。项目 skills → .agents/skills（共用）。CI 用 --yes。也支持：--ide cursor、-g、--list、--skills-only、--no-hooks、uninstall。装完重启 IDE。',
+        note: '交互安装：↑↓/空格/ctrl+a 选 IDE，再选范围与 hooks。项目 skills → .agents/skills（共用）。默认不写 AGENTS.md（--agents-md 为 append）。CI 用 --yes。装完重启 IDE。',
       },
       {
         num: 2, title: '从项目聊天框开始',

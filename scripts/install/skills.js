@@ -34,6 +34,47 @@ function agentsMdDestPath(provider, isGlobal) {
   return path.resolve("AGENTS.md");
 }
 
+const AGENTS_MD_START = "<!-- aiops:agents-md:start -->";
+const AGENTS_MD_END = "<!-- aiops:agents-md:end -->";
+const AGENTS_MD_BLOCK_RE = new RegExp(
+  `${AGENTS_MD_START}[\\s\\S]*?${AGENTS_MD_END}\\n?`,
+  "g"
+);
+
+function wrapAgentsMdBlock(content) {
+  const body = content.trimEnd();
+  return `${AGENTS_MD_START}\n${body}\n${AGENTS_MD_END}\n`;
+}
+
+function hasAgentsMdBlock(content) {
+  return content.includes(AGENTS_MD_START) && content.includes(AGENTS_MD_END);
+}
+
+/** Append or refresh the marked aiops section — never overwrite user content. */
+function mergeAgentsMdContent(existing, incoming) {
+  const block = wrapAgentsMdBlock(incoming);
+  if (existing == null || existing === "") return block;
+  if (hasAgentsMdBlock(existing)) {
+    return existing.replace(AGENTS_MD_BLOCK_RE, block);
+  }
+  // Legacy full-file install from older aiops — replace with marked block only
+  if (isAiopsAgentsMd(existing) && !hasAgentsMdBlock(existing)) {
+    return block;
+  }
+  const base = existing.replace(/\s*$/, "");
+  return `${base}\n\n${block}`;
+}
+
+function stripAgentsMdBlock(existing) {
+  if (existing == null) return null;
+  if (hasAgentsMdBlock(existing)) {
+    const next = existing.replace(AGENTS_MD_BLOCK_RE, "").replace(/\s*$/, "\n");
+    return next.trim() === "" ? null : next.startsWith("\n") ? next.replace(/^\n+/, "") : next;
+  }
+  if (isAiopsAgentsMd(existing)) return null;
+  return existing;
+}
+
 function installSkills(
   fs,
   aiopsRoot,
@@ -183,9 +224,19 @@ function installAgentsMd(fs, aiopsRoot, provider, isGlobal, log) {
   const destPath = agentsMdDestPath(provider, isGlobal);
   if (!destPath) return false;
 
+  const incoming = fs.readFileSync(agentsMdPath, "utf8");
+  const existing = fs.existsSync(destPath) ? fs.readFileSync(destPath, "utf8") : null;
+  const merged = mergeAgentsMdContent(existing, incoming);
+
   fs.mkdirSync(path.dirname(destPath), { recursive: true });
-  fs.copyFileSync(agentsMdPath, destPath);
-  log.ok(`AGENTS.md → ${log.dim(path.dirname(destPath))}`);
+  fs.writeFileSync(destPath, merged, "utf8");
+  const mode =
+    existing == null
+      ? "created"
+      : hasAgentsMdBlock(existing) || isAiopsAgentsMd(existing)
+        ? "updated"
+        : "appended";
+  log.ok(`AGENTS.md ${mode} → ${log.dim(destPath)}`);
   return true;
 }
 
@@ -194,13 +245,21 @@ function uninstallAgentsMd(fs, aiopsRoot, provider, isGlobal, log) {
   if (!destPath || !fs.existsSync(destPath)) return false;
 
   const content = fs.readFileSync(destPath, "utf8");
-  if (isAiopsAgentsMd(content)) {
+  const next = stripAgentsMdBlock(content);
+
+  if (next === content) {
+    log.skip("AGENTS.md left unchanged (no aiops section)");
+    return false;
+  }
+
+  if (next == null) {
     fs.unlinkSync(destPath);
     log.ok(`removed AGENTS.md → ${log.dim(path.dirname(destPath))}`);
-    return true;
+  } else {
+    fs.writeFileSync(destPath, next.endsWith("\n") ? next : `${next}\n`, "utf8");
+    log.ok(`removed aiops section from AGENTS.md → ${log.dim(destPath)}`);
   }
-  log.skip("AGENTS.md left unchanged (not aiops-generated)");
-  return false;
+  return true;
 }
 
 module.exports = {
@@ -214,4 +273,9 @@ module.exports = {
   skillsDestPath,
   uniqueBySkillsDest,
   agentsMdDestPath,
+  mergeAgentsMdContent,
+  stripAgentsMdBlock,
+  wrapAgentsMdBlock,
+  AGENTS_MD_START,
+  AGENTS_MD_END,
 };

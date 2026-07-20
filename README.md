@@ -65,14 +65,14 @@ Default install is **interactive** (arrow keys + space to pick IDEs, `ctrl+a` fo
 
 ```bash
 npx -y github:yugasun/aiops                        # interactive install
-npx -y github:yugasun/aiops --yes                  # non-interactive: all detected IDEs, project-local, with hooks
+npx -y github:yugasun/aiops --yes                  # non-interactive: all detected IDEs, project agents/hooks, skills in ~/
 npx -y github:yugasun/aiops --all                  # same as --yes
 npx -y github:yugasun/aiops --ide claude           # Claude Code only (still prompts scope/hooks unless --yes)
 npx -y github:yugasun/aiops --ide cursor           # Cursor only
 npx -y github:yugasun/aiops --ide codex            # Codex CLI only
 npx -y github:yugasun/aiops --ide copilot          # GitHub Copilot only
 npx -y github:yugasun/aiops --ide opencode         # OpenCode only
-npx -y github:yugasun/aiops -g                     # global install to ~/<ide>/
+npx -y github:yugasun/aiops -g                     # global agents/hooks/skills under ~/
 npx -y github:yugasun/aiops --skills-only          # slash-command skills only (no hooks/agents/always-on lean)
 npx -y github:yugasun/aiops --commands-only        # alias for --skills-only
 npx -y github:yugasun/aiops --agents-only          # only install agents
@@ -95,16 +95,16 @@ npx -y github:yugasun/aiops --uninstall            # alias for uninstall
 
 5 IDEs plus a generic AGENTS.md harness for any tool that reads it.
 
-Project-local **skills** for Cursor / Codex / Copilot / OpenCode install once to `.agents/skills/` (shared with Amp, Antigravity, Cline, Gemini CLI, Warp, and other agents that follow the [skills](https://github.com/vercel-labs/skills) universal path). Claude Code keeps `.claude/skills/`. Agents, hooks, and always-on lean remain per-IDE.
+**Skills always install to user-global directories** (never into the project tree). Project scope only places agents / hooks / always-on rules in the repo. Global scope puts those under `~/` as well.
 
-| IDE                 | Skills Path         | Always-On                         | Agents                  | Hooks                        |
-| ------------------- | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
-| **Claude Code**     | `.claude/skills/`   | via `/lean`                       | `.claude/agents/*.md`   | SessionStart + SubagentStart |
-| **Cursor**          | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
-| **Codex CLI**       | `.agents/skills/`   | SessionStart hooks                | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
-| **GitHub Copilot**  | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
-| **OpenCode**        | `.agents/skills/`   | via `/lean`                       | `.opencode/agents/*.md` | —                            |
-| **Generic harness** | —                   | optional `AGENTS.md` append       | —                       | —                            |
+| IDE                 | Skills Path (global)              | Always-On (project scope)         | Agents (project scope)  | Hooks                        |
+| ------------------- | --------------------------------- | --------------------------------- | ----------------------- | ---------------------------- |
+| **Claude Code**     | `~/.claude/skills/`               | via `/lean`                       | `.claude/agents/*.md`   | SessionStart + SubagentStart |
+| **Cursor**          | `~/.cursor/skills/`               | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
+| **Codex CLI**       | `~/.agents/skills/`               | SessionStart hooks                | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
+| **GitHub Copilot**  | `~/.github/skills/`               | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**        | `~/.config/opencode/skills/`      | via `/lean`                       | `.opencode/agents/*.md` | —                            |
+| **Generic harness** | —                                 | optional `AGENTS.md` append       | —                       | —                            |
 
 `AGENTS.md` is **off by default**. Pass `--agents-md` (or say yes in the interactive prompt) to append a marked aiops block — never overwrite your existing file.
 
@@ -132,10 +132,10 @@ To opt out of lean after a full install: run `npx -y github:yugasun/aiops uninst
 │  └── phase dispatch →  agents/*.md + skills/*/SKILL.md  │
 ├─────────────────────────────────────────────────────────┤
 │  Adapter seam (scripts/adapters/*)                      │
-│  ├── shared   → .agents/skills/ (project skills once)   │
+│  ├── skills   → ~/…/skills/ (always global, never in repo) │
 │  ├── cursor   → .cursor/rules/*.mdc + .cursor/agents/   │
-│  ├── claude   → .claude/skills/ + .claude/agents/       │
-│  ├── codex    → .codex/agents/*.toml + AGENTS.md        │
+│  ├── claude   → .claude/agents/ (+ ~/.claude/skills)    │
+│  ├── codex    → .codex/agents/*.toml + optional AGENTS.md │
 │  ├── copilot  → .github/copilot-instructions.md         │
 │  └── opencode → .opencode/agents/                       │
 └─────────────────────────────────────────────────────────┘

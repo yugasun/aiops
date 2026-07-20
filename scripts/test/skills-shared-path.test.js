@@ -2,6 +2,7 @@
 "use strict";
 
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const { strict: assert } = require("assert");
 const {
@@ -20,29 +21,35 @@ const opencode = PROVIDERS.find((p) => p.id === "opencode");
 const codex = PROVIDERS.find((p) => p.id === "codex");
 const claude = PROVIDERS.find((p) => p.id === "claude-code");
 
-assert.equal(cursor.localSkillsDir, ".agents/skills");
-assert.equal(copilot.localSkillsDir, ".agents/skills");
-assert.equal(opencode.localSkillsDir, ".agents/skills");
-assert.equal(codex.localSkillsDir, ".agents/skills");
-assert.equal(claude.localSkillsDir, ".claude/skills");
-assert.equal(cursor.sharedSkills, true);
-assert.equal(claude.sharedSkills, false);
+// Skills destination is always user-global (never project-local path)
+assert.equal(skillsDestPath(cursor), cursor.globalSkillsDir);
+assert.equal(skillsDestPath(copilot), copilot.globalSkillsDir);
+assert.equal(skillsDestPath(codex), codex.globalSkillsDir);
+assert.equal(skillsDestPath(claude), claude.globalSkillsDir);
+assert.notEqual(skillsDestPath(cursor), path.resolve(".agents/skills"));
 
-const sharedKey = skillsDestPath(cursor, false);
-assert.equal(skillsDestPath(copilot, false), sharedKey);
-assert.equal(skillsDestPath(opencode, false), sharedKey);
-assert.equal(skillsDestPath(codex, false), sharedKey);
-assert.notEqual(skillsDestPath(claude, false), sharedKey);
+const unique = uniqueBySkillsDest([cursor, copilot, opencode, codex, claude]);
+// cursor/copilot/opencode each have distinct global dirs; codex shares ~/.agents/skills
+assert.ok(unique.length >= 3);
+assert.ok(unique.some((p) => p.id === "claude-code"));
+assert.ok(unique.some((p) => p.id === "cursor"));
 
-const unique = uniqueBySkillsDest([cursor, copilot, opencode, codex, claude], false);
-assert.equal(unique.length, 2);
-assert.equal(unique[0].id, "cursor");
-assert.equal(unique[1].id, "claude-code");
-
-const tmp = fs.mkdtempSync(path.join(__dirname, "aiops-shared-skills-"));
+const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), "aiops-global-skills-"));
+const tmpProject = fs.mkdtempSync(path.join(__dirname, "aiops-project-skills-"));
 const prevCwd = process.cwd();
-process.chdir(tmp);
 
+const cursorGlobal = {
+  ...cursor,
+  globalSkillsDir: path.join(tmpHome, "cursor-skills"),
+  localSkillsDir: ".agents/skills",
+};
+const copilotGlobal = {
+  ...copilot,
+  globalSkillsDir: path.join(tmpHome, "copilot-skills"),
+  localSkillsDir: ".agents/skills",
+};
+
+process.chdir(tmpProject);
 const aiopsRoot = path.resolve(__dirname, "../..");
 const log = {
   msg: () => {},
@@ -53,25 +60,26 @@ const log = {
 };
 
 const seen = new Set();
-for (const provider of [cursor, copilot, opencode]) {
-  const key = skillsDestPath(provider, false);
+for (const provider of [cursorGlobal, copilotGlobal]) {
+  const key = skillsDestPath(provider);
   const skipSkillFiles = seen.has(key);
   if (!skipSkillFiles) seen.add(key);
+  // project-local scope (isGlobal=false) must still write skills to globalSkillsDir
   installSkills(fs, aiopsRoot, provider, false, loadAllSkills, hasDir, log, {
     skipAlwaysOn: true,
     skipSkillFiles,
   });
 }
 
-const agentsSkills = path.resolve(".agents/skills");
-assert.ok(fs.existsSync(path.join(agentsSkills, "aiops")));
+assert.ok(fs.existsSync(path.join(cursorGlobal.globalSkillsDir, "aiops")));
+assert.ok(fs.existsSync(path.join(copilotGlobal.globalSkillsDir, "aiops")));
+assert.equal(fs.existsSync(path.resolve(".agents/skills")), false);
+assert.equal(fs.existsSync(path.resolve(".cursor/skills")), false);
 assert.equal(fs.existsSync(path.resolve(".github/skills")), false);
-assert.equal(fs.existsSync(path.resolve(".opencode/skills")), false);
 
-// No-op when legacy dirs absent (avoid writing .cursor/ which some sandboxes block)
 uninstallLegacyLocalSkills(fs, aiopsRoot, loadAllSkills, hasDir, log);
-assert.ok(fs.existsSync(path.join(agentsSkills, "aiops")));
 
 process.chdir(prevCwd);
-fs.rmSync(tmp, { recursive: true, force: true });
+fs.rmSync(tmpProject, { recursive: true, force: true });
+fs.rmSync(tmpHome, { recursive: true, force: true });
 console.log("skills-shared-path.test.js: ok");

@@ -6,18 +6,17 @@ const { getAdapter } = require("../adapters");
 const { copyDirSync } = require("./fs-utils");
 const { LEGACY_LOCAL_SKILLS_DIRS } = require("../providers");
 
-function skillsDestPath(provider, isGlobal) {
-  return isGlobal
-    ? provider.globalSkillsDir
-    : path.resolve(provider.localSkillsDir);
+/** Skills always install to the user-global dir — never into the project tree. */
+function skillsDestPath(provider) {
+  return provider.globalSkillsDir;
 }
 
-/** First provider per unique skills destination (project-local shared `.agents/skills`). */
-function uniqueBySkillsDest(providers, isGlobal) {
+/** First provider per unique global skills destination. */
+function uniqueBySkillsDest(providers) {
   const seen = new Set();
   const unique = [];
   for (const provider of providers) {
-    const key = skillsDestPath(provider, isGlobal);
+    const key = skillsDestPath(provider);
     if (seen.has(key)) continue;
     seen.add(key);
     unique.push(provider);
@@ -97,7 +96,8 @@ function installSkills(
   const regularSkills = allSkills.filter((s) => !s.alwaysOn);
 
   if (!skipSkillFiles) {
-    const destBase = skillsDestPath(provider, isGlobal);
+    // Always user-global — project scope must not write into .agents/skills etc.
+    const destBase = skillsDestPath(provider);
     fs.mkdirSync(destBase, { recursive: true });
 
     for (const skill of regularSkills) {
@@ -110,7 +110,7 @@ function installSkills(
       log.ok(`${skill.name}/ → ${log.dim(destDir)}`);
     }
 
-    // Always-on skills that have no adapter path still land in skills dir
+    // Always-on skills that have no adapter path still land in global skills dir
     if (alwaysOnSkills.length > 0 && !skipAlwaysOn && !adapter.installAlwaysOn) {
       for (const skill of alwaysOnSkills) {
         const srcDir = path.join(skillsDir, skill.name);
@@ -122,7 +122,7 @@ function installSkills(
       }
     }
   } else {
-    log.skip(`skills files already installed at ${log.dim(skillsDestPath(provider, isGlobal))}`);
+    log.skip(`skills files already installed at ${log.dim(skillsDestPath(provider))}`);
   }
 
   if (alwaysOnSkills.length > 0 && !skipAlwaysOn) {
@@ -206,7 +206,7 @@ function uninstallSkills(
   const alwaysOnSkills = allSkills.filter((s) => s.alwaysOn);
 
   if (!skipSkillFiles) {
-    removeSkillsFromDir(fs, skillsDestPath(provider, isGlobal), allSkills, hasDir, log);
+    removeSkillsFromDir(fs, skillsDestPath(provider), allSkills, hasDir, log);
   }
 
   if (alwaysOnSkills.length > 0) {

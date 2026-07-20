@@ -75,7 +75,7 @@ npx -y github:yugasun/aiops --ide codex
 npx -y github:yugasun/aiops --ide copilot
 npx -y github:yugasun/aiops --ide opencode
 
-# 全局安装（到 ~/）
+# 全局安装（agents/hooks/skills 都到 ~/）
 npx -y github:yugasun/aiops -g
 
 # 选择性安装
@@ -105,16 +105,16 @@ npx -y github:yugasun/aiops --uninstall             # 同上
 
 ## 支持的 IDE
 
-项目级 **skills**：Cursor / Codex / Copilot / OpenCode 统一写入 `.agents/skills/`（与 Amp、Antigravity、Cline、Gemini CLI、Warp 等遵循 [skills](https://github.com/vercel-labs/skills) 通用路径的 Agent 共用，只拷贝一次）。Claude Code 仍用 `.claude/skills/`。agents、hooks、常驻 lean 仍按 IDE 分别安装。
+**Skills 始终安装到用户全局目录**（不会写入项目仓库）。「项目」范围只影响 agents / hooks / always-on rules；「全局」则这些也进 `~/`。
 
-| IDE                | Skills 路径           | Always-On                         | Agents                  | Hooks                        |
-| ------------------ | ------------------- | --------------------------------- | ----------------------- | ---------------------------- |
-| **Claude Code**    | `.claude/skills/`   | 通过 `/lean` 触发                     | `.claude/agents/*.md`   | SessionStart + SubagentStart |
-| **Cursor**         | `.agents/skills/`   | `.cursor/rules/lean.mdc`          | `.cursor/agents/*.md`   | —                            |
-| **Codex CLI**      | `.agents/skills/`   | SessionStart hooks                | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
-| **GitHub Copilot** | `.agents/skills/`   | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
-| **OpenCode**       | `.agents/skills/`   | 通过 `/lean` 触发                     | `.opencode/agents/*.md` | —                            |
-| **通用 harness**     | —                   | 可选 append `AGENTS.md`              | —                       | —                            |
+| IDE                | Skills 路径（全局）                    | Always-On（项目范围）                    | Agents（项目范围）            | Hooks                        |
+| ------------------ | -------------------------------- | -------------------------------- | ----------------------- | ---------------------------- |
+| **Claude Code**    | `~/.claude/skills/`              | 通过 `/lean` 触发                      | `.claude/agents/*.md`   | SessionStart + SubagentStart |
+| **Cursor**         | `~/.cursor/skills/`              | `.cursor/rules/lean.mdc`         | `.cursor/agents/*.md`   | —                            |
+| **Codex CLI**      | `~/.agents/skills/`              | SessionStart hooks               | `.codex/agents/*.toml`  | SessionStart + SubagentStart |
+| **GitHub Copilot** | `~/.github/skills/`              | `.github/copilot-instructions.md` | `.github/agents/*.md`   | —                            |
+| **OpenCode**       | `~/.config/opencode/skills/`     | 通过 `/lean` 触发                      | `.opencode/agents/*.md` | —                            |
+| **通用 harness**     | —                                | 可选 append `AGENTS.md`             | —                       | —                            |
 
 `AGENTS.md` **默认不写**。加 `--agents-md`（或交互里选 Yes）才会 append 带标记的 aiops 区块，不会覆盖你已有内容。
 

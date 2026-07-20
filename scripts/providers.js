@@ -86,7 +86,7 @@ const PROVIDERS = [
     globalAgentsDir: path.join(HOME, ".cursor", "agents"),
     localAgentsDir: ".cursor/agents",
     globalSkillsDir: path.join(HOME, ".cursor", "skills"),
-    // Project skills shared with Amp/Cline/Codex/Copilot/OpenCode/Warp/… (vercel-labs/skills)
+    // localSkillsDir kept for legacy uninstall cleanup only — installs always use globalSkillsDir
     localSkillsDir: ".agents/skills",
     sharedSkills: true,
     hooksDir: path.join(HOME, ".cursor", "hooks"),

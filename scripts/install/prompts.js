@@ -347,17 +347,15 @@ async function promptIdes(providers) {
     items: providers.map((p) => ({
       value: p.id,
       label: p.label,
-      hint: p.sharedSkills
-        ? `(${p.id} · skills → .agents/skills)`
-        : `(${p.id} · skills → ${p.localSkillsDir || ".claude/skills"})`,
+      hint: `(${p.id} · skills → ${p.globalSkillsDir})`,
     })),
     initialSelected: [],
     required: true,
     lockedSection: hasShared
       ? {
-          title: "Universal (.agents/skills)",
+          title: "Skills (user-global only)",
           items: UNIVERSAL_SKILLS_CONSUMERS.map((label) => ({ label })),
-          note: "Project skills install once here when any shared IDE is selected",
+          note: "Skills never write into the project tree; agents/hooks follow scope below",
         }
       : null,
   });
@@ -375,12 +373,12 @@ async function promptScope() {
       {
         value: false,
         label: "Project",
-        hint: "current directory (committed with your project)",
+        hint: "agents/hooks/rules in this repo; skills still go to ~/",
       },
       {
         value: true,
         label: "Global",
-        hint: "home directory (available across all projects)",
+        hint: "agents/hooks/skills all under home directories",
       },
     ],
   });

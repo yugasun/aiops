@@ -152,8 +152,8 @@ ${c.bold("Flags:")}
   -y, --yes          Skip prompts; install to all detected IDEs (project-local)
   --all              Same as --yes; install to every detected IDE
   --ide <name>       Install to specific IDE: claude, cursor, copilot, codex, opencode
-  -g, --global       Global install to ~/<ide>/
-  --local            Project-local install to ./<ide>/ (default)
+  -g, --global       Global agents/hooks/skills under ~/
+  --local            Project agents/hooks/rules; skills still under ~/ (default)
   --list             List detected IDEs, don't install
   --uninstall        Alias for the uninstall command
   --skills-only      Install slash-command skills only (no hooks, agents, or always-on lean)
@@ -346,19 +346,22 @@ async function main() {
     log.msg(c.bold(`[${provider.label}]`));
 
     if (!args.agentsOnly && !args.noSkills) {
-      const skillsKey = skillsDestPath(provider, args.global);
-      const skipSkillFiles = seenSkillsDest.has(skillsKey);
-      if (!skipSkillFiles) seenSkillsDest.add(skillsKey);
+      // Skill files always land in user-global dirs; never in the project tree.
+      const skillsKey = skillsDestPath(provider);
+      const skipSkillFilesInstall = seenSkillsDest.has(skillsKey);
+      if (!skipSkillFilesInstall) seenSkillsDest.add(skillsKey);
+      // Project uninstall must not delete global skills shared across projects.
+      const skipSkillFilesUninstall = !args.global || skipSkillFilesInstall;
 
       if (args.uninstall) {
         uninstallSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log, {
-          skipSkillFiles,
+          skipSkillFiles: skipSkillFilesUninstall,
         });
         uninstallHooks(fs, provider, args.global, hasDir, log);
       } else {
         installSkills(fs, AIOps_ROOT, provider, args.global, loadAllSkills, hasDir, log, {
           skipAlwaysOn,
-          skipSkillFiles,
+          skipSkillFiles: skipSkillFilesInstall,
         });
         if (installHooksFlag) {
           installHooks(fs, AIOps_ROOT, provider, args.global, hasDir, log);

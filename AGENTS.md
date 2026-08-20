@@ -1,6 +1,6 @@
 # aiops — Agent Definitions
 
-Lazy means efficient, not careless. The best code is the code never written.
+The smallest working change. Skip what is not needed.
 
 ## Lean Discipline
 

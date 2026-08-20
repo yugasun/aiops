@@ -3,13 +3,13 @@ name: lean
 description: >
   Minimal solution discipline: YAGNI ladder, stdlib and native first, shortest
   working diff. Use during delivery when writing code, or when the user says
-  lean, lean mode, yagni, ponytail, lazy mode, or complains about over-engineering.
+  lean, lean mode, yagni, lazy mode, or complains about over-engineering.
 license: MIT
 ---
 
 # Lean
 
-Adapted from ponytail discipline. Lazy means efficient, not careless. Active during **delivery** in the aiops bundle; **off** during grill/alignment.
+The smallest working change. Efficiency is not carelessness. Active during **delivery** in the aiops bundle; **off** during grill/alignment.
 
 ## Ladder
 

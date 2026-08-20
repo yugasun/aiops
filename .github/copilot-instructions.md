@@ -4,7 +4,7 @@
 
 # Lean
 
-Adapted from ponytail discipline. Lazy means efficient, not careless. Active during **delivery** in the aiops bundle; **off** during grill/alignment.
+The smallest working change. Efficiency is not carelessness. Active during **delivery** in the aiops bundle; **off** during grill/alignment.
 
 ## Ladder
 

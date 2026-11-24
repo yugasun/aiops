@@ -1,0 +1,891 @@
+[
+  {
+    "taskKind": "feature_idea",
+    "title": {
+      "en": "Feature",
+      "zh": "功能"
+    },
+    "phases": [
+      {
+        "phase_id": "alignment",
+        "skill": "/grill-with-docs",
+        "agent": "architect",
+        "title": {
+          "en": "Align on the idea",
+          "zh": "对齐需求"
+        }
+      },
+      {
+        "phase_id": "design_spec",
+        "skill": "/architect-design",
+        "agent": "architect",
+        "title": {
+          "en": "Design spec",
+          "zh": "设计方案"
+        }
+      },
+      {
+        "phase_id": "design_review",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Design review",
+          "zh": "设计评审"
+        }
+      },
+      {
+        "phase_id": "task_breakdown",
+        "skill": "/to-issues",
+        "agent": "planner",
+        "title": {
+          "en": "Task breakdown",
+          "zh": "任务拆分"
+        }
+      },
+      {
+        "phase_id": "delivery",
+        "skill": "/aiops-implement",
+        "agent": "builder",
+        "title": {
+          "en": "Implement with quality gates",
+          "zh": "实现与质量门"
+        }
+      },
+      {
+        "phase_id": "drift_check",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Drift check",
+          "zh": "漂移检测"
+        }
+      },
+      {
+        "phase_id": "ship",
+        "skill": "/gitops",
+        "agent": "gitops",
+        "title": {
+          "en": "Ship",
+          "zh": "提交与推送"
+        }
+      }
+    ],
+    "branches": [
+      {
+        "id": "bootstrap",
+        "title": {
+          "en": "Tracker needs setup",
+          "zh": "尚未配置跟踪器"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "bootstrap",
+            "skill": "/aiops-setup",
+            "agent": "planner",
+            "title": {
+              "en": "Project setup",
+              "zh": "项目准备"
+            }
+          }
+        ]
+      },
+      {
+        "id": "explore",
+        "title": {
+          "en": "Exploration requested",
+          "zh": "先探索想法"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "explore",
+            "skill": "/explore",
+            "agent": "architect",
+            "title": {
+              "en": "Explore ideas",
+              "zh": "自由探索"
+            }
+          }
+        ]
+      },
+      {
+        "id": "greenfield",
+        "title": {
+          "en": "No existing codebase",
+          "zh": "没有现有代码库"
+        },
+        "start": 0,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "alignment",
+            "skill": "/grilling",
+            "agent": "architect",
+            "title": {
+              "en": "Align on the idea",
+              "zh": "对齐需求"
+            }
+          }
+        ]
+      },
+      {
+        "id": "prototype",
+        "title": {
+          "en": "Prototype needed (return with VERDICT.md)",
+          "zh": "需要原型验证并带回 VERDICT.md"
+        },
+        "start": 3,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "prototype_handoff_out",
+            "skill": "/handoff",
+            "agent": "",
+            "title": {
+              "en": "Start prototype session",
+              "zh": "先开原型会话"
+            }
+          },
+          {
+            "phase_id": "prototype",
+            "skill": "/prototype",
+            "agent": "prototyper",
+            "title": {
+              "en": "Prototype",
+              "zh": "快速原型"
+            }
+          },
+          {
+            "phase_id": "prototype_handoff_back",
+            "skill": "/handoff",
+            "agent": "architect",
+            "title": {
+              "en": "Return prototype findings",
+              "zh": "带回结论"
+            }
+          }
+        ]
+      },
+      {
+        "id": "multi",
+        "title": {
+          "en": "Multi-session delivery confirmed",
+          "zh": "已确认跨会话交付"
+        },
+        "start": 3,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "planning_prd",
+            "skill": "/to-prd",
+            "agent": "planner",
+            "title": {
+              "en": "Write PRD",
+              "zh": "写成 PRD"
+            }
+          },
+          {
+            "phase_id": "planning_issues",
+            "skill": "/to-issues",
+            "agent": "planner",
+            "title": {
+              "en": "Split into issues",
+              "zh": "拆成子任务"
+            }
+          },
+          {
+            "phase_id": "issue_session",
+            "skill": "/handoff",
+            "agent": "planner",
+            "title": {
+              "en": "Fresh issue session",
+              "zh": "新会话开工"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskKind": "feature_with_ui",
+    "title": {
+      "en": "Feature + UI",
+      "zh": "功能 + UI"
+    },
+    "phases": [
+      {
+        "phase_id": "alignment",
+        "skill": "/grill-with-docs",
+        "agent": "architect",
+        "title": {
+          "en": "Align on the idea",
+          "zh": "对齐需求"
+        }
+      },
+      {
+        "phase_id": "design_spec",
+        "skill": "/architect-design",
+        "agent": "architect",
+        "title": {
+          "en": "Design spec",
+          "zh": "设计方案"
+        }
+      },
+      {
+        "phase_id": "ui_mockup",
+        "skill": "/ui-mockup",
+        "agent": "ui-designer",
+        "title": {
+          "en": "UI mockup",
+          "zh": "界面草图"
+        }
+      },
+      {
+        "phase_id": "design_review",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Design review",
+          "zh": "设计评审"
+        }
+      },
+      {
+        "phase_id": "task_breakdown",
+        "skill": "/to-issues",
+        "agent": "planner",
+        "title": {
+          "en": "Task breakdown",
+          "zh": "任务拆分"
+        }
+      },
+      {
+        "phase_id": "delivery",
+        "skill": "/aiops-implement",
+        "agent": "builder",
+        "title": {
+          "en": "Implement with quality gates",
+          "zh": "实现与质量门"
+        }
+      },
+      {
+        "phase_id": "drift_check",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Drift check",
+          "zh": "漂移检测"
+        }
+      },
+      {
+        "phase_id": "ship",
+        "skill": "/gitops",
+        "agent": "gitops",
+        "title": {
+          "en": "Ship",
+          "zh": "提交与推送"
+        }
+      }
+    ],
+    "branches": [
+      {
+        "id": "bootstrap",
+        "title": {
+          "en": "Tracker needs setup",
+          "zh": "尚未配置跟踪器"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "bootstrap",
+            "skill": "/aiops-setup",
+            "agent": "planner",
+            "title": {
+              "en": "Project setup",
+              "zh": "项目准备"
+            }
+          }
+        ]
+      },
+      {
+        "id": "explore",
+        "title": {
+          "en": "Exploration requested",
+          "zh": "先探索想法"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "explore",
+            "skill": "/explore",
+            "agent": "architect",
+            "title": {
+              "en": "Explore ideas",
+              "zh": "自由探索"
+            }
+          }
+        ]
+      },
+      {
+        "id": "greenfield",
+        "title": {
+          "en": "No existing codebase",
+          "zh": "没有现有代码库"
+        },
+        "start": 0,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "alignment",
+            "skill": "/grilling",
+            "agent": "architect",
+            "title": {
+              "en": "Align on the idea",
+              "zh": "对齐需求"
+            }
+          }
+        ]
+      },
+      {
+        "id": "prototype",
+        "title": {
+          "en": "Prototype needed (return with VERDICT.md)",
+          "zh": "需要原型验证并带回 VERDICT.md"
+        },
+        "start": 4,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "prototype_handoff_out",
+            "skill": "/handoff",
+            "agent": "",
+            "title": {
+              "en": "Start prototype session",
+              "zh": "先开原型会话"
+            }
+          },
+          {
+            "phase_id": "prototype",
+            "skill": "/prototype",
+            "agent": "prototyper",
+            "title": {
+              "en": "Prototype",
+              "zh": "快速原型"
+            }
+          },
+          {
+            "phase_id": "prototype_handoff_back",
+            "skill": "/handoff",
+            "agent": "architect",
+            "title": {
+              "en": "Return prototype findings",
+              "zh": "带回结论"
+            }
+          }
+        ]
+      },
+      {
+        "id": "multi",
+        "title": {
+          "en": "Multi-session delivery confirmed",
+          "zh": "已确认跨会话交付"
+        },
+        "start": 4,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "planning_prd",
+            "skill": "/to-prd",
+            "agent": "planner",
+            "title": {
+              "en": "Write PRD",
+              "zh": "写成 PRD"
+            }
+          },
+          {
+            "phase_id": "planning_issues",
+            "skill": "/to-issues",
+            "agent": "planner",
+            "title": {
+              "en": "Split into issues",
+              "zh": "拆成子任务"
+            }
+          },
+          {
+            "phase_id": "issue_session",
+            "skill": "/handoff",
+            "agent": "planner",
+            "title": {
+              "en": "Fresh issue session",
+              "zh": "新会话开工"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskKind": "bug_fix",
+    "title": {
+      "en": "Bug",
+      "zh": "缺陷"
+    },
+    "phases": [
+      {
+        "phase_id": "diagnose",
+        "skill": "/diagnosing-bugs",
+        "agent": "builder",
+        "title": {
+          "en": "Diagnose bug",
+          "zh": "定位问题"
+        }
+      },
+      {
+        "phase_id": "delivery",
+        "skill": "/aiops-implement",
+        "agent": "builder",
+        "title": {
+          "en": "Implement with quality gates",
+          "zh": "实现与质量门"
+        }
+      },
+      {
+        "phase_id": "drift_check",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Drift check",
+          "zh": "漂移检测"
+        }
+      },
+      {
+        "phase_id": "ship",
+        "skill": "/gitops",
+        "agent": "gitops",
+        "title": {
+          "en": "Ship",
+          "zh": "提交与推送"
+        }
+      }
+    ],
+    "branches": [
+      {
+        "id": "explore",
+        "title": {
+          "en": "Exploration requested",
+          "zh": "先探索想法"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "explore",
+            "skill": "/explore",
+            "agent": "architect",
+            "title": {
+              "en": "Explore ideas",
+              "zh": "自由探索"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskKind": "incoming_queue",
+    "title": {
+      "en": "Incoming",
+      "zh": "收到的请求"
+    },
+    "phases": [
+      {
+        "phase_id": "triage",
+        "skill": "/triage",
+        "agent": "",
+        "title": {
+          "en": "Triage backlog",
+          "zh": "整理待办"
+        }
+      },
+      {
+        "phase_id": "delivery",
+        "skill": "/aiops-implement",
+        "agent": "builder",
+        "title": {
+          "en": "Implement with quality gates",
+          "zh": "实现与质量门"
+        }
+      },
+      {
+        "phase_id": "drift_check",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Drift check",
+          "zh": "漂移检测"
+        }
+      },
+      {
+        "phase_id": "ship",
+        "skill": "/gitops",
+        "agent": "gitops",
+        "title": {
+          "en": "Ship",
+          "zh": "提交与推送"
+        }
+      }
+    ],
+    "branches": [
+      {
+        "id": "bootstrap",
+        "title": {
+          "en": "Tracker needs setup",
+          "zh": "尚未配置跟踪器"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "bootstrap",
+            "skill": "/aiops-setup",
+            "agent": "planner",
+            "title": {
+              "en": "Project setup",
+              "zh": "项目准备"
+            }
+          }
+        ]
+      },
+      {
+        "id": "explore",
+        "title": {
+          "en": "Exploration requested",
+          "zh": "先探索想法"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "explore",
+            "skill": "/explore",
+            "agent": "architect",
+            "title": {
+              "en": "Explore ideas",
+              "zh": "自由探索"
+            }
+          }
+        ]
+      },
+      {
+        "id": "unclear",
+        "title": {
+          "en": "Triage is still unclear",
+          "zh": "分流后需求仍不明确"
+        },
+        "start": 1,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "alignment",
+            "skill": "/grill-with-docs",
+            "agent": "architect",
+            "title": {
+              "en": "Align on the idea",
+              "zh": "对齐需求"
+            }
+          }
+        ]
+      },
+      {
+        "id": "unclear_greenfield",
+        "title": {
+          "en": "Triage is still unclear and there is no codebase",
+          "zh": "分流后需求仍不明确，且没有代码库"
+        },
+        "start": 1,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "alignment",
+            "skill": "/grilling",
+            "agent": "architect",
+            "title": {
+              "en": "Align on the idea",
+              "zh": "对齐需求"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskKind": "architecture_health",
+    "title": {
+      "en": "Architecture health",
+      "zh": "架构健康"
+    },
+    "phases": [
+      {
+        "phase_id": "graph_build",
+        "skill": "/code-graph",
+        "agent": "architect",
+        "title": {
+          "en": "Prepare code graph",
+          "zh": "准备代码图谱"
+        }
+      },
+      {
+        "phase_id": "architecture_scan",
+        "skill": "/improve-codebase-architecture",
+        "agent": "architect",
+        "title": {
+          "en": "Architecture health scan",
+          "zh": "扫描架构机会"
+        }
+      },
+      {
+        "phase_id": "alignment",
+        "skill": "/grill-with-docs",
+        "agent": "architect",
+        "title": {
+          "en": "Deepen the chosen architecture item",
+          "zh": "深化所选架构项"
+        }
+      },
+      {
+        "phase_id": "design_spec",
+        "skill": "/architect-design",
+        "agent": "architect",
+        "title": {
+          "en": "Design spec",
+          "zh": "设计方案"
+        }
+      },
+      {
+        "phase_id": "design_review",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Design review",
+          "zh": "设计评审"
+        }
+      },
+      {
+        "phase_id": "task_breakdown",
+        "skill": "/to-issues",
+        "agent": "planner",
+        "title": {
+          "en": "Task breakdown",
+          "zh": "任务拆分"
+        }
+      },
+      {
+        "phase_id": "delivery",
+        "skill": "/aiops-implement",
+        "agent": "builder",
+        "title": {
+          "en": "Implement with quality gates",
+          "zh": "实现与质量门"
+        }
+      },
+      {
+        "phase_id": "drift_check",
+        "skill": "/review",
+        "agent": "design-reviewer",
+        "title": {
+          "en": "Drift check",
+          "zh": "漂移检测"
+        }
+      },
+      {
+        "phase_id": "ship",
+        "skill": "/gitops",
+        "agent": "gitops",
+        "title": {
+          "en": "Ship",
+          "zh": "提交与推送"
+        }
+      }
+    ],
+    "branches": [
+      {
+        "id": "bootstrap",
+        "title": {
+          "en": "Tracker needs setup",
+          "zh": "尚未配置跟踪器"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "bootstrap",
+            "skill": "/aiops-setup",
+            "agent": "planner",
+            "title": {
+              "en": "Project setup",
+              "zh": "项目准备"
+            }
+          }
+        ]
+      },
+      {
+        "id": "explore",
+        "title": {
+          "en": "Exploration requested",
+          "zh": "先探索想法"
+        },
+        "start": 0,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "explore",
+            "skill": "/explore",
+            "agent": "architect",
+            "title": {
+              "en": "Explore ideas",
+              "zh": "自由探索"
+            }
+          }
+        ]
+      },
+      {
+        "id": "greenfield",
+        "title": {
+          "en": "No existing codebase",
+          "zh": "没有现有代码库"
+        },
+        "start": 2,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "alignment",
+            "skill": "/grilling",
+            "agent": "architect",
+            "title": {
+              "en": "Deepen the chosen architecture item",
+              "zh": "深化所选架构项"
+            }
+          }
+        ]
+      },
+      {
+        "id": "prototype",
+        "title": {
+          "en": "Prototype needed (return with VERDICT.md)",
+          "zh": "需要原型验证并带回 VERDICT.md"
+        },
+        "start": 5,
+        "remove": 0,
+        "phases": [
+          {
+            "phase_id": "prototype_handoff_out",
+            "skill": "/handoff",
+            "agent": "",
+            "title": {
+              "en": "Start prototype session",
+              "zh": "先开原型会话"
+            }
+          },
+          {
+            "phase_id": "prototype",
+            "skill": "/prototype",
+            "agent": "prototyper",
+            "title": {
+              "en": "Prototype",
+              "zh": "快速原型"
+            }
+          },
+          {
+            "phase_id": "prototype_handoff_back",
+            "skill": "/handoff",
+            "agent": "architect",
+            "title": {
+              "en": "Return prototype findings",
+              "zh": "带回结论"
+            }
+          }
+        ]
+      },
+      {
+        "id": "multi",
+        "title": {
+          "en": "Multi-session delivery confirmed",
+          "zh": "已确认跨会话交付"
+        },
+        "start": 5,
+        "remove": 1,
+        "phases": [
+          {
+            "phase_id": "planning_prd",
+            "skill": "/to-prd",
+            "agent": "planner",
+            "title": {
+              "en": "Write PRD",
+              "zh": "写成 PRD"
+            }
+          },
+          {
+            "phase_id": "planning_issues",
+            "skill": "/to-issues",
+            "agent": "planner",
+            "title": {
+              "en": "Split into issues",
+              "zh": "拆成子任务"
+            }
+          },
+          {
+            "phase_id": "issue_session",
+            "skill": "/handoff",
+            "agent": "planner",
+            "title": {
+              "en": "Fresh issue session",
+              "zh": "新会话开工"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskKind": "new_personal_skill",
+    "title": {
+      "en": "New personal skill",
+      "zh": "新建个人技能"
+    },
+    "phases": [
+      {
+        "phase_id": "skill_authoring",
+        "skill": "/aiops",
+        "agent": "",
+        "title": {
+          "en": "New personal skill",
+          "zh": "新技能"
+        }
+      }
+    ],
+    "branches": []
+  },
+  {
+    "taskKind": "prototype",
+    "title": {
+      "en": "Prototype",
+      "zh": "原型"
+    },
+    "phases": [
+      {
+        "phase_id": "prototype",
+        "skill": "/prototype",
+        "agent": "prototyper",
+        "title": {
+          "en": "Prototype",
+          "zh": "快速原型"
+        }
+      }
+    ],
+    "branches": []
+  }
+]

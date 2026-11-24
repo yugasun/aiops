@@ -1,11 +1,10 @@
 import generated from './registry.generated.json'
+import flowRoutes from './flow-routes.generated.json'
 import {
   agentMeta,
-  sequenceTypeLabels,
   skillCategories,
   skillDescriptions,
   tier2Handoffs,
-  virtualAgents,
   type LocaleText,
 } from './registry.i18n'
 
@@ -48,7 +47,6 @@ export function buildSkillCategories() {
 
       return {
         id: categoryId,
-        icon: meta.icon,
         title: meta.title,
         desc: meta.desc,
         skills: sorted.map((s) => ({
@@ -78,8 +76,6 @@ export function buildAgents() {
     if (!meta) {
       return {
         id: agent.name,
-        icon: '•',
-        color: 'text-muted-foreground',
         role: { en: agent.role, zh: agent.role },
         desc: { en: agent.role, zh: agent.role },
         skills: agent.skills,
@@ -88,8 +84,6 @@ export function buildAgents() {
     }
     return {
       id: agent.name,
-      icon: meta.icon,
-      color: meta.color,
       role: meta.role,
       desc: meta.desc,
       skills: agent.skills,
@@ -98,25 +92,9 @@ export function buildAgents() {
   })
 }
 
-export function buildSequences() {
-  return generated.sequences.map((seq) => ({
-    type:
-      sequenceTypeLabels[seq.taskType] ?? {
-        en: seq.taskType,
-        zh: seq.taskType,
-      },
-    agents: seq.agents,
-  }))
-}
+export const sequences = flowRoutes
 
 export const artifacts = generated.artifacts
-
-export function agentDisplay(agentId: string, agents: ReturnType<typeof buildAgents>) {
-  const agent = agents.find((a) => a.id === agentId)
-  if (agent) return { icon: agent.icon, id: agent.id }
-  const virtual = virtualAgents[agentId]
-  return { icon: virtual?.icon ?? '•', id: agentId }
-}
 
 export const registryVersion = generated.version
 export const latestReleaseVersion =

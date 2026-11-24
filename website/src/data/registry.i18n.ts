@@ -1,38 +1,32 @@
-/** Curated bilingual copy for the docs site — not derived from SKILL.md. */
+/** Curated bilingual copy for the docs site. */
 
 export type LocaleText = { en: string; zh: string }
 
 export const skillCategories: Record<
   string,
-  { icon: string; title: LocaleText; desc: LocaleText }
+  { title: LocaleText; desc: LocaleText }
 > = {
   router: {
-    icon: '🧭',
     title: { en: 'Router & Entry', zh: '路由与入口' },
     desc: { en: 'Start a task and keep the flow moving', zh: '开始任务，并让流程持续推进' },
   },
   alignment: {
-    icon: '🎯',
     title: { en: 'Alignment', zh: '对齐' },
     desc: { en: 'Clarify the work before code changes start', zh: '改代码前先把问题说清楚' },
   },
   planning: {
-    icon: '📋',
     title: { en: 'Planning', zh: '规划' },
     desc: { en: 'Turn large ideas into work that can be delivered safely', zh: '把大想法拆成能安全交付的工作' },
   },
   delivery: {
-    icon: '🔨',
     title: { en: 'Delivery', zh: '交付' },
     desc: { en: 'Make the smallest correct change and prepare it for review', zh: '做出最小正确改动，并准备评审' },
   },
   quality: {
-    icon: '🛡️',
     title: { en: 'Quality Gates', zh: '质量门' },
     desc: { en: 'Prevent drift, excess code, and unreviewed changes', zh: '防止偏移、多写和未评审改动' },
   },
   design: {
-    icon: '🎨',
     title: { en: 'Design', zh: '设计' },
     desc: { en: 'See UI direction before implementation', zh: '实现前先看清 UI 方向' },
   },
@@ -65,8 +59,8 @@ export const skillDescriptions: Record<string, LocaleText> = {
     zh: '把已对齐需求转成 builder 能执行的技术设计。',
   },
   explore: {
-    en: 'Think through an idea without creating delivery artifacts — opt-in discussion partner.',
-    zh: '在不产生交付产物的情况下深入思考一个想法——可选的讨论伙伴。',
+    en: 'An optional discussion partner for exploring ideas without creating delivery artifacts.',
+    zh: '可选的讨论伙伴，帮助深入探索想法，无需生成交付产物。',
   },
   'improve-codebase-architecture': {
     en: 'Finds evidence-backed refactor opportunities before choosing one to implement.',
@@ -93,8 +87,8 @@ export const skillDescriptions: Record<string, LocaleText> = {
     zh: '分类新请求，并路由到合适路径。',
   },
   'aiops-implement': {
-    en: 'Runs lean → TDD → prune → review; invokes /file-refactor when files approach 500 lines.',
-    zh: '运行 lean → TDD → prune → review；文件逼近 500 行时调用 /file-refactor。',
+    en: 'Owns TDD, Lean implementation, Prune, and Code Review. Hands the verified diff to Drift check.',
+    zh: '负责 TDD、最小实现、精简检查和代码评审，再把验证过的变更交给漂移检查。',
   },
   tdd: {
     en: 'Pins behavior with a failing test before writing the implementation.',
@@ -105,12 +99,12 @@ export const skillDescriptions: Record<string, LocaleText> = {
     zh: '高风险想法需要验证时，先做一次性原型。',
   },
   'diagnosing-bugs': {
-    en: 'Reproduces the problem, finds the cause, and keeps the fix narrow.',
-    zh: '复现问题、找到根因，并保持修复范围很小。',
+    en: 'Hands the cause and reproduction to Delivery in a Bug Journey. A direct fix request can continue through verification.',
+    zh: 'Bug Journey 中把原因和复现证据交给交付阶段。直接要求修复时可继续完成验证。',
   },
   gitops: {
-    en: 'Handles commit and push only after the delivery work is approved.',
-    zh: '交付工作确认后才处理 commit 和 push。',
+    en: 'In Ship, rechecks the gates and performs the Git operation you authorize.',
+    zh: '在 Ship 阶段复查门槛，执行你明确授权的 Git 操作。',
   },
   lean: {
     en: 'Keeps the diff focused: use existing tools and write only what the task needs.',
@@ -136,8 +130,8 @@ export const skillDescriptions: Record<string, LocaleText> = {
 
 export const tier2Handoffs: Record<string, LocaleText> = {
   'codebase-design': {
-    en: 'Tier 1 vocabulary: architect-design/design-vocabulary.md; full skill deferred',
-    zh: 'Tier 1 词汇表：architect-design/design-vocabulary.md；完整 skill 仍延后',
+    en: 'Tier 1 vocabulary is in architect-design/design-vocabulary.md. The full skill is deferred.',
+    zh: 'Tier 1 词汇表位于 architect-design/design-vocabulary.md。完整技能仍延后安装。',
   },
   'writing-great-skills': {
     en: 'CONTEXT.md authoring principles + new-skill checklist in /aiops',
@@ -151,11 +145,9 @@ export const tier2Handoffs: Record<string, LocaleText> = {
 
 export const agentMeta: Record<
   string,
-  { icon: string; color: string; role: LocaleText; desc: LocaleText }
+  { role: LocaleText; desc: LocaleText }
 > = {
   architect: {
-    icon: '🏛️',
-    color: 'text-purple-400',
     role: { en: 'Alignment', zh: '对齐' },
     desc: {
       en: 'Clarifies the problem and turns decisions into NOTES.md and tech-spec.md',
@@ -163,8 +155,6 @@ export const agentMeta: Record<
     },
   },
   'design-reviewer': {
-    icon: '🔎',
-    color: 'text-blue-400',
     role: { en: 'Design gate', zh: '设计门' },
     desc: {
       en: 'Design gate before planning; drift check before ship (review skill: design + drift modes)',
@@ -172,8 +162,6 @@ export const agentMeta: Record<
     },
   },
   planner: {
-    icon: '📐',
-    color: 'text-cyan-400',
     role: { en: 'Planning', zh: '规划' },
     desc: {
       en: 'Turns larger work into a PRD and vertical slices',
@@ -181,8 +169,6 @@ export const agentMeta: Record<
     },
   },
   prototyper: {
-    icon: '🧪',
-    color: 'text-amber-400',
     role: { en: 'Prototype', zh: '原型' },
     desc: {
       en: 'Validates risky assumptions with disposable prototypes',
@@ -190,8 +176,6 @@ export const agentMeta: Record<
     },
   },
   builder: {
-    icon: '🔨',
-    color: 'text-green-400',
     role: { en: 'Delivery', zh: '交付' },
     desc: {
       en: 'Implements the smallest tested change that satisfies the plan',
@@ -199,8 +183,6 @@ export const agentMeta: Record<
     },
   },
   'ui-designer': {
-    icon: '🎨',
-    color: 'text-pink-400',
     role: { en: 'UI design', zh: 'UI 设计' },
     desc: {
       en: 'Creates previewable UI mockups before product code is written',
@@ -208,8 +190,6 @@ export const agentMeta: Record<
     },
   },
   'code-reviewer': {
-    icon: '📋',
-    color: 'text-blue-400',
     role: { en: 'Delivery gate', zh: '交付门' },
     desc: {
       en: 'Reviews the diff in code mode (standards + spec vs REVIEW.md)',
@@ -217,8 +197,6 @@ export const agentMeta: Record<
     },
   },
   'quality-auditor': {
-    icon: '✂️',
-    color: 'text-orange-400',
     role: { en: 'Delivery gate', zh: '交付门' },
     desc: {
       en: 'Flags unnecessary complexity before delivery',
@@ -226,8 +204,6 @@ export const agentMeta: Record<
     },
   },
   gitops: {
-    icon: '🚀',
-    color: 'text-emerald-400',
     role: { en: 'Delivery', zh: '交付' },
     desc: {
       en: 'Handles git operations after explicit approval',
@@ -236,16 +212,3 @@ export const agentMeta: Record<
   },
 }
 
-export const sequenceTypeLabels: Record<string, LocaleText> = {
-  Feature: { en: 'Feature', zh: '功能' },
-  'Feature + UI': { en: 'Feature + UI', zh: '功能 + UI' },
-  Bug: { en: 'Bug', zh: 'Bug' },
-  Incoming: { en: 'Incoming', zh: '请求' },
-  Prototype: { en: 'Prototype', zh: '原型' },
-  'Architecture health': { en: 'Architecture health', zh: '架构健康' },
-}
-
-/** Virtual agent row for triage in dispatch sequences. */
-export const virtualAgents: Record<string, { icon: string }> = {
-  triage: { icon: '📥' },
-}

@@ -1,8 +1,8 @@
 {
   "manifestVersion": 3,
-  "version": "1.4.0",
-  "latestReleaseVersion": "1.4.1",
-  "generatedAt": "2026-07-07T09:36:33.683Z",
+  "version": "1.5.1",
+  "latestReleaseVersion": "1.5.1",
+  "generatedAt": "2026-11-20T07:55:18.658Z",
   "categoryOrder": [
     "router",
     "alignment",
@@ -61,7 +61,7 @@
       "category": "delivery",
       "role": "delivery",
       "alwaysOn": false,
-      "descriptionEn": "Delivery overlay — orchestrates lean ladder, tdd, prune, review with sub-phase gates; commits only on user approval."
+      "descriptionEn": "Delivery sequence for implementing an agreed change and handing off verified code for Drift check."
     },
     {
       "name": "aiops-setup",
@@ -82,21 +82,21 @@
       "category": "quality",
       "role": "discipline",
       "alwaysOn": true,
-      "descriptionEn": ">"
+      "descriptionEn": "Minimal solution discipline: YAGNI ladder, stdlib and native first, shortest working diff. Use during delivery when writing code, or when the user says lean, lean mode, yagni, lazy mode, or complains about over-engineering."
     },
     {
       "name": "file-refactor",
       "category": "quality",
       "role": "discipline",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Keep source files under 500 lines. Split files that mix concerns — types, utils, hooks, sub-components, constants. Use when a file approaches the limit or when the user says refactor file, split file, too long, or file too big."
     },
     {
       "name": "prune",
       "category": "quality",
       "role": "delivery-gate",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Review diffs for over-engineering only. One line per finding: location, what to cut, what replaces it. Hard gate before /review in aiops delivery. Use when the user says prune, simplify review, what can we delete, or over-engineered."
     },
     {
       "name": "grill-with-docs",
@@ -173,42 +173,42 @@
       "category": "quality",
       "role": "delivery-gate",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Review in three modes — code (diff vs standards/spec), design (NOTES + tech-spec before planning), drift (implementation vs tech-spec before ship). Pick mode from Flow Conductor phase or user intent; do not mix artifact types."
     },
     {
       "name": "gitops",
       "category": "delivery",
       "role": "delivery",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Git operations wrapper: sync, stage, commit, push. Generates Conventional Commits messages with .scratch artifact references. Use when the user says gitops, commit, push, sync code, or needs version control operations."
     },
     {
       "name": "ui-mockup",
       "category": "design",
       "role": "design",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Generate HTML/CSS mockups for UI design. Produces browser-previewable mockup files with placeholder data. Use when the user says ui-mockup, mockup, design UI, wireframe, or needs visual reference for a feature."
     },
     {
       "name": "improve-codebase-architecture",
       "category": "alignment",
       "role": "architecture-health",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick. Use when the user says architecture review, codebase health, deepening, refactor suggestions, or complains about architectural friction."
     },
     {
       "name": "architect-design",
       "category": "alignment",
       "role": "alignment",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Structured design process for the architect agent. Guides from grill conclusions to complete NOTES.md + tech-spec.md plus needed domain documentation updates through constraint gathering, module identification, interface design, alternative exploration, and risk analysis. Use when the architect needs to produce design decisions and technical specifications."
     },
     {
       "name": "code-graph",
       "category": "alignment",
       "role": "infrastructure",
       "alwaysOn": false,
-      "descriptionEn": ">"
+      "descriptionEn": "Build and query a persistent code graph for the target project. Uses graphify (Tree-sitter + Louvain clustering) for deterministic structural extraction, then the model adds semantic annotations. Use when the user says build graph, code graph, dependency graph, impact analysis, or when other skills need structured code understanding before proceeding."
     }
   ],
   "tier2": [
@@ -255,9 +255,10 @@
       ],
       "role": "planning",
       "outputs": [
-        "PRD.md",
-        "plan.md",
-        "issues/"
+        "PRD (tracker)",
+        "tasks.md",
+        "tracker issue references",
+        "flow.state.yaml"
       ]
     },
     {
@@ -314,7 +315,7 @@
       ],
       "role": "delivery-gate",
       "outputs": [
-        "prune findings"
+        "PRUNE.md"
       ]
     },
     {
@@ -325,112 +326,6 @@
       "role": "delivery",
       "outputs": [
         "commit + push"
-      ]
-    }
-  ],
-  "dispatch": [
-    {
-      "taskType": "Feature",
-      "grill": "yes",
-      "prototypeVerdict": "only if /prototype ran",
-      "endsAt": "/gitops"
-    },
-    {
-      "taskType": "Feature + UI",
-      "grill": "yes",
-      "prototypeVerdict": "only if /prototype ran",
-      "endsAt": "/gitops"
-    },
-    {
-      "taskType": "Bug",
-      "grill": "no",
-      "prototypeVerdict": "no",
-      "endsAt": "/gitops"
-    },
-    {
-      "taskType": "Incoming",
-      "grill": "conditional",
-      "prototypeVerdict": "no",
-      "endsAt": "/gitops"
-    },
-    {
-      "taskType": "Architecture health",
-      "grill": "yes (you pick the item)",
-      "prototypeVerdict": "only if /prototype ran",
-      "endsAt": "/gitops"
-    },
-    {
-      "taskType": "Prototype",
-      "grill": "—",
-      "prototypeVerdict": "—",
-      "endsAt": "VERDICT.md"
-    },
-    {
-      "taskType": "New personal skill",
-      "grill": "yes",
-      "prototypeVerdict": "—",
-      "endsAt": "new SKILL.md"
-    }
-  ],
-  "sequences": [
-    {
-      "taskType": "Feature",
-      "agents": [
-        "architect",
-        "design-reviewer",
-        "planner",
-        "builder",
-        "code-reviewer",
-        "quality-auditor",
-        "gitops"
-      ]
-    },
-    {
-      "taskType": "Feature + UI",
-      "agents": [
-        "architect",
-        "ui-designer",
-        "design-reviewer",
-        "planner",
-        "builder",
-        "code-reviewer",
-        "quality-auditor",
-        "gitops"
-      ]
-    },
-    {
-      "taskType": "Bug",
-      "agents": [
-        "builder",
-        "code-reviewer",
-        "gitops"
-      ]
-    },
-    {
-      "taskType": "Incoming",
-      "agents": [
-        "triage",
-        "builder",
-        "code-reviewer",
-        "gitops"
-      ]
-    },
-    {
-      "taskType": "Architecture health",
-      "agents": [
-        "architect",
-        "design-reviewer",
-        "planner",
-        "builder",
-        "code-reviewer",
-        "quality-auditor",
-        "gitops"
-      ]
-    },
-    {
-      "taskType": "Prototype",
-      "agents": [
-        "prototyper"
       ]
     }
   ],
@@ -464,21 +359,28 @@
       ]
     },
     {
-      "file": "PRD.md",
+      "file": "PRD (tracker)",
       "producer": "planner",
       "consumers": [
         "builder"
       ]
     },
     {
-      "file": "plan.md",
+      "file": "tasks.md",
       "producer": "planner",
       "consumers": [
         "builder"
       ]
     },
     {
-      "file": "issues/*.md",
+      "file": "tracker issue references",
+      "producer": "planner",
+      "consumers": [
+        "builder"
+      ]
+    },
+    {
+      "file": "flow.state.yaml",
       "producer": "planner",
       "consumers": [
         "builder"
@@ -501,11 +403,18 @@
       ]
     },
     {
+      "file": "DIAGNOSIS.md",
+      "producer": "builder",
+      "consumers": [
+        "builder",
+        "design-reviewer"
+      ]
+    },
+    {
       "file": "REVIEW.md",
       "producer": "code-reviewer",
       "consumers": [
         "builder",
-        "quality-auditor",
         "gitops"
       ]
     },
@@ -518,7 +427,7 @@
       ]
     },
     {
-      "file": "prune findings",
+      "file": "PRUNE.md",
       "producer": "quality-auditor",
       "consumers": [
         "builder"

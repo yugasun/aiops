@@ -2,7 +2,6 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { I18nProvider, useI18n } from './lib/i18n'
 import { latestReleaseVersion } from './data/registry'
-import { Button } from './components/ui/button'
 import Landing from './pages/Landing'
 import DocsLayout from './docs/DocsLayout'
 import GettingStartedPage from './docs/GettingStartedPage'
@@ -14,43 +13,42 @@ import DemosPage from './docs/DemosPage'
 
 function Nav() {
   const { t, toggle, lang } = useI18n()
+  const { pathname } = useLocation()
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 bg-background/72 backdrop-blur-2xl border-b border-primary/10"
-      style={{ boxShadow: '0 1px 28px rgba(0,0,0,0.42), 0 1px 0 rgba(108,138,255,0.08)' }}>
-      <Link to="/" className="group font-mono font-bold text-lg text-foreground hover:no-underline flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[var(--cyan)] shadow-[0_0_10px_rgba(34,211,238,0.45)]" />
-        <span>ai<span className="text-primary">ops</span></span>
-        <span className="hidden sm:inline rounded-full border border-border/70 bg-muted/40 px-2 py-0.5 text-[0.62rem] font-normal text-muted-foreground">v{latestReleaseVersion}</span>
-      </Link>
-      <div className="flex items-center gap-1">
-        <Link to="/docs/getting-started"
-          className="px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-all">
-          {t('nav.docs')}
+    <header className="site-header">
+      <nav className="site-container site-nav" aria-label={t('nav.primary')}>
+        <Link to="/" className="nav-mark" aria-label="aiops">
+          <span className="site-wordmark">ai<span>ops</span></span>
+          <span className="site-release">v{latestReleaseVersion}</span>
         </Link>
-        <a href="https://github.com/yugasun/aiops" target="_blank" rel="noopener"
-          className="px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-all">
-          GitHub
-        </a>
-        <Button variant="outline" size="sm" onClick={toggle}
-          className="ml-2 font-mono text-xs h-7 px-2.5 border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
-          {lang === 'en' ? '中文' : 'EN'}
-        </Button>
-      </div>
-    </nav>
+        <div className="nav-links">
+          <Link to="/docs/getting-started" data-active={pathname.startsWith('/docs/') ? '' : undefined} aria-current={pathname === '/docs/getting-started' ? 'page' : undefined}>{t('nav.docs')}</Link>
+          <a href="https://github.com/yugasun/aiops" target="_blank" rel="noopener">GitHub</a>
+          <button type="button" onClick={toggle} className="language-action" lang={lang === 'en' ? 'zh' : 'en'}>
+            {lang === 'en' ? '中文' : 'EN'}
+          </button>
+        </div>
+      </nav>
+    </header>
   )
 }
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 
 function Footer() {
+  const { t } = useI18n()
   return (
-    <footer className="border-t border-border py-10 text-center bg-gradient-to-b from-background to-[rgba(108,138,255,0.03)]">
-      <div className="flex gap-5 justify-center mb-3">
-        <a href="https://github.com/yugasun/aiops" className="text-muted-foreground text-sm hover:text-foreground transition-colors">GitHub</a>
-        <Link to="/docs/getting-started" className="text-muted-foreground text-sm hover:text-foreground transition-colors">Docs</Link>
-        <a href="https://github.com/yugasun/aiops/blob/main/LICENSE" className="text-muted-foreground text-sm hover:text-foreground transition-colors">License</a>
+    <footer className="site-footer">
+      <div className="site-container footer-layout">
+        <div className="footer-details">
+          <div className="footer-links">
+            <a href="https://github.com/yugasun/aiops">GitHub</a>
+            <Link to="/docs/getting-started">{t('nav.docs')}</Link>
+            <a href="https://github.com/yugasun/aiops/blob/main/LICENSE">License</a>
+          </div>
+          <div className="footer-legal"><span>Apache 2.0</span><a href="https://github.com/yugasun">@yugasun</a></div>
+        </div>
       </div>
-      <div className="text-xs text-muted-foreground">Apache 2.0 · <a href="https://github.com/yugasun" className="hover:text-foreground transition-colors">@yugasun</a></div>
     </footer>
   )
 }

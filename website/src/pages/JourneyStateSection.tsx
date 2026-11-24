@@ -1,71 +1,33 @@
 import { useI18n } from '../lib/i18n'
-import { cn } from '../lib/utils'
-import { Card, CardContent } from '../components/ui/card'
-import { Section } from './Landing'
 
 export function JourneyStateSection() {
   const { t } = useI18n()
 
-  const steps = [
-    { input: t('journey.demo.input1'), step: t('journey.demo.step1'), dim: false },
-    { input: '', step: t('journey.demo.desc1'), dim: true },
-    { input: t('journey.demo.input2'), step: t('journey.demo.step2'), highlight: true },
-    { input: '', step: t('journey.demo.desc2'), dim: true },
+  const sessions = [
+    ['journey.demo.input1', 'journey.demo.step1', 'journey.demo.desc1'],
+    ['journey.demo.input2', 'journey.demo.step2', 'journey.demo.desc2'],
   ]
 
   return (
-    <Section id="journey" label={t('journey.label')} title={t('journey.title')} desc={t('journey.desc')}>
-      {/* Resume experience demo */}
-      <Card className="ai-panel max-w-2xl mx-auto mb-5 backdrop-blur-2xl overflow-hidden">
-        <div className="relative flex items-center justify-between px-4 py-2 border-b border-[rgba(108,138,255,0.12)] font-mono text-[0.7rem] text-muted-foreground">
-          <span>{t('journey.demo.title')}</span>
-          <span className="ai-chip rounded-full px-2 py-0.5 text-[0.62rem]">/aiops</span>
-        </div>
-        <CardContent className="relative p-5 font-mono text-sm leading-relaxed space-y-3">
-          {steps.map((s, i) => (
-            <div key={i} className={cn(
-              'transition-all rounded-lg px-2 py-1',
-              s.dim && 'opacity-50 text-xs',
-              s.highlight && 'text-[var(--green)] bg-[var(--green-dim)] border border-[var(--green)]/15',
-            )}>
-              {s.input && (
-                <div className="flex gap-2">
-                  <span className="text-[var(--cyan)]">›</span>
-                  <span style={s.highlight ? { textShadow: '0 0 12px rgba(74,222,128,0.25)' } : undefined}>
-                    {s.input}
-                  </span>
-                </div>
-              )}
-              {s.step && (
-                <div className={cn('ml-4', !s.dim && 'text-muted-foreground')}>
-                  {s.step}
-                </div>
-              )}
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Feature cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="ai-panel backdrop-blur-xl hover:border-[rgba(74,222,128,0.25)] transition-all"
-            style={{ boxShadow: '0 0 15px rgba(74,222,128,0.05)' }}>
-            <CardContent className="relative p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className={cn(
-                  'w-6 h-6 rounded text-xs flex items-center justify-center font-mono font-bold',
-                  i === 1 && 'bg-[var(--green)]/15 text-[var(--green)]',
-                  i === 2 && 'bg-[var(--cyan)]/15 text-[var(--cyan)]',
-                  i === 3 && 'bg-[var(--accent)]/15 text-[var(--accent)]',
-                )}>{i}</span>
-                <span className="font-semibold text-sm">{t(`journey.card.${i}.name`)}</span>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">{t(`journey.card.${i}.desc`)}</p>
-            </CardContent>
-          </Card>
+    <div className="journey-layout">
+      <figure className="journey-record">
+        <figcaption className="record-label">{t('journey.demo.title')}</figcaption>
+        {sessions.map(([prompt, step, status]) => (
+          <div className="journey-session" key={prompt}>
+            <pre><code>{t(prompt)}</code></pre>
+            <p>{t(step)}</p>
+            <p>{t(status)}</p>
+          </div>
         ))}
-      </div>
-    </Section>
+      </figure>
+      <dl className="journey-notes">
+        {[1, 2, 3].map((i) => (
+          <div key={i}>
+            <dt>{t(`journey.card.${i}.name`)}</dt>
+            <dd>{t(`journey.card.${i}.desc`)}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   )
 }

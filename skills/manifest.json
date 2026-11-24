@@ -1,6 +1,6 @@
 {
   "manifestVersion": 3,
-  "version": "1.5.1",
+  "version": "1.5.2",
   "tier1": [
     {
       "name": "aiops",
